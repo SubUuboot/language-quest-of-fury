@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://8dk0ny2oq5wu"]
+
+[ext_resource type="Script" uid="uid://55g31s2htybq" path="res://Scripts/Obstacle.gd" id="1_u4h2b"]
+[ext_resource type="Texture2D" uid="uid://d0b6hgnygas3b" path="res://Block_A_02.png" id="2_u4h2b"]
+
+[node name="Obstacle" type="StaticBody2D"]
+position = Vector2(518, 533)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_u4h2b")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-198, -277)
+texture = ExtResource("2_u4h2b")
+
+[node name="Sprite2D3" type="Sprite2D" parent="."]
+position = Vector2(-70, -277)
+texture = ExtResource("2_u4h2b")
+
+[node name="Sprite2D4" type="Sprite2D" parent="."]
+position = Vector2(-198, -405)
+texture = ExtResource("2_u4h2b")
+
+[node name="Sprite2D5" type="Sprite2D" parent="."]
+position = Vector2(-70, -405)
+texture = ExtResource("2_u4h2b")

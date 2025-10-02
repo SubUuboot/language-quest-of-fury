@@ -1,0 +1,299 @@
+[gd_scene load_steps=4 format=3 uid="uid://dam42vxh421u1"]
+
+[ext_resource type="Texture2D" uid="uid://b7ahdfyf3tj" path="res://Sprites/ground_tiles/concrete_tile1.png" id="1_43k67"]
+[ext_resource type="Texture2D" uid="uid://b81og42sia48n" path="res://Sprites/Obstacles/PNG/Buildings/Building_B_01.png" id="2_43k67"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_43k67"]
+size = Vector2(483.41394, 511.41638)
+
+[node name="Ground" type="Node2D"]
+position = Vector2(155, 296)
+
+[node name="Concrete" type="Area2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(307, 596)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D8" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(-909, 596)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D9" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(307, -613)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D10" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(-909, -613)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D2" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(-605, -613)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D3" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(-301, -613)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D4" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(3, -613)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D5" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(-909, -9)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D6" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(-605, -9)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D7" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(-301, -9)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D11" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(3, -9)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D12" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(611, -613)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D13" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(916, -613)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D14" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(1222, -613)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D15" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(307, -9)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D16" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(611, -9)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D17" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(916, -9)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D18" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(1222, -9)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D19" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(-605, 596)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D20" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(-301, 596)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D21" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(3, 596)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D22" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(-909, 1200)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D23" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(-605, 1200)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D24" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(-301, 1200)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D25" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(3, 1200)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D26" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(611, 596)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D27" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(916, 596)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D28" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(1222, 596)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D29" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(307, 1200)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D30" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(611, 1200)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D31" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(916, 1200)
+texture = ExtResource("1_43k67")
+
+[node name="Sprite2D32" type="Sprite2D" parent="Concrete"]
+show_behind_parent = true
+light_mask = 4
+visibility_layer = 4
+z_index = -1
+position = Vector2(1222, 1200)
+texture = ExtResource("1_43k67")
+
+[node name="Hangar" type="Area2D" parent="."]
+collision_mask = 4
+
+[node name="BuildingB01" type="Sprite2D" parent="Hangar"]
+position = Vector2(-1144, 292.99994)
+scale = Vector2(0.3349609, 4.712891)
+texture = ExtResource("2_43k67")
+
+[node name="RigidBody2D" type="Area2D" parent="Hangar/BuildingB01"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hangar/BuildingB01/RigidBody2D"]
+position = Vector2(0.7463379, 0.13258362)
+scale = Vector2(1, 1.0000001)
+shape = SubResource("RectangleShape2D_43k67")
+
+[node name="RigidBody2D" type="Area2D" parent="Hangar"]
+position = Vector2(1458.0002, 294)
+scale = Vector2(0.3349609, 4.7128916)
+collision_layer = 4
+collision_mask = 4
+
+[node name="BuildingB02" type="Sprite2D" parent="Hangar/RigidBody2D"]
+position = Vector2(-0.00048828125, 0)
+scale = Vector2(0.99999994, 0.9999999)
+texture = ExtResource("2_43k67")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hangar/RigidBody2D"]
+position = Vector2(-0.7463379, 0.10606766)
+scale = Vector2(1, 1.0000001)
+shape = SubResource("RectangleShape2D_43k67")

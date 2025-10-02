@@ -1,0 +1,94 @@
+[gd_scene load_steps=12 format=3 uid="uid://wr26b50e836f"]
+
+[ext_resource type="Script" uid="uid://dyh3b5v8h3iq1" path="res://Scripts/Main.gd" id="1_5vw27"]
+[ext_resource type="Script" uid="uid://bye0dca81bllt" path="res://Scripts/Tank.gd" id="1_7mycd"]
+[ext_resource type="Texture2D" uid="uid://3ba6jqdcnuql" path="res://Assets/tank/Hulls_Color_D/Hull_01.png" id="2_272bh"]
+[ext_resource type="Texture2D" uid="uid://b46v86at470me" path="res://Assets/tank/Weapon_Color_D/Gun_01.png" id="3_5vw27"]
+[ext_resource type="Script" uid="uid://6k05yl7w8c2a" path="res://Scripts/Instructor.gd" id="5_4c57u"]
+[ext_resource type="Script" uid="uid://dwsnlo6lt567d" path="res://Scripts/Commander.gd" id="6_272bh"]
+[ext_resource type="Script" uid="uid://c3714oq4kbn4y" path="res://Scripts/Level.gd" id="6_efxa6"]
+[ext_resource type="Script" uid="uid://devr6alcpyuyg" path="res://Scripts/HangarDoor.gd" id="7_5vw27"]
+[ext_resource type="PackedScene" uid="uid://dam42vxh421u1" path="res://Scenes/Segments/ground.tscn" id="8_kek77"]
+
+[sub_resource type="GDScript" id="GDScript_lquwl"]
+resource_name = "CameraShake"
+script/source = "extends Camera2D
+var trauma := 0.0
+
+func add_trauma(amount: float) -> void:
+	trauma = clamp(trauma + amount, 0.0, 1.0)
+
+func _process(delta: float) -> void:
+	if trauma > 0.0:
+		offset = Vector2(
+			(randf() - 0.5) * 6.0 * trauma,
+			(randf() - 0.5) * 6.0 * trauma
+		)
+		trauma = max(trauma - 1.8 * delta, 0.0)
+	else:
+		offset = Vector2.ZERO
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7mycd"]
+size = Vector2(150, 224)
+
+[node name="Main" type="Node2D"]
+position = Vector2(100, 100)
+scale = Vector2(2, 2)
+script = ExtResource("1_5vw27")
+
+[node name="Tank" type="CharacterBody2D" parent="."]
+unique_name_in_owner = true
+z_index = 10
+collision_mask = 2
+script = ExtResource("1_7mycd")
+
+[node name="Camera2D" type="Camera2D" parent="Tank"]
+script = SubResource("GDScript_lquwl")
+
+[node name="Sprite2D" type="Sprite2D" parent="Tank"]
+texture = ExtResource("2_272bh")
+
+[node name="Sprite2D2" type="Sprite2D" parent="Tank"]
+texture = ExtResource("3_5vw27")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Tank"]
+position = Vector2(0, 4)
+shape = SubResource("RectangleShape2D_7mycd")
+
+[node name="Level" type="Node2D" parent="."]
+script = ExtResource("6_efxa6")
+
+[node name="Instructor" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("5_4c57u")
+
+[node name="CommandTimer" type="Timer" parent="Instructor"]
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="Instructor"]
+position = Vector2(545, -357)
+
+[node name="Commander" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("6_272bh")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="Commander"]
+position = Vector2(545, -357)
+
+[node name="HangarDoor" type="Node2D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("7_5vw27")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="HangarDoor"]
+
+[node name="Hangar" parent="." instance=ExtResource("8_kek77")]
+
+[node name="Obstacles" type="Node2D" parent="."]
+
+[node name="ZoneCross" type="Area2D" parent="Obstacles"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/ZoneCross"]
+
+[node name="ZoneClimb" type="Area2D" parent="Obstacles"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/ZoneClimb"]

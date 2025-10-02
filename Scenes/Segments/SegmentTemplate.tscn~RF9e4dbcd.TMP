@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://dcaekgwki7n3d"]
+
+[ext_resource type="TileSet" uid="uid://4ug47845meb" path="res://Assets/TerrainTileset.tres" id="1"]
+[ext_resource type="Script" uid="uid://dd7iix8gxkqcb" path="res://scripts/Segment.gd" id="2"]
+
+[node name="SegmentTemplate" type="Node2D"]
+script = ExtResource("2")
+size_y = 640
+
+[node name="Terrain" type="TileMap" parent="."]
+tile_set = ExtResource("1")
+cell_quadrant_size = 16
+cell_size = Vector2i(64, 64)
+
+
+
+
+Segment_Straight.tscn"),Segment_Right.tscn"),Segment_Left.tscn"),Segment_Stop.tscn"),Segment_Butte.tscn"),Segment_Fosse.tscn"),Segment_Template.tscn")

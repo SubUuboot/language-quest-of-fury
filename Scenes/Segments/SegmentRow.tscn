@@ -1,0 +1,28 @@
+[gd_scene load_steps=9 format=3 uid="uid://dmsv7u1gqu4au"]
+
+[ext_resource type="Script" uid="uid://vw82sgar2it0" path="res://Scripts/SegmentRow.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://b1iv7cu2kcque" path="res://Scenes/Segments/Segment_Straight.tscn" id="2_p1c6k"]
+[ext_resource type="PackedScene" uid="uid://ce7seuc3bnqcc" path="res://Scenes/Segments/Segment_Butte.tscn" id="3_643n4"]
+[ext_resource type="PackedScene" uid="uid://che6id8xuwbyr" path="res://Scenes/Segments/Segment_Fosse.tscn" id="4_b0evn"]
+[ext_resource type="PackedScene" uid="uid://qeuhdcrd0shq" path="res://Scenes/Segments/Right/Segment_Right.tscn" id="4_vjq5e"]
+[ext_resource type="PackedScene" uid="uid://4u4o7ab1jwum" path="res://Scenes/Segments/Left/Segment_Left.tscn" id="5_ubekk"]
+[ext_resource type="PackedScene" uid="uid://cirx51x6vw8rk" path="res://Scenes/Segments/Segment_Stop.tscn" id="5_vjq5e"]
+[ext_resource type="PackedScene" uid="uid://qeuhdcrd0shq" path="res://Scenes/Segments/Left/Segment_Right.tscn" id="7_uoxrl"]
+
+[node name="SegmentRow" type="Node2D"]
+script = ExtResource("1")
+segment_scenes_ext_left = Array[PackedScene]([ExtResource("2_p1c6k"), ExtResource("3_643n4"), ExtResource("4_vjq5e"), ExtResource("5_ubekk")])
+segment_scenes_left = Array[PackedScene]([ExtResource("2_p1c6k"), ExtResource("4_b0evn"), ExtResource("7_uoxrl"), ExtResource("7_uoxrl")])
+segment_scenes_right = Array[PackedScene]([ExtResource("2_p1c6k"), ExtResource("5_vjq5e"), ExtResource("7_uoxrl"), ExtResource("5_ubekk")])
+segment_scenes_ext_right = Array[PackedScene]([ExtResource("7_uoxrl"), ExtResource("5_ubekk")])
+
+[node name="Slot0" type="Node2D" parent="."]
+
+[node name="Slot1" type="Node2D" parent="."]
+position = Vector2(640, 0)
+
+[node name="Slot2" type="Node2D" parent="."]
+position = Vector2(1280, 0)
+
+[node name="Slot3" type="Node2D" parent="."]
+position = Vector2(1920, 0)

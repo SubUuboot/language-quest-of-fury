@@ -1,0 +1,154 @@
+[gd_scene load_steps=3 format=3 uid="uid://bcu5lifpcai6t"]
+
+[ext_resource type="Script" uid="uid://bu6yv7koy1vai" path="res://Scripts/HUD.gd" id="1_64ctp"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_37p78"]
+
+[node name="HUDLayer" type="CanvasLayer"]
+metadata/_edit_use_anchors_ = true
+
+[node name="DebugOverlay" type="Label" parent="."]
+z_index = 10
+anchors_preset = -1
+anchor_left = 0.572
+anchor_top = 0.78900003
+anchor_right = 0.572
+anchor_bottom = 0.78900003
+offset_left = -1186.9441
+offset_top = -791.27203
+offset_right = -882.94403
+offset_bottom = -551.27203
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.73333335)
+theme_override_colors/font_outline_color = Color(0.21176471, 0.69803923, 0, 1)
+text = "text test"
+label_settings = SubResource("LabelSettings_37p78")
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="HUD" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_64ctp")
+metadata/_edit_use_anchors_ = true
+
+[node name="InstructorDialog" type="RichTextLabel" parent="HUD"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -50.0
+offset_top = -400.0
+offset_right = 50.0
+grow_horizontal = 2
+grow_vertical = 0
+scale = Vector2(3, 3)
+metadata/_edit_use_anchors_ = true
+
+[node name="MovementIndicator" type="Label" parent="HUD"]
+layout_direction = 1
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -1152.0
+offset_top = -324.0
+offset_right = -1080.5
+offset_bottom = -177.0
+grow_horizontal = 0
+grow_vertical = 2
+scale = Vector2(3, 3)
+metadata/_edit_use_anchors_ = true
+
+[node name="SpeedPanel" type="NinePatchRect" parent="HUD"]
+custom_minimum_size = Vector2(260, 64)
+layout_mode = 0
+offset_right = 260.0
+offset_bottom = 270.0
+region_rect = Rect2(0, 16, 0, 16)
+metadata/_edit_use_anchors_ = true
+
+[node name="SpeedLabel" type="Label" parent="HUD/SpeedPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(3, 3)
+metadata/_edit_use_anchors_ = true
+
+[node name="CommandPanel" type="NinePatchRect" parent="HUD"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -150.0
+offset_right = 150.0
+offset_bottom = 40.5
+grow_horizontal = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="CommandLabel" type="Label" parent="HUD/CommandPanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.785
+anchor_top = 7.2469134
+anchor_right = -0.46
+anchor_bottom = 9.975308
+offset_left = 377.5
+offset_top = -229.5
+offset_right = 468.0
+offset_bottom = -175.5
+metadata/_edit_use_anchors_ = true
+
+[node name="PronunciationLabel" type="Label" parent="HUD/CommandPanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0016666667
+anchor_top = 16.11111
+anchor_right = 0.15833333
+anchor_bottom = 18.777779
+offset_left = 345.5
+offset_top = -468.5
+offset_right = 449.0
+offset_bottom = -419.0
+metadata/_edit_use_anchors_ = true
+
+[node name="FuelPanel" type="NinePatchRect" parent="HUD"]
+layout_direction = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.8220486
+anchor_top = 0.37962964
+anchor_right = 0.8220486
+anchor_bottom = 0.37962964
+offset_left = -600.0
+offset_bottom = 40.5
+grow_horizontal = 0
+scale = Vector2(3, 3)
+metadata/_edit_use_anchors_ = true
+
+[node name="FuelBar" type="TextureProgressBar" parent="HUD/FuelPanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.5419445
+anchor_top = 1.5802472
+anchor_right = -0.5419445
+anchor_bottom = 1.5802472
+offset_left = 550.5
+offset_top = -118.0
+offset_right = 662.0
+offset_bottom = -21.5
+scale = Vector2(3, 3)
+metadata/_edit_use_anchors_ = true

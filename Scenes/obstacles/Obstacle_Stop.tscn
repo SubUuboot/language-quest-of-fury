@@ -1,0 +1,57 @@
+[gd_scene load_steps=4 format=3 uid="uid://baeagb4am5e2e"]
+
+[ext_resource type="Script" uid="uid://55g31s2htybq" path="res://Scripts/Obstacle.gd" id="1_kosde"]
+[ext_resource type="Texture2D" uid="uid://d0b6hgnygas3b" path="res://Block_A_02.png" id="2_vcyq6"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kosde"]
+size = Vector2(624, 242)
+
+[node name="Obstacle" type="StaticBody2D"]
+position = Vector2(518, 533)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_kosde")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-454, -341)
+texture = ExtResource("2_vcyq6")
+
+[node name="Sprite2D3" type="Sprite2D" parent="."]
+position = Vector2(-326, -341)
+texture = ExtResource("2_vcyq6")
+
+[node name="Sprite2D4" type="Sprite2D" parent="."]
+position = Vector2(-454, -469)
+texture = ExtResource("2_vcyq6")
+
+[node name="Sprite2D5" type="Sprite2D" parent="."]
+position = Vector2(-326, -469)
+texture = ExtResource("2_vcyq6")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(-198, -341)
+texture = ExtResource("2_vcyq6")
+
+[node name="Sprite2D6" type="Sprite2D" parent="."]
+position = Vector2(-70, -341)
+texture = ExtResource("2_vcyq6")
+
+[node name="Sprite2D7" type="Sprite2D" parent="."]
+position = Vector2(-198, -469)
+texture = ExtResource("2_vcyq6")
+
+[node name="Sprite2D8" type="Sprite2D" parent="."]
+position = Vector2(-70, -469)
+texture = ExtResource("2_vcyq6")
+
+[node name="Sprite2D9" type="Sprite2D" parent="."]
+position = Vector2(58, -341)
+texture = ExtResource("2_vcyq6")
+
+[node name="Sprite2D10" type="Sprite2D" parent="."]
+position = Vector2(58, -469)
+texture = ExtResource("2_vcyq6")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-198, -404)
+shape = SubResource("RectangleShape2D_kosde")
