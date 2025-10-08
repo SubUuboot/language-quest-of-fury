@@ -1,0 +1,92 @@
+{
+  "commander": {
+	"intro": [
+	  {
+		"id": "init",
+		"text": "Протокол инициализации. Следуйте приказам.",
+		"translation": "Protocole d’activation. Suivez les ordres.",
+		"pronunciation": ""
+	  },
+	  {
+		"id": "end",
+		"text": "Протокол завершён.",
+		"translation": "Protocole terminé.",
+		"pronunciation": ""
+	  }
+	],
+	"feedback": [
+	  {
+		"id": "good",
+		"text": "Хорошо.",
+		"translation": "Bien.",
+		"pronunciation": ""
+	  },
+	  {
+		"id": "repeat",
+		"text": "Повторите.",
+		"translation": "Répétez.",
+		"pronunciation": ""
+	  }
+	],
+	"commands": [
+	  { "id": "forward", "text": "Вперёд!", "translation": "En avant !" },
+	  { "id": "backward", "text": "Назад!", "translation": "En arrière !" },
+	  { "id": "left", "text": "Налево!", "translation": "À gauche !" },
+	  { "id": "right", "text": "Направо!", "translation": "À droite !" },
+	  { "id": "stop", "text": "Стоп!", "translation": "Stop !" }
+	]
+  },
+
+  "instructor": {
+	"lessons": [
+	  {
+		"id": "hangar_exit",
+		"name": "Piste de roulage — sortie hangar",
+		"instructions": "On y va. Exécute les ordres sur la piste.",
+		"commands": ["forward","stop","left","forward","stop","right","forward","stop","backward","stop"]
+	  },
+	  {
+		"id": "obstacles",
+		"name": "Parcours d’obstacles — fossé et butte",
+		"instructions": "Montre que tu peux franchir les obstacles. Pas d’excuses.",
+		"commands": ["forward","cross","stop","forward","climb","stop"]
+	  }
+	],
+	"feedback": [
+	  {
+		"id": "good",
+		"text": "Хорошо.",
+		"translation": "Bien."
+	  },
+	  {
+		"id": "correct",
+		"text": "Верно.",
+		"translation": "Correct."
+	  },
+	  {
+		"id": "repeat",
+		"text": "Повторите.",
+		"translation": "Répétez."
+	  },
+	  {
+		"id": "wrong",
+		"text": "Не то.",
+		"translation": "Pas ça."
+	  },
+	  {
+		"id": "complete",
+		"text": "Этап завершён.",
+		"translation": "Étape terminée."
+	  }
+	],
+	"commands": [
+	  { "id": "forward", "text": "Вперёд!", "translation": "En avant !" },
+	  { "id": "backward", "text": "Назад!", "translation": "En arrière !" },
+	  { "id": "left", "text": "Налево!", "translation": "À gauche !" },
+	  { "id": "right", "text": "Направо!", "translation": "À droite !" },
+	  { "id": "stop", "text": "Стоп!", "translation": "Stop !" },
+	  { "id": "cross", "text": "Через ров!", "translation": "Franchis le fossé !" },
+	  { "id": "climb", "text": "Взбирайся!", "translation": "Monte la butte !" }
+	]
+  }
+}

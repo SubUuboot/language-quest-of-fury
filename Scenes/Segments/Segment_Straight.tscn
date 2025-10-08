@@ -38,3 +38,4 @@ script = ExtResource("3_mbp0k")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ZoneForward"]
 position = Vector2(320, 48)
 shape = SubResource("RectangleShape2D_q6tuu")
+metadata/expected_command = "Straight"

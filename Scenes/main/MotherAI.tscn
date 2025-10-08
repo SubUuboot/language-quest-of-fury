@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://cxog4wx4hf5bx"]
+
+[ext_resource type="Script" uid="uid://c1a4xr6c2uaib" path="res://Scripts/systems/MotherAI.gd" id="1_wl85p"]
+
+[node name="MotherAI" type="Node"]
+script = ExtResource("1_wl85p")
+
+[node name="Audio" type="AudioStreamPlayer2D" parent="."]
+
+[node name="Timer" type="Timer" parent="."]

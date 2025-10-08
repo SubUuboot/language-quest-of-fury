@@ -37,6 +37,7 @@ shape = SubResource("RectangleShape2D_d540l")
 
 [node name="ZoneRight" type="Area2D" parent="." groups=["validation_zones"]]
 script = ExtResource("3_qnlgd")
+metadata/expected_command = "Right"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ZoneRight"]
 position = Vector2(444, 139.75)

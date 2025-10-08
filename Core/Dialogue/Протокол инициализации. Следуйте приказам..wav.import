@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://bcy70050jy6q8"
+path="res://.godot/imported/Протокол инициализации. Следуйте приказам..wav-b91938793dd76d014ac7412c2457d2b2.sample"
+
+[deps]
+
+source_file="res://Core/Dialogue/Протокол инициализации. Следуйте приказам..wav"
+dest_files=["res://.godot/imported/Протокол инициализации. Следуйте приказам..wav-b91938793dd76d014ac7412c2457d2b2.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

@@ -1,0 +1,21 @@
+		  ┌───────────────────────┐
+		  │        Game           │
+		  │  (point d’entrée)     │
+		  │                       │
+		  │• init globale         │
+		  │• écoute les signaux   │
+		  │  des autres modules   │
+		  └────────▲───────┬──────┘
+				   │       │
+	 emits:        │       │  emits:
+[stage_loaded]◄────┘       └────►[global_task_event]
+				   │       │
+				   ▼       ▼
+	 ┌────────────────────┐   ┌───────────────────────────┐
+	 │   StageManager     │   │        MotherAI           │
+	 │  (charge les       │   │  (IA persistante,         │
+	 │   stages/scènes)   │   │   logique autonome)       │
+	 │                    │   │                           │
+	 │• load_stage()      │   │• queue, mémoire, signaux  │
+	 │• emit stage_done   │   │• répond aux ordres        │
+	 └────────────────────┘   └───────────────────────────┘

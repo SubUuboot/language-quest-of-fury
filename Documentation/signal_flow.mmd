@@ -1,0 +1,30 @@
+flowchart TD
+  subgraph GAME["Game (entry point)"]
+    G_init["Global init"]
+    G_listen["Listen to signals"]
+  end
+
+  subgraph STAGEMANAGER["StageManager"]
+    SM_load["Load stages"]
+    SM_done["Emit stage_done"]
+  end
+
+  subgraph MOTHERAI["MotherAI (persistent)"]
+    MA_tasks["Task queue"]
+    MA_signals["Emit task_started & task_completed"]
+  end
+
+  subgraph STAGES["Stages (Stage0 / Stage1)"]
+    S_work["Local scene"]
+    S_emit["Emit stage_completed"]
+  end
+
+  %% Connections (always node-to-node)
+  G_init --> SM_load
+  G_listen --> MA_signals
+  SM_load --> S_work
+  S_emit --> SM_done
+  SM_done --> G_listen
+  MOTHERAI -->|task_started & task_completed| G_listen
+  G_init -->|load_stage| SM_load
+  G_init -->|orders| MOTHERAI

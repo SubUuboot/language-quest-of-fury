@@ -1,0 +1,63 @@
+[gd_scene load_steps=7 format=3 uid="uid://inj3nv1y5esk"]
+
+[ext_resource type="PackedScene" uid="uid://c6hky71emjfig" path="res://Scenes/input_assignment/InputAssignmentScene.tscn" id="1_2y60g"]
+[ext_resource type="Script" uid="uid://c0a1kneg5bunw" path="res://Scripts/MotherAI_Physical.gd" id="1_hdc1j"]
+[ext_resource type="Script" uid="uid://dyh3b5v8h3iq1" path="res://Scripts/FirstInstructions.gd" id="2_2mpug"]
+[ext_resource type="PackedScene" uid="uid://dam42vxh421u1" path="res://Scenes/Segments/ground.tscn" id="2_sfy5f"]
+[ext_resource type="Script" uid="uid://devr6alcpyuyg" path="res://Scripts/HangarDoor.gd" id="4_gtl7k"]
+[ext_resource type="Script" uid="uid://djh2hjmj4sy00" path="res://Scripts/stages/Stage0_Controller.gd" id="5_8kfhi"]
+
+[node name="Stage0_Hangar" type="Node2D"]
+
+[node name="Environment" type="WorldEnvironment" parent="."]
+
+[node name="Bench" type="StaticBody2D" parent="Environment"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Environment/Bench"]
+
+[node name="Hangar" parent="Environment" instance=ExtResource("2_sfy5f")]
+
+[node name="HangarDoor" type="Node2D" parent="Environment/Hangar"]
+unique_name_in_owner = true
+position = Vector2(-310, -592)
+script = ExtResource("4_gtl7k")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Environment/Hangar/HangarDoor"]
+
+[node name="Characters" type="Node" parent="."]
+
+[node name="MotherAI_Physical" type="Node2D" parent="Characters"]
+unique_name_in_owner = true
+script = ExtResource("1_hdc1j")
+
+[node name="Commander" type="Node2D" parent="Characters"]
+unique_name_in_owner = true
+
+[node name="DialoguesPlayer" type="Node" parent="Characters/Commander"]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="Characters/Commander"]
+
+[node name="CommandTimer" type="Timer" parent="Characters/Commander"]
+
+[node name="Technicians" type="Node2D" parent="Characters"]
+unique_name_in_owner = true
+
+[node name="DialoguesPlayer" type="Node" parent="Characters/Technicians"]
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="Characters/Technicians"]
+
+[node name="Logic" type="Node2D" parent="."]
+script = ExtResource("5_8kfhi")
+
+[node name="InputAssignmentScene" parent="Logic" instance=ExtResource("1_2y60g")]
+
+[node name="FirstInstructionsScene" type="Node" parent="Logic"]
+script = ExtResource("2_2mpug")
+
+[node name="TransitionTriggers" type="Node" parent="."]
+
+[node name="DoorTrigger" type="Area2D" parent="TransitionTriggers"]
+unique_name_in_owner = true
+
+[node name="BenchTrigger" type="Area2D" parent="TransitionTriggers"]
+unique_name_in_owner = true
