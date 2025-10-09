@@ -12,17 +12,27 @@ var order_index = 0
 @onready var dialogue_sync = $DialogueSync
 @onready var ui = $"../UI"
 @onready var tank = get_node_or_null("/root/Game/Main/Characters/Tank")
-@onready var mother_ai = get_node_or_null("/root/Game/MotherAI")
+@onready var mother_ai = $"../../../../../MotherAI"
 
 var orders = [
-	{"action": "move_forward", "dialogue": "FORWARD", "prompt": "Press a key to move forward"},
-	{"action": "move_backward", "dialogue": "BACKWARD", "prompt": "Press a key to move backward"},
-	{"action": "turn_left", "dialogue": "LEFT TURN", "prompt": "Press a key to turn left"},
-	{"action": "turn_right", "dialogue": "RIGHT TURN", "prompt": "Press a key to turn right"},
-	{"action": "fire", "dialogue": "FIRE", "prompt": "Press a key to fire"},
+	{"action": "accelerate", "dialogue": "FORWARD", "prompt": "Push the levers to move forward"},
+	{"action": "steer_left", "dialogue": "LEFT TURN", "prompt": "Pull the lever to turn left"},
+	{"action": "steer_right", "dialogue": "RIGHT TURN", "prompt": "Pull the lever to turn right"},
+	{"action": "brake", "dialogue": "BRAKE", "prompt": "Pump the brakes"},
+	{"action": "clutch", "dialogue": "CLUTCH", "prompt": "Double-pump the clutch"},
+	{"action": "gear_up", "dialogue": "GEAR UP", "prompt": "High gear shift"},
+	{"action": "gear_down", "dialogue": "GEAR DOWN", "prompt": "Low gear shift"},
 ]
 
 func _ready():
+	
+	# si la scène est désactivée, ne rien faire
+	if not is_inside_tree():
+		return
+		
+	if tank == null:
+		push_warning("Tank non trouvé dans la scène principale.")
+		
 	if not dialogue_sync:
 		push_error("DialogueSync introuvable — vérifie la scène InputAssignmentScene.tscn")
 	if not tank:
@@ -67,8 +77,8 @@ func simulate_tank_reaction(action):
 		push_warning("simulate_tank_reaction() appelé sans tank valide.")
 		return
 	match action:
-		"move_forward": tank.play_animation("idle_rev")
-		"turn_left": tank.play_animation("left_torque")
+		"accelerate": tank.play_animation("idle_rev")
+		"steer_left": tank.play_animation("left_torque")
 		"fire": tank.play_animation("barrel_charge")
 	if mother_ai and mother_ai.has_method("play_animation"):
 		mother_ai.play_animation("arm_adjust")

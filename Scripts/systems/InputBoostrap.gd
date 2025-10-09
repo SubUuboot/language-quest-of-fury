@@ -20,10 +20,6 @@ func _ready():
 
 	# === Reste compatible avec d’anciens scripts ===
 	# (utile si certains appels utilisent encore "move_forward" etc.)
-	_ensure_action("move_forward",  [KEY_W, KEY_UP])
-	_ensure_action("move_backward", [KEY_S, KEY_DOWN])
-	_ensure_action("turn_left",     [KEY_A, KEY_LEFT])
-	_ensure_action("turn_right",    [KEY_D, KEY_RIGHT])
 
 	# === Debug / Interface ===
 	_ensure_action("toggle_debug", [KEY_F3])

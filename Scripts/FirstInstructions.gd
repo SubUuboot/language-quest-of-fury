@@ -12,10 +12,10 @@ signal sequence_complete
 @onready var hangar_door = get_node_or_null(door_path)
 
 var sequence = [
-	{"action": "move_forward", "dialogue": "Rusty, avance."},
-	{"action": "move_backward", "dialogue": "Recule."},
-	{"action": "turn_left", "dialogue": "Tourne à gauche."},
-	{"action": "turn_right", "dialogue": "Tourne à droite."},
+	{"action": "accelerate", "dialogue": "Rusty, avance."},
+	{"action": "reverse", "dialogue": "Recule."},
+	{"action": "steer_left", "dialogue": "Tourne à gauche."},
+	{"action": "steer_right", "dialogue": "Tourne à droite."},
 ]
 
 var current_order = ""
