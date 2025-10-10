@@ -40,13 +40,15 @@ var engine_on: bool = true
 var engine_rpm: float = engine_idle_rpm
 var gear: int = 0  # Démarre au neutre
 var gear_ratios := {
-	-1: -0.5,
+	-1: -0.25,
 	 0:  0.0,
 	 1:  0.25,
 	 2:  0.45,
 	 3:  0.7,
 	 4:  1.0
 }
+
+
 
 ### ------------------------------------------------------------
 ### ÉTAT DU JOUEUR
@@ -131,8 +133,6 @@ func _process_inputs() -> void:
 	var target_throttle := 0.0
 	if Input.is_action_pressed("accelerate"):
 		target_throttle = 1.0
-	elif Input.is_action_pressed("reverse"):
-		target_throttle = -1.0
 
 	# Lissage pour simuler le temps de montée/descente du régime
 	var throttle_response := 2.0  # vitesse de réponse moteur
@@ -184,8 +184,9 @@ func _update_engine(delta: float) -> void:
 		var ratio: float = gear_ratios.get(gear, 0.0)
 		var drive_force: float = torque * ratio
 		var drive_accel: float = drive_force / mass
-		var direction: Vector2 = Vector2.UP.rotated(rotation)
-		velocity -= direction * drive_accel * delta * visual_speed_factor
+		var direction: Vector2 = -Vector2.UP.rotated(rotation)
+		velocity += direction * drive_accel * delta * visual_speed_factor
+
 
 	# --- Calage éventuel ---
 	if use_engine_stall and not clutch_pressed and gear != 0:
@@ -196,33 +197,66 @@ func _update_engine(delta: float) -> void:
 
 
 ### ------------------------------------------------------------
-### TRANSMISSION / CHENILLES
+### TRANSMISSION / CHENILLES — version corrigée
 ### ------------------------------------------------------------
+
+# Calcule la vitesse "cible" pour chaque chenille
+# en fonction du régime moteur, du rapport engagé et de la direction.
 func _compute_track_targets() -> void:
+	# Récupération du ratio de la boîte
 	var ratio: float = gear_ratios.get(gear, 0.0)
-	var can_drive: bool = engine_on and (gear != 0) and not clutch_pressed
-	var base: float = 0.0
 
+	# Si moteur éteint ou au point mort => pas de poussée
+	var can_drive: bool = engine_on and (gear != 0)
+
+	# Base de la vitesse transmise aux chenilles (en m/s)
+	var _base_speed: float = 0.0
 	if can_drive:
-		base = throttle * max_track_speed * abs(ratio)
-		if ratio < 0.0:
-			base = -base
+		_base_speed = throttle * ratio * max_track_speed
 	else:
-		base = 0.0  # au neutre ou embrayé = pas de propulsion
+		_base_speed = 0.0
 
-	# Contrôle différentiel (accélération par chenille)
-	var left_input := throttle - steer
-	var right_input := throttle + steer
+	# =============================
+	#   LOGIQUE DIFFÉRENTIELLE
+	# =============================
+	# Pour un tank :
+	# - "throttle" = avance/recul (accélérateur)
+	# - "steer"    = vitesse relative entre les deux chenilles
+	#   (comme si on poussait une manette plus que l’autre)
+	#
+	# => Pour que le tank avance dans le bon sens, les chenilles doivent
+	#    tourner de l’ARRIÈRE vers l’AVANT.
+	#    On inverse donc le signe de throttle.
+	#
+	#    gauche = -throttle - steer
+	#    droite = -throttle + steer
+	# =========================================
 
-	left_target_speed = clamp(left_input * ratio * max_track_speed, -max_track_speed, max_track_speed)
-	right_target_speed = clamp(right_input * ratio * max_track_speed, -max_track_speed, max_track_speed)
+	var left_input: float  = (-throttle - steer)
+	var right_input: float = (-throttle + steer)
+
+	left_target_speed  = clamp(left_input * max_track_speed * abs(ratio), -max_track_speed,  max_track_speed)
+	right_target_speed = clamp(right_input * max_track_speed * abs(ratio), -max_track_speed,  max_track_speed)
+
+	# Log optionnel (utile si le tank se déplace encore à l’envers)
+	if DEBUG_LOGS:
+		print("Throttle:", throttle, " Steer:", steer, " L:", left_target_speed, " R:", right_target_speed, " Ratio:", ratio)
+
 
 ### ------------------------------------------------------------
-### INERTIE DES CHENILLES
+### MISE À JOUR DES CHENILLES — interpolation inertielle
 ### ------------------------------------------------------------
+# Les vitesses des chenilles évoluent progressivement pour simuler leur inertie.
+# Cela évite les changements brusques et donne un comportement plus "massif".
 func _update_tracks(delta: float) -> void:
-	left_track_speed = move_toward(left_track_speed, left_target_speed, track_accel * delta)
+	# Interpolation vers les vitesses cibles
+	left_track_speed  = move_toward(left_track_speed,  left_target_speed,  track_accel * delta)
 	right_track_speed = move_toward(right_track_speed, right_target_speed, track_accel * delta)
+
+	# Limite visuelle (évite les valeurs parasites)
+	if absf(left_track_speed) < 0.01:  left_track_speed = 0.0
+	if absf(right_track_speed) < 0.01: right_track_speed = 0.0
+
 
 ### ------------------------------------------------------------
 ### MOUVEMENT GLOBAL (physique inertielle)

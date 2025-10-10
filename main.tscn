@@ -1,6 +1,6 @@
 [gd_scene load_steps=19 format=3 uid="uid://wr26b50e836f"]
 
-[ext_resource type="Script" uid="uid://d3wytagpqp1e4" path="res://Scripts/TankControler2D.gd" id="2_kek77"]
+[ext_resource type="Script" uid="uid://cag7srbirdqpw" path="res://Scripts/TankController2D.gd" id="1_kek77"]
 [ext_resource type="Texture2D" uid="uid://cbhhgxjtapdj1" path="res://Assets/tank/Hulls_Color_D/Hull_04.png" id="3_kek77"]
 [ext_resource type="Texture2D" uid="uid://cjcl4dpiqbbtn" path="res://Assets/tank/Weapon_Color_D/Gun_04.png" id="4_4c57u"]
 [ext_resource type="Texture2D" uid="uid://daxx3tkmm2dvm" path="res://Assets/effects/halo_soft.png" id="4_7mycd"]
@@ -101,7 +101,7 @@ z_index = 10
 position = Vector2(100, 100)
 scale = Vector2(2, 2)
 collision_mask = 2
-script = ExtResource("2_kek77")
+script = ExtResource("1_kek77")
 
 [node name="CameraRig2D" type="Node2D" parent="Characters/Tank"]
 
@@ -160,6 +160,10 @@ offset_bottom = 23.0
 [node name="HUDLayer" parent="." instance=ExtResource("4_lquwl")]
 layer = 2
 
+[node name="LogContainer" type="VBoxContainer" parent="HUDLayer"]
+offset_right = 40.0
+offset_bottom = 40.0
+
 [node name="DebugOverlay" type="Label" parent="HUDLayer"]
 z_index = 10
 anchors_preset = -1
@@ -194,7 +198,7 @@ grow_vertical = 2
 script = ExtResource("5_7mycd")
 metadata/_edit_use_anchors_ = true
 
-[node name="InstructorDialog" type="RichTextLabel" parent="HUDLayer/HUD"]
+[node name="InstructorDialog" type="Label" parent="HUDLayer/HUD"]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -302,7 +306,7 @@ grow_horizontal = 0
 scale = Vector2(3, 3)
 metadata/_edit_use_anchors_ = true
 
-[node name="FuelBar" type="TextureProgressBar" parent="HUDLayer/HUD/FuelPanel"]
+[node name="FuelBar" type="ProgressBar" parent="HUDLayer/HUD/FuelPanel"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = -0.5419445

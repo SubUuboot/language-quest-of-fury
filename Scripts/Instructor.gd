@@ -3,10 +3,11 @@ extends Node
 signal command_given(command: String)
 signal lesson_completed()
 
+@onready var tank = %Tank
+@onready var HUD = $HUDLayer
 @export var hud_path: NodePath
 @onready var hud: Node = null
 @export var tank_path: NodePath
-@onready var tank: Node = null
 @onready var command_timer: Timer = $CommandTimer
 
 @export var input_grace_time: float = 0.4
@@ -34,6 +35,16 @@ func _ready() -> void:
 		command_timer.timeout.connect(_on_command_timeout)
 	if tank and tank.has_signal("player_performed_action"):
 		tank.player_performed_action.connect(_on_tank_action)
+		
+	if hud_path and get_node_or_null(hud_path):
+		hud = get_node(hud_path)
+	else:
+		push_warning("HUD non assigné dans %s" % name)
+
+	if tank_path and get_node_or_null(tank_path):
+		tank = get_node(tank_path)
+	else:
+		push_warning("Tank non assigné dans %s" % name)
 
 	# Démarrer sur la première leçon
 	start_lesson("hangar_exit")

@@ -21,6 +21,15 @@ var response_timeout := 5.0
 
 func _ready() -> void:
 	
+	if hud_path and get_node_or_null(hud_path):
+		hud = get_node(hud_path)
+	else:
+		push_warning("HUD non assigné dans %s" % name)
+
+	if tank_path and get_node_or_null(tank_path):
+		tank = get_node(tank_path)
+	else:
+		push_warning("Tank non assigné dans %s" % name)
 	tank = get_node_or_null(tank_path)
 	hud = get_node_or_null(hud_path)
 	
