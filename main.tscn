@@ -1,6 +1,6 @@
 [gd_scene load_steps=20 format=3 uid="uid://wr26b50e836f"]
 
-[ext_resource type="Script" uid="uid://cag7srbirdqpw" path="res://Scripts/TankController2D.gd" id="1_kek77"]
+[ext_resource type="Script" uid="uid://cag7srbirdqpw" path="res://Scripts/TankController2D.gd" id="1_4c57u"]
 [ext_resource type="Texture2D" uid="uid://cbhhgxjtapdj1" path="res://Assets/tank/Hulls_Color_D/Hull_04.png" id="3_kek77"]
 [ext_resource type="Texture2D" uid="uid://cjcl4dpiqbbtn" path="res://Assets/tank/Weapon_Color_D/Gun_04.png" id="4_4c57u"]
 [ext_resource type="Texture2D" uid="uid://daxx3tkmm2dvm" path="res://Assets/effects/halo_soft.png" id="4_7mycd"]
@@ -87,25 +87,21 @@ func _on_tank_action(action: String) -> void:
 "
 
 [node name="Main" type="Node2D"]
+position = Vector2(712, 467)
 
 [node name="Characters" type="Node" parent="."]
 
 [node name="Rusty" type="Node2D" parent="Characters"]
-position = Vector2(100, 100)
+position = Vector2(812, 567)
 scale = Vector2(2, 2)
 
 [node name="Tank" type="CharacterBody2D" parent="Characters"]
 unique_name_in_owner = true
-physics_interpolation_mode = 1
 z_index = 10
-position = Vector2(100, 100)
+position = Vector2(812, 567)
 scale = Vector2(2, 2)
 collision_mask = 2
-script = ExtResource("1_kek77")
-rotation_speed = 1.0
-friction = 5.0
-hud_path = NodePath("../../HUD")
-instructor_path = NodePath("../Instructor")
+script = ExtResource("1_4c57u")
 
 [node name="CameraRig2D" type="Node2D" parent="Characters/Tank"]
 
@@ -133,11 +129,12 @@ texture = ExtResource("4_7mycd")
 
 [node name="TextureRect" type="TextureRect" parent="Characters/Tank/HeatDistortion"]
 material = SubResource("ShaderMaterial_272bh")
-offset_left = -104.0
-offset_top = -73.0
-offset_right = 24.0
-offset_bottom = 55.0
+offset_left = 252.0
+offset_top = 160.5
+offset_right = 380.0
+offset_bottom = 288.5
 texture = ExtResource("4_7mycd")
+metadata/_edit_use_anchors_ = true
 
 [node name="ExhaustSmoke" type="GPUParticles2D" parent="Characters/Tank"]
 position = Vector2(26, 122)
@@ -160,6 +157,10 @@ position = Vector2(545, -357)
 
 [node name="HUD" parent="." instance=ExtResource("7_kek77")]
 unique_name_in_owner = true
+offset_left = 848.0
+offset_top = -240.0
+offset_right = 848.0
+offset_bottom = -240.0
 
 [node name="LogContainer" type="VBoxContainer" parent="HUD"]
 layout_mode = 0
@@ -176,10 +177,10 @@ anchor_left = 0.572
 anchor_top = 0.78900003
 anchor_right = 0.572
 anchor_bottom = 0.78900003
-offset_left = -1024.0
-offset_top = -136.0
-offset_right = -719.99994
-offset_bottom = 104.0
+offset_left = -168.0
+offset_top = 696.0
+offset_right = 136.00006
+offset_bottom = 936.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.73333335)
 theme_override_colors/font_outline_color = Color(0.21176471, 0.69803923, 0, 1)
@@ -191,15 +192,17 @@ vertical_alignment = 1
 script = SubResource("GDScript_kek77")
 
 [node name="Panel" type="Panel" parent="HUD_Debug"]
-offset_left = -264.0
-offset_top = -176.0
-offset_right = -224.0
-offset_bottom = -136.0
+offset_left = 616.0
+offset_top = 168.0
+offset_right = 656.0
+offset_bottom = 208.0
 
 [node name="Label" type="Label" parent="HUD_Debug/Panel"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+offset_left = 968.0
+offset_top = 276.0
+offset_right = 1008.0
+offset_bottom = 299.0
 
 [node name="HUDLayer" parent="." instance=ExtResource("4_lquwl")]
 layer = 2

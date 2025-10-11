@@ -52,13 +52,14 @@ func _get_direction_from_velocity() -> String:
 	return "forward" if velocity.dot(forward) > 0 else "backward"
 
 func _process_inputs(delta: float) -> void:
-	var accel_input := Input.get_action_strength(input_accelerate)
-	var brake_input := Input.get_action_strength(input_brake)
-	var steer_left := Input.is_action_pressed(input_steer_left)
-	var steer_right := Input.is_action_pressed(input_steer_right)
-	var gear_up := Input.is_action_just_pressed(input_gear_up)
-	var gear_down := Input.is_action_just_pressed(input_gear_down)
-	
+	var accel_input: float = Input.get_action_strength(input_accelerate)
+	var brake_input: float = Input.get_action_strength(input_brake)
+	var steer_left: bool = Input.is_action_pressed(input_steer_left)
+	var steer_right: bool = Input.is_action_pressed(input_steer_right)
+	var gear_up: bool = Input.is_action_just_pressed(input_gear_up)
+	var gear_down: bool = Input.is_action_just_pressed(input_gear_down)
+
+	# --- Signaux d’action ---
 	if accel_input > 0.1:
 		emit_signal("action_performed", "accelerate")
 	if brake_input > 0.1:
@@ -68,46 +69,66 @@ func _process_inputs(delta: float) -> void:
 	if steer_right:
 		emit_signal("action_performed", "turn_right")
 
-
+	# --- Gestion de la boîte ---
 	if gear_up:
-		current_gear = clamp(current_gear + 1, -1, gear_ratios.size() - 1)
+		current_gear = clamp(current_gear + 1, 0, gear_ratios.size() - 1)
 		emit_signal("gear_changed", current_gear)
 	if gear_down:
-		current_gear = clamp(current_gear - 1, -1, gear_ratios.size() - 1)
+		current_gear = clamp(current_gear - 1, 0, gear_ratios.size() - 1)
 		emit_signal("gear_changed", current_gear)
 
-	if steer_left:
-		rotation -= rotation_speed * delta
-	if steer_right:
-		rotation += rotation_speed * delta
+	# --- Calcul du couple moteur ---
+	var gear_ratio: float = float(gear_ratios[current_gear])
+	var has_traction: bool = absf(gear_ratio) > 0.001
+	var throttle_force: float = acceleration * accel_input * gear_ratio
 
-	# ✅ Typage explicite du ratio
-	var gear_ratio: float = 0.0
-	if current_gear + 1 < gear_ratios.size():
-		gear_ratio = float(gear_ratios[current_gear + 1])
+	# Simule le comportement moteur (inertie + montée progressive)
+	var target_force: float = throttle_force
+	current_engine_force = lerp(current_engine_force, target_force, 2.5 * delta)
 
-	var _max_speed := max_speed_forward if gear_ratio >= 0 else max_speed_reverse
-	current_engine_force = acceleration * accel_input * sign(gear_ratio)
+	# --- Rotation réaliste : dépendante du mouvement ---
+	var steer_input: float = 0.0
+	if steer_left: steer_input -= 1.0
+	if steer_right: steer_input += 1.0
 
+	# On ne peut tourner que si le moteur entraîne les chenilles
+	if has_traction and accel_input > 0.05:
+		rotation += steer_input * rotation_speed * delta * sign(gear_ratio)
+
+	# --- Frein manuel ---
 	if brake_input > 0.1:
 		current_engine_force = 0.0
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 
+
+
+
 func _physics_process(delta: float) -> void:
 	_process_inputs(delta)
-	var forward := transform.x.normalized()
-	velocity += forward * current_engine_force * delta
 
-	var speed_limit := (max_speed_forward if current_gear >= 0 else max_speed_reverse)
+	var forward: Vector2 = -transform.y.normalized()
+
+	# Appliquer la poussée moteur uniquement si un rapport est engagé
+	if absf(float(gear_ratios[current_gear])) > 0.001:
+		velocity += forward * current_engine_force * delta
+	else:
+		# point mort = perte de vitesse naturelle (roue libre)
+		velocity = velocity.move_toward(Vector2.ZERO, friction * 0.5 * delta)
+
+	var speed_limit: float = absf(float(gear_ratios[current_gear])) * max_speed_forward
 	if velocity.length() > speed_limit:
 		velocity = velocity.normalized() * speed_limit
 
-	if current_engine_force == 0.0:
+	# Friction naturelle si moteur au ralenti
+	if absf(current_engine_force) < 0.001:
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 
 	move_and_slide()
 	_update_direction_and_notify()
 	_update_hud_state()
+
+
+
 
 func _update_direction_and_notify() -> void:
 	var dir := _get_direction_from_velocity()
