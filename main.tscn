@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://wr26b50e836f"]
+[gd_scene load_steps=20 format=3 uid="uid://wr26b50e836f"]
 
 [ext_resource type="Script" uid="uid://cag7srbirdqpw" path="res://Scripts/TankController2D.gd" id="1_kek77"]
 [ext_resource type="Texture2D" uid="uid://cbhhgxjtapdj1" path="res://Assets/tank/Hulls_Color_D/Hull_04.png" id="3_kek77"]
@@ -6,7 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://daxx3tkmm2dvm" path="res://Assets/effects/halo_soft.png" id="4_7mycd"]
 [ext_resource type="Shader" uid="uid://c1admgcuh6mgh" path="res://shaders/heat_distortion.gdshader" id="4_272bh"]
 [ext_resource type="PackedScene" uid="uid://bcu5lifpcai6t" path="res://hud.tscn" id="4_lquwl"]
-[ext_resource type="Script" uid="uid://bu6yv7koy1vai" path="res://Scripts/HUD.gd" id="5_7mycd"]
+[ext_resource type="Script" uid="uid://6k05yl7w8c2a" path="res://Scripts/Instructor.gd" id="6_4c57u"]
+[ext_resource type="PackedScene" uid="uid://dpwrbabn3fnhu" path="res://Scenes/main/hud.tscn" id="7_kek77"]
 [ext_resource type="PackedScene" uid="uid://dhf6x4t4il8us" path="res://ui/Debug_Menu.tscn" id="8_5vw27"]
 [ext_resource type="Script" uid="uid://xnxmifbiuugt" path="res://Core/Config/SettingsManager.gd" id="9_kek77"]
 
@@ -64,6 +65,8 @@ scale_min = 0.59999996
 scale_max = 1.5
 color_ramp = SubResource("GradientTexture1D_5vw27")
 
+[sub_resource type="LabelSettings" id="LabelSettings_272bh"]
+
 [sub_resource type="GDScript" id="GDScript_kek77"]
 resource_name = "HUD_Debug.gd"
 script/source = "extends CanvasLayer
@@ -83,11 +86,7 @@ func _on_tank_action(action: String) -> void:
 		\"right\": print(\"➡️  Rotation droite\")
 "
 
-[sub_resource type="LabelSettings" id="LabelSettings_272bh"]
-
 [node name="Main" type="Node2D"]
-position = Vector2(100, 100)
-scale = Vector2(2, 2)
 
 [node name="Characters" type="Node" parent="."]
 
@@ -97,21 +96,26 @@ scale = Vector2(2, 2)
 
 [node name="Tank" type="CharacterBody2D" parent="Characters"]
 unique_name_in_owner = true
+physics_interpolation_mode = 1
 z_index = 10
 position = Vector2(100, 100)
 scale = Vector2(2, 2)
 collision_mask = 2
 script = ExtResource("1_kek77")
+rotation_speed = 1.0
+friction = 5.0
+hud_path = NodePath("../../HUD")
+instructor_path = NodePath("../Instructor")
 
 [node name="CameraRig2D" type="Node2D" parent="Characters/Tank"]
 
 [node name="Camera2D" type="Camera2D" parent="Characters/Tank/CameraRig2D"]
 script = SubResource("GDScript_lquwl")
 
-[node name="HullBody" type="Sprite2D" parent="Characters/Tank"]
+[node name="SpriteBody" type="Sprite2D" parent="Characters/Tank"]
 texture = ExtResource("3_kek77")
 
-[node name="TuretsHead" type="Sprite2D" parent="Characters/Tank"]
+[node name="SpriteTurret" type="Sprite2D" parent="Characters/Tank"]
 texture = ExtResource("4_4c57u")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Characters/Tank"]
@@ -143,6 +147,46 @@ lifetime = 1.8
 explosiveness = 0.6
 process_material = SubResource("ParticleProcessMaterial_kek77")
 
+[node name="Instructor" type="Node" parent="Characters"]
+unique_name_in_owner = true
+script = ExtResource("6_4c57u")
+hud_path = NodePath("../../HUD")
+tank_path = NodePath("../Tank")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="Characters/Instructor"]
+position = Vector2(545, -357)
+
+[node name="CommandTimer" type="Timer" parent="Characters/Instructor"]
+
+[node name="HUD" parent="." instance=ExtResource("7_kek77")]
+unique_name_in_owner = true
+
+[node name="LogContainer" type="VBoxContainer" parent="HUD"]
+layout_mode = 0
+offset_left = -496.0
+offset_top = 144.0
+offset_right = -456.0
+offset_bottom = 184.0
+
+[node name="DebugOverlay" type="Label" parent="HUD"]
+z_index = 10
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.572
+anchor_top = 0.78900003
+anchor_right = 0.572
+anchor_bottom = 0.78900003
+offset_left = -1024.0
+offset_top = -136.0
+offset_right = -719.99994
+offset_bottom = 104.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.73333335)
+theme_override_colors/font_outline_color = Color(0.21176471, 0.69803923, 0, 1)
+label_settings = SubResource("LabelSettings_272bh")
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="HUD_Debug" type="CanvasLayer" parent="."]
 script = SubResource("GDScript_kek77")
 
@@ -159,166 +203,6 @@ offset_bottom = 23.0
 
 [node name="HUDLayer" parent="." instance=ExtResource("4_lquwl")]
 layer = 2
-
-[node name="LogContainer" type="VBoxContainer" parent="HUDLayer"]
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="DebugOverlay" type="Label" parent="HUDLayer"]
-z_index = 10
-anchors_preset = -1
-anchor_left = 0.572
-anchor_top = 0.78900003
-anchor_right = 0.572
-anchor_bottom = 0.78900003
-offset_left = -1186.9441
-offset_top = -791.27203
-offset_right = -882.94403
-offset_bottom = -551.27203
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.73333335)
-theme_override_colors/font_outline_color = Color(0.21176471, 0.69803923, 0, 1)
-label_settings = SubResource("LabelSettings_272bh")
-horizontal_alignment = 1
-vertical_alignment = 1
-metadata/_edit_use_anchors_ = true
-
-[node name="HUD" type="Control" parent="HUDLayer"]
-unique_name_in_owner = true
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 496.0
-offset_top = -144.0
-offset_right = 496.0
-offset_bottom = -144.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("5_7mycd")
-metadata/_edit_use_anchors_ = true
-
-[node name="InstructorDialog" type="Label" parent="HUDLayer/HUD"]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -50.0
-offset_top = -400.0
-offset_right = 50.0
-grow_horizontal = 2
-grow_vertical = 0
-scale = Vector2(3, 3)
-metadata/_edit_use_anchors_ = true
-
-[node name="MovementIndicator" type="Label" parent="HUDLayer/HUD"]
-layout_direction = 1
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 1.7222222
-anchor_top = 0.2777778
-anchor_right = 1.7222222
-anchor_bottom = 0.2777778
-offset_left = -1152.0
-offset_top = -324.0
-offset_right = -1080.5
-offset_bottom = -177.0
-grow_horizontal = 0
-grow_vertical = 2
-scale = Vector2(3, 3)
-metadata/_edit_use_anchors_ = true
-
-[node name="SpeedPanel" type="NinePatchRect" parent="HUDLayer/HUD"]
-custom_minimum_size = Vector2(260, 64)
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.5625
-anchor_top = -0.19753087
-anchor_right = 0.5625
-anchor_bottom = -0.19753087
-offset_right = 260.0
-offset_bottom = 270.0
-region_rect = Rect2(0, 16, 0, 16)
-metadata/_edit_use_anchors_ = true
-
-[node name="SpeedLabel" type="Label" parent="HUDLayer/HUD/SpeedPanel"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 1.6
-anchor_top = -1.2444445
-anchor_right = 2.6
-anchor_bottom = -0.24444444
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(3, 3)
-metadata/_edit_use_anchors_ = true
-
-[node name="CommandPanel" type="NinePatchRect" parent="HUDLayer/HUD"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -150.0
-offset_right = 150.0
-offset_bottom = 40.5
-grow_horizontal = 2
-metadata/_edit_use_anchors_ = true
-
-[node name="CommandLabel" type="Label" parent="HUDLayer/HUD/CommandPanel"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = -0.785
-anchor_top = 7.2469134
-anchor_right = -0.46
-anchor_bottom = 9.975308
-offset_left = 377.5
-offset_top = -229.5
-offset_right = 468.0
-offset_bottom = -175.5
-metadata/_edit_use_anchors_ = true
-
-[node name="PronunciationLabel" type="Label" parent="HUDLayer/HUD/CommandPanel"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.0016666667
-anchor_top = 16.11111
-anchor_right = 0.15833333
-anchor_bottom = 18.777779
-offset_left = 345.5
-offset_top = -468.5
-offset_right = 449.0
-offset_bottom = -419.0
-metadata/_edit_use_anchors_ = true
-
-[node name="FuelPanel" type="NinePatchRect" parent="HUDLayer/HUD"]
-layout_direction = 1
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.8220486
-anchor_top = 0.37962964
-anchor_right = 0.8220486
-anchor_bottom = 0.37962964
-offset_left = -600.0
-offset_bottom = 40.5
-grow_horizontal = 0
-scale = Vector2(3, 3)
-metadata/_edit_use_anchors_ = true
-
-[node name="FuelBar" type="ProgressBar" parent="HUDLayer/HUD/FuelPanel"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = -0.5419445
-anchor_top = 1.5802472
-anchor_right = -0.5419445
-anchor_bottom = 1.5802472
-offset_left = 550.5
-offset_top = -118.0
-offset_right = 662.0
-offset_bottom = -21.5
-scale = Vector2(3, 3)
-metadata/_edit_use_anchors_ = true
 
 [node name="DebugMenu" parent="." instance=ExtResource("8_5vw27")]
 unique_name_in_owner = true

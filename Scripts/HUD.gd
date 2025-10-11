@@ -7,9 +7,13 @@ extends Control
 @onready var fuel_bar: ProgressBar = $FuelPanel/FuelBar
 @onready var instructor_dialog: Label = $InstructorDialog
 @onready var movement_indicator: Label = $MovementIndicator
+@onready var gear_label: Label = $"%GearLabel" if has_node("%GearLabel") else null
+
 
 # Zone de log visuel (optionnelle)
 @onready var log_container: VBoxContainer = $"%LogContainer" if has_node("%LogContainer") else null
+@onready var debug_overlay: Label = $"%DebugOverlay" if has_node("%DebugOverlay") else null
+
 
 # --- Timers internes ---
 var current_command_timer := 0.0
@@ -22,6 +26,10 @@ var log_fade_time := 0.35
 var log_display_time := 3.0
 
 func _ready():
+	
+	if gear_label:
+		gear_label.text = "Rapport : N"
+
 	_setup_ui()
 	# Exemple de test visuel non bloquant :
 	# show_command("ТЕСТ", "TEST")
@@ -44,6 +52,27 @@ func _setup_ui():
 		movement_indicator.visible = true
 		movement_indicator.text = "СТОП"
 		movement_indicator.modulate = Color.RED
+
+
+
+func update_gear_display(gear: int) -> void:
+	if not gear_label:
+		return
+	var text := ""
+	match gear:
+		-1:
+			text = "R"       # marche arrière
+		0:
+			text = "N"       # neutre
+		_:
+			text = str(gear) # rapports avant
+	gear_label.text = "Rapport : %s" % text
+	# Animation légère pour le feedback visuel
+	var t = create_tween()
+	t.tween_property(gear_label, "scale", Vector2(1.2, 1.2), 0.1)
+	t.tween_property(gear_label, "scale", Vector2(1.0, 1.0), 0.1)
+
+
 
 func _process(delta):
 	if current_command_timer > 0.0:
@@ -103,17 +132,22 @@ func show_instructor_command(russian_text: String, pronunciation: String) -> voi
 		t.tween_property(command_label, "scale", Vector2(1.2, 1.2), 0.08)
 		t.tween_property(command_label, "scale", Vector2(1.0, 1.0), 0.08)
 
-func update_movement_state(is_moving: bool) -> void:
+func update_movement_state(is_moving: bool, direction: String = "stopped") -> void:
 	if movement_indicator:
 		movement_indicator.visible = true
-		if is_moving:
-			movement_indicator.modulate = Color.GREEN
-			movement_indicator.text = "ДВИЖЕНИЕ"
-		else:
-			movement_indicator.modulate = Color.RED
-			movement_indicator.text = "СТОП"
+		match direction:
+			"forward":
+				movement_indicator.text = "ВПЕРЁД"
+				movement_indicator.modulate = Color.GREEN
+			"backward":
+				movement_indicator.text = "НАЗАД"
+				movement_indicator.modulate = Color.ORANGE
+			_:
+				movement_indicator.text = "СТОП"
+				movement_indicator.modulate = Color.RED
 	if speed_label:
 		speed_label.modulate = (Color.GREEN if is_moving else Color.WHITE)
+
 
 # ------------------------------------------------------------
 # Log visuel : log_to_screen()

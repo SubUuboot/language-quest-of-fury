@@ -40,11 +40,11 @@ func _process(_delta):
 	if current_order == "":
 		return
 
-	if Input.is_action_just_pressed(current_order):
-		print("[Rusty]: %s done" % current_order)
-		current_order = ""
-		await get_tree().create_timer(1.2).timeout
-		_start_next_order()
+#	if Input.is_action_just_pressed(current_order):
+#		print("[Rusty]: %s done" % current_order)
+#		current_order = ""
+#		await get_tree().create_timer(1.2).timeout
+#		_start_next_order()
 
 func _finish_sequence():
 	print("[FirstInstructions] Sequence complete.")

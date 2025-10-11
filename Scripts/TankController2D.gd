@@ -1,344 +1,133 @@
-### ============================================================
-### TankController2D.gd — Version stable (Godot 4.5)
-### Réaliste, inertiel, orienté Vector2.UP (canon vers le haut)
-### ============================================================
-
 extends CharacterBody2D
 class_name TankController2D
 
-### ------------------------------------------------------------
-### PARAMÈTRES GÉNÉRAUX
-### ------------------------------------------------------------
-@export var DEBUG_LOGS: bool = false
-@export var debug_dashboard: bool = false
+signal moved(direction: String)
+signal gear_changed(gear: int)
+signal action_performed(action: String)
 
-# Physique générale
-@export var mass: float = 5000.0
-@export var drag: float = 10.0
-@export var brake_power: float = 1600.0
-@export var track_accel: float = 8800.0
-@export var max_track_speed: float = 200.0
-@export var visual_speed_factor: float = 4.0
+@export var acceleration := 4.0
+@export var max_speed_forward := 10.0
+@export var max_speed_reverse := 5.0
+@export var rotation_speed := 2.0
+@export var friction := 2.5
+@export var gear_ratios := [-1.0, 0.0, 0.4, 0.6, 0.8, 1.0]
 
-# Inertie et rotation
-@export var lateral_friction: float = 8.0
-@export var angular_damping: float = 3.0
-@export var rotational_inertia: float = 0.7
-@export var rotation_gain: float = 0.004
+@export var input_accelerate := "accelerate"
+@export var input_brake := "brake"
+@export var input_steer_left := "steer_left"
+@export var input_steer_right := "steer_right"
+@export var input_gear_up := "gear_up"
+@export var input_gear_down := "gear_down"
 
-### ------------------------------------------------------------
-### MOTEUR ET TRANSMISSION
-### ------------------------------------------------------------
-@export var use_gearbox: bool = true
-@export var use_engine_stall: bool = false
-@export var engine_idle_rpm: float = 800.0
-@export var engine_throttle_rpm_gain: float = 220.0
-@export var engine_torque: float = 2000.0
-@export var max_gears: int = 4
+@export var hud_path: NodePath
+@export var instructor_path: NodePath
+var hud_ref: Node = null
+var instructor_ref: Node = null
 
-var engine_on: bool = true
-var engine_rpm: float = engine_idle_rpm
-var gear: int = 0  # Démarre au neutre
-var gear_ratios := {
-	-1: -0.25,
-	 0:  0.0,
-	 1:  0.25,
-	 2:  0.45,
-	 3:  0.7,
-	 4:  1.0
-}
+var current_gear: int = 0
+var current_engine_force := 0.0
+# (supprimé la redéclaration de velocity)
+var _previous_direction: String = "stopped"
+var _previous_gear: int = 0
+var _movement_threshold := 0.05
 
-
-
-### ------------------------------------------------------------
-### ÉTAT DU JOUEUR
-### ------------------------------------------------------------
-var throttle: float = 0.0
-var steer: float = 0.0
-var brake: float = 0.0
-var clutch_pressed: bool = false
-
-### ------------------------------------------------------------
-### CHENILLES ET MOUVEMENT
-### ------------------------------------------------------------
-var left_track_speed: float = 0.0
-var right_track_speed: float = 0.0
-var left_target_speed: float = 0.0
-var right_target_speed: float = 0.0
-var angular_velocity: float = 0.0
-var is_moving: bool = false
-var prev_is_moving: bool = false
-
-### ------------------------------------------------------------
-### HUD INTÉGRÉ
-### ------------------------------------------------------------
-var hud_label: Label
-var debug_action_label: Label
-var action_display_time: float = 0.0
-@export var action_message_duration: float = 1.0
-
-### ------------------------------------------------------------
-### SIGNALS
-### ------------------------------------------------------------
-signal player_performed_action(action: String)
-
-### ------------------------------------------------------------
-### INITIALISATION
-### ------------------------------------------------------------
 func _ready() -> void:
-	if debug_dashboard:
-		# HUD principal
-		hud_label = Label.new()
-		hud_label.position = Vector2(10, 10)
-		hud_label.theme_type_variation = "Monospace"
-		add_child(hud_label)
-		# HUD actions
-		debug_action_label = Label.new()
-		debug_action_label.position = Vector2(10, 80)
-		debug_action_label.theme_type_variation = "Monospace"
-		add_child(debug_action_label)
+	if hud_path and get_node_or_null(hud_path):
+		hud_ref = get_node(hud_path)
+	else:
+		push_warning("HUD non assigné pour %s" % name)
+	if instructor_path and get_node_or_null(instructor_path):
+		instructor_ref = get_node(instructor_path)
+	emit_signal("gear_changed", current_gear)
+	_previous_gear = current_gear
 
-	if DEBUG_LOGS:
-		print("Tank initialisé — boîte active :", use_gearbox)
+	if hud_ref and hud_ref.has_method("update_gear_display"):
+		self.gear_changed.connect(hud_ref.update_gear_display)
 
-	connect("player_performed_action", Callable(self, "_on_player_action"))
 
-### ------------------------------------------------------------
-### BOUCLE PRINCIPALE
-### ------------------------------------------------------------
+func _get_direction_from_velocity() -> String:
+	if velocity.length() < _movement_threshold:
+		return "stopped"
+	var forward := transform.x.normalized()
+	return "forward" if velocity.dot(forward) > 0 else "backward"
+
+func _process_inputs(delta: float) -> void:
+	var accel_input := Input.get_action_strength(input_accelerate)
+	var brake_input := Input.get_action_strength(input_brake)
+	var steer_left := Input.is_action_pressed(input_steer_left)
+	var steer_right := Input.is_action_pressed(input_steer_right)
+	var gear_up := Input.is_action_just_pressed(input_gear_up)
+	var gear_down := Input.is_action_just_pressed(input_gear_down)
+	
+	if accel_input > 0.1:
+		emit_signal("action_performed", "accelerate")
+	if brake_input > 0.1:
+		emit_signal("action_performed", "brake")
+	if steer_left:
+		emit_signal("action_performed", "turn_left")
+	if steer_right:
+		emit_signal("action_performed", "turn_right")
+
+
+	if gear_up:
+		current_gear = clamp(current_gear + 1, -1, gear_ratios.size() - 1)
+		emit_signal("gear_changed", current_gear)
+	if gear_down:
+		current_gear = clamp(current_gear - 1, -1, gear_ratios.size() - 1)
+		emit_signal("gear_changed", current_gear)
+
+	if steer_left:
+		rotation -= rotation_speed * delta
+	if steer_right:
+		rotation += rotation_speed * delta
+
+	# ✅ Typage explicite du ratio
+	var gear_ratio: float = 0.0
+	if current_gear + 1 < gear_ratios.size():
+		gear_ratio = float(gear_ratios[current_gear + 1])
+
+	var _max_speed := max_speed_forward if gear_ratio >= 0 else max_speed_reverse
+	current_engine_force = acceleration * accel_input * sign(gear_ratio)
+
+	if brake_input > 0.1:
+		current_engine_force = 0.0
+		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+
 func _physics_process(delta: float) -> void:
-	_process_inputs()
-	_update_engine(delta)
-	_compute_track_targets()
-	_update_tracks(delta)
-	_apply_movement(delta)
-	_update_hud_display()
+	_process_inputs(delta)
+	var forward := transform.x.normalized()
+	velocity += forward * current_engine_force * delta
 
-	# Effacement progressif du message ACTION
-	if debug_action_label and action_display_time > 0.0:
-		action_display_time -= delta
-		if action_display_time <= 0.0:
-			debug_action_label.text = ""
+	var speed_limit := (max_speed_forward if current_gear >= 0 else max_speed_reverse)
+	if velocity.length() > speed_limit:
+		velocity = velocity.normalized() * speed_limit
 
-### ------------------------------------------------------------
-### INPUTS JOUEUR
-### ------------------------------------------------------------
-func _process_inputs() -> void:
-	var s := 0.0
-	if Input.is_action_pressed("steer_left"): s -= 1.0
-	if Input.is_action_pressed("steer_right"): s += 1.0
-	steer = clamp(s, -1.0, 1.0)
+	if current_engine_force == 0.0:
+		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 
-	# Gestion du régime moteur (accélérateur = Espace)
-	var target_throttle := 0.0
-	if Input.is_action_pressed("accelerate"):
-		target_throttle = 1.0
+	move_and_slide()
+	_update_direction_and_notify()
+	_update_hud_state()
 
-	# Lissage pour simuler le temps de montée/descente du régime
-	var throttle_response := 2.0  # vitesse de réponse moteur
-	throttle = move_toward(throttle, target_throttle, throttle_response * get_physics_process_delta_time())
+func _update_direction_and_notify() -> void:
+	var dir := _get_direction_from_velocity()
+	if dir != _previous_direction:
+		emit_signal("moved", dir)
+		_previous_direction = dir
+		if hud_ref and hud_ref.has_method("log_to_screen"):
+			hud_ref.log_to_screen("Déplacement : %s" % dir)
+	if _previous_gear != current_gear:
+		emit_signal("gear_changed", current_gear)
+		_previous_gear = current_gear
+		if hud_ref and hud_ref.has_method("log_to_screen"):
+			hud_ref.log_to_screen("Rapport : %d" % current_gear)
 
-
-	brake = float(Input.is_action_pressed("brake"))
-	clutch_pressed = Input.is_action_pressed("clutch")
-
-	# Gestion boîte
-	if Input.is_action_just_pressed("gear_up"):
-		var prev = gear
-		gear = clamp(gear + 1, -1, max_gears)
-		if gear != prev: player_performed_action.emit("gear_up")
-
-	if Input.is_action_just_pressed("gear_down"):
-		var prev = gear
-		gear = clamp(gear - 1, -1, max_gears)
-		if gear != prev: player_performed_action.emit("gear_down")
-
-	# Signaux d’action HUD_DEBUG
-	if Input.is_action_just_pressed("accelerate"): player_performed_action.emit("forward")
-	if Input.is_action_just_pressed("reverse"): player_performed_action.emit("backward")
-	if Input.is_action_just_pressed("steer_left"): player_performed_action.emit("left")
-	if Input.is_action_just_pressed("steer_right"): player_performed_action.emit("right")
-	if Input.is_action_just_pressed("brake"): player_performed_action.emit("brake")
-	if Input.is_action_just_pressed("clutch"): player_performed_action.emit("clutch_press")
-	if Input.is_action_just_released("clutch"): player_performed_action.emit("clutch_release")
-
-### ------------------------------------------------------------
-### MOTEUR
-### ------------------------------------------------------------
-
-func _update_engine(delta: float) -> void:
-	if not engine_on:
-		engine_rpm = 0.0
+func _update_hud_state() -> void:
+	if not hud_ref:
 		return
-
-	# --- Simulation du régime moteur ---
-	var rpm_target: float = engine_idle_rpm + throttle * 2000.0  # montée RPM
-	engine_rpm = move_toward(engine_rpm, rpm_target, 1000.0 * delta)
-
-	# --- Couple moteur dépend du régime ---
-	var rpm_factor: float = clamp((engine_rpm - engine_idle_rpm) / 3000.0, 0.0, 1.0)
-	var torque: float = engine_torque * rpm_factor
-
-	# --- Transmission vers les chenilles ---
-	if gear != 0 and not clutch_pressed:
-		var ratio: float = gear_ratios.get(gear, 0.0)
-		var drive_force: float = torque * ratio
-		var drive_accel: float = drive_force / mass
-		var direction: Vector2 = -Vector2.UP.rotated(rotation)
-		velocity += direction * drive_accel * delta * visual_speed_factor
-
-
-	# --- Calage éventuel ---
-	if use_engine_stall and not clutch_pressed and gear != 0:
-		if velocity.length() < 0.2 and absf(throttle) < 0.05:
-			engine_on = false
-			if DEBUG_LOGS:
-				print("Moteur calé.")
-
-
-### ------------------------------------------------------------
-### TRANSMISSION / CHENILLES — version corrigée
-### ------------------------------------------------------------
-
-# Calcule la vitesse "cible" pour chaque chenille
-# en fonction du régime moteur, du rapport engagé et de la direction.
-func _compute_track_targets() -> void:
-	# Récupération du ratio de la boîte
-	var ratio: float = gear_ratios.get(gear, 0.0)
-
-	# Si moteur éteint ou au point mort => pas de poussée
-	var can_drive: bool = engine_on and (gear != 0)
-
-	# Base de la vitesse transmise aux chenilles (en m/s)
-	var _base_speed: float = 0.0
-	if can_drive:
-		_base_speed = throttle * ratio * max_track_speed
-	else:
-		_base_speed = 0.0
-
-	# =============================
-	#   LOGIQUE DIFFÉRENTIELLE
-	# =============================
-	# Pour un tank :
-	# - "throttle" = avance/recul (accélérateur)
-	# - "steer"    = vitesse relative entre les deux chenilles
-	#   (comme si on poussait une manette plus que l’autre)
-	#
-	# => Pour que le tank avance dans le bon sens, les chenilles doivent
-	#    tourner de l’ARRIÈRE vers l’AVANT.
-	#    On inverse donc le signe de throttle.
-	#
-	#    gauche = -throttle - steer
-	#    droite = -throttle + steer
-	# =========================================
-
-	var left_input: float  = (-throttle - steer)
-	var right_input: float = (-throttle + steer)
-
-	left_target_speed  = clamp(left_input * max_track_speed * abs(ratio), -max_track_speed,  max_track_speed)
-	right_target_speed = clamp(right_input * max_track_speed * abs(ratio), -max_track_speed,  max_track_speed)
-
-	# Log optionnel (utile si le tank se déplace encore à l’envers)
-	if DEBUG_LOGS:
-		print("Throttle:", throttle, " Steer:", steer, " L:", left_target_speed, " R:", right_target_speed, " Ratio:", ratio)
-
-
-### ------------------------------------------------------------
-### MISE À JOUR DES CHENILLES — interpolation inertielle
-### ------------------------------------------------------------
-# Les vitesses des chenilles évoluent progressivement pour simuler leur inertie.
-# Cela évite les changements brusques et donne un comportement plus "massif".
-func _update_tracks(delta: float) -> void:
-	# Interpolation vers les vitesses cibles
-	left_track_speed  = move_toward(left_track_speed,  left_target_speed,  track_accel * delta)
-	right_track_speed = move_toward(right_track_speed, right_target_speed, track_accel * delta)
-
-	# Limite visuelle (évite les valeurs parasites)
-	if absf(left_track_speed) < 0.01:  left_track_speed = 0.0
-	if absf(right_track_speed) < 0.01: right_track_speed = 0.0
-
-
-### ------------------------------------------------------------
-### MOUVEMENT GLOBAL (physique inertielle)
-### ------------------------------------------------------------
-func _apply_movement(delta: float) -> void:
-	var forward_speed := 0.5 * (left_track_speed + right_track_speed)
-	var target_angular_velocity := (right_track_speed - left_track_speed) * rotation_gain
-	angular_velocity = lerp(angular_velocity, target_angular_velocity, rotational_inertia)
-
-	var _forward_dir := Vector2.UP.rotated(rotation)
-	var local_velocity := velocity.rotated(-rotation)
-
-	# Friction latérale
-	local_velocity.x = move_toward(local_velocity.x, 0.0, lateral_friction * delta)
-
-	# Frein moteur + inertie
-	if absf(throttle) < 0.05 or gear == 0:
-		local_velocity.y = move_toward(local_velocity.y, 0.0, drag * delta)
-	else:
-		local_velocity.y = move_toward(local_velocity.y, forward_speed * visual_speed_factor, track_accel * delta)
-
-	velocity = local_velocity.rotated(rotation)
-	
-	# Évite les dérives parasites sur les axes très faibles
-	if velocity.length() < 0.05:
-		velocity = Vector2.ZERO
-
-	
-
-	if brake > 0.0:
-		velocity = velocity.move_toward(Vector2.ZERO, brake_power * brake * delta)
-
-	rotation += angular_velocity * delta
-	angular_velocity = move_toward(angular_velocity, 0.0, angular_damping * delta)
-
-	var collision := move_and_collide(velocity * delta)
-	if collision:
-		# On annule la composante de vitesse dans la normale de contact
-		var n: Vector2 = collision.get_normal()
-		velocity = velocity.slide(n) * 0.3  # perte d’énergie à l’impact
-
-
-	is_moving = velocity.length() > 0.5
-	if prev_is_moving and not is_moving:
-		player_performed_action.emit("stop")
-	prev_is_moving = is_moving
-
-### ------------------------------------------------------------
-### HUD_DEBUG
-### ------------------------------------------------------------
-func _update_hud_display() -> void:
-	if not debug_dashboard or hud_label == null:
-		return
-
-	var speed_kmh := velocity.length() * 3.6
-	var gear_name := "N" if gear == 0 else ("R" if gear < 0 else str(gear))
-	hud_label.text = "SPD: %3.0f km/h\nGEAR: %s\nRPM: %4.0f\nTHR: %.1f" % [
-		speed_kmh, gear_name, engine_rpm, throttle
-	]
-
-func _on_player_action(action: String) -> void:
-	if debug_action_label:
-		debug_action_label.text = "ACTION: %s" % action
-		action_display_time = action_message_duration
-
-### ------------------------------------------------------------
-### UTILITAIRES
-### ------------------------------------------------------------
-func get_speed_kmh() -> float:
-	return velocity.length() * 3.6
-
-func restart_engine() -> void:
-	if not engine_on:
-		engine_on = true
-		engine_rpm = engine_idle_rpm
-
-### ------------------------------------------------------------
-### ANIMATIONS (compatibilité InputAssigner)
-### ------------------------------------------------------------
-func play_animation(animation_name: String) -> void:
-	var anim: AnimationPlayer = $AnimationPlayer if has_node("AnimationPlayer") else null
-	if anim and anim.has_animation(animation_name):
-		anim.play(animation_name)
-	elif DEBUG_LOGS:
-		print("⚠️ Animation '%s' non trouvée." % animation_name)
+	var speed_kmh := int(velocity.length() * 3.6)
+	if hud_ref.has_method("update_speed"):
+		hud_ref.update_speed(velocity.length(), speed_kmh)
+	var dir := _get_direction_from_velocity()
+	if hud_ref.has_method("update_movement_state"):
+		hud_ref.update_movement_state(dir != "stopped", dir)

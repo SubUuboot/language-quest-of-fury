@@ -1,0 +1,144 @@
+[gd_scene load_steps=2 format=3 uid="uid://dpwrbabn3fnhu"]
+
+[ext_resource type="Script" uid="uid://bu6yv7koy1vai" path="res://Scripts/HUD.gd" id="1_uifb5"]
+
+[node name="HUD" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 496.0
+offset_top = -144.0
+offset_right = 496.0
+offset_bottom = -144.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_uifb5")
+metadata/_edit_use_anchors_ = true
+
+[node name="InstructorDialog" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -50.0
+offset_top = -400.0
+offset_right = 50.0
+grow_horizontal = 2
+grow_vertical = 0
+scale = Vector2(3, 3)
+metadata/_edit_use_anchors_ = true
+
+[node name="MovementIndicator" type="Label" parent="."]
+layout_direction = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.7222222
+anchor_top = 0.2777778
+anchor_right = 1.7222222
+anchor_bottom = 0.2777778
+offset_left = -1152.0
+offset_top = -324.0
+offset_right = -1080.5
+offset_bottom = -177.0
+grow_horizontal = 0
+grow_vertical = 2
+scale = Vector2(3, 3)
+metadata/_edit_use_anchors_ = true
+
+[node name="SpeedPanel" type="NinePatchRect" parent="."]
+custom_minimum_size = Vector2(260, 64)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5625
+anchor_top = -0.19753087
+anchor_right = 0.5625
+anchor_bottom = -0.19753087
+offset_right = 260.0
+offset_bottom = 270.0
+region_rect = Rect2(0, 16, 0, 16)
+metadata/_edit_use_anchors_ = true
+
+[node name="SpeedLabel" type="Label" parent="SpeedPanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.6
+anchor_top = -1.2444445
+anchor_right = 2.6
+anchor_bottom = -0.24444444
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(3, 3)
+metadata/_edit_use_anchors_ = true
+
+[node name="GearLabel" type="Label" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="CommandPanel" type="NinePatchRect" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -150.0
+offset_right = 150.0
+offset_bottom = 40.5
+grow_horizontal = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="CommandLabel" type="Label" parent="CommandPanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.785
+anchor_top = 7.2469134
+anchor_right = -0.46
+anchor_bottom = 9.975308
+offset_left = 377.5
+offset_top = -229.5
+offset_right = 468.0
+offset_bottom = -175.5
+metadata/_edit_use_anchors_ = true
+
+[node name="PronunciationLabel" type="Label" parent="CommandPanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0016666667
+anchor_top = 16.11111
+anchor_right = 0.15833333
+anchor_bottom = 18.777779
+offset_left = 345.5
+offset_top = -468.5
+offset_right = 449.0
+offset_bottom = -419.0
+metadata/_edit_use_anchors_ = true
+
+[node name="FuelPanel" type="NinePatchRect" parent="."]
+layout_direction = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.8220486
+anchor_top = 0.37962964
+anchor_right = 0.8220486
+anchor_bottom = 0.37962964
+offset_left = -600.0
+offset_bottom = 40.5
+grow_horizontal = 0
+scale = Vector2(3, 3)
+metadata/_edit_use_anchors_ = true
+
+[node name="FuelBar" type="ProgressBar" parent="FuelPanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.5419445
+anchor_top = 1.5802472
+anchor_right = -0.5419445
+anchor_bottom = 1.5802472
+offset_left = 550.5
+offset_top = -118.0
+offset_right = 662.0
+offset_bottom = -21.5
+scale = Vector2(3, 3)
+metadata/_edit_use_anchors_ = true

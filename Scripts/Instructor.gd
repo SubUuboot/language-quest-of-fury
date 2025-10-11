@@ -4,7 +4,7 @@ signal command_given(command: String)
 signal lesson_completed()
 
 @onready var tank = %Tank
-@onready var HUD = $HUDLayer
+@onready var HUD = %HUD
 @export var hud_path: NodePath
 @onready var hud: Node = null
 @export var tank_path: NodePath
