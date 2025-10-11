@@ -102,6 +102,13 @@ position = Vector2(812, 567)
 scale = Vector2(2, 2)
 collision_mask = 2
 script = ExtResource("1_4c57u")
+acceleration = 40.0
+max_speed_forward = 200.0
+max_speed_reverse = 100.0
+rotation_speed = 1.0
+friction = 0.0
+hud_path = NodePath("../../HUD")
+instructor_path = NodePath("../Instructor")
 
 [node name="CameraRig2D" type="Node2D" parent="Characters/Tank"]
 
