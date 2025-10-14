@@ -1,0 +1,54 @@
+[gd_scene load_steps=4 format=3 uid="uid://dugs35e4xectk"]
+
+[ext_resource type="PackedScene" uid="uid://dhf6x4t4il8us" path="res://ui/Debug_Menu.tscn" id="1_8mdbb"]
+
+[sub_resource type="GDScript" id="GDScript_tuwvd"]
+script/source = "extends \"res://Scripts/systems/Debug_Menu_Old.gd\"
+"
+
+[sub_resource type="GDScript" id="GDScript_8mdbb"]
+resource_name = "HUD_Debug.gd"
+script/source = "extends Node
+
+
+
+func _ready() -> void:
+	if has_node(\"/root/HUD_Debug\"):
+		var hud = get_node(\"/root/HUD_Debug\")
+		connect(\"player_performed_action\", Callable(hud, \"_on_tank_action\"))
+		
+func _on_tank_action(action: String) -> void:
+	match action:
+		\"forward\": print(\"🟢 Tank avance\")
+		\"stop\": print(\"🔴 Tank arrêté\")
+		\"left\": print(\"⬅️  Rotation gauche\")
+		\"right\": print(\"➡️  Rotation droite\")
+"
+
+[node name="Node" type="Node"]
+
+[node name="Old_DebugMenu" parent="." instance=ExtResource("1_8mdbb")]
+unique_name_in_owner = true
+script = SubResource("GDScript_tuwvd")
+
+[node name="HUD_Debug" type="Node" parent="Old_DebugMenu"]
+script = SubResource("GDScript_8mdbb")
+
+[node name="Panel" type="Panel" parent="Old_DebugMenu/HUD_Debug"]
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -128.0
+offset_top = -96.0
+offset_bottom = 96.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="Old_DebugMenu/HUD_Debug/Panel"]
+layout_mode = 0
+offset_left = -24.0
+offset_top = -60.0
+offset_right = 104.0
+offset_bottom = 132.0

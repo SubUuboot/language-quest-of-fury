@@ -69,7 +69,6 @@ color_ramp = SubResource("GradientTexture1D_5vw27")
 font_names = PackedStringArray("Agency FB", "Corbel")
 font_weight = 300
 font_stretch = 200
-subpixel_positioning = 0
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_efxa6"]
 color = Color(0.35780492, 0.51919645, 0.28523287, 1)

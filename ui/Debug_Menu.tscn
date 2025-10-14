@@ -2,7 +2,7 @@
 
 [sub_resource type="GDScript" id="GDScript_272bh"]
 resource_name = "DebugMenu.gd"
-script/source = "extends CanvasLayer
+script/source = "extends Control
 signal value_changed(setting: String, value: float)
 
 @onready var shake_slider: HSlider = $Panel/TabBar/TabContainer/CamPage/Shake/ShakeSlider
@@ -70,26 +70,40 @@ func _toggle_visibility() -> void:
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_13yec"]
 
-[node name="DebugMenu" type="CanvasLayer"]
+[node name="DebugMenu" type="Control"]
+layout_mode = 3
+anchor_top = 0.59900004
+anchor_right = 0.46500003
+anchor_bottom = 1.062
+offset_top = -64.15204
+offset_right = -535.68005
+offset_bottom = -364.17603
+grow_vertical = 2
 script = SubResource("GDScript_272bh")
 
 [node name="Panel" type="Panel" parent="."]
 custom_minimum_size = Vector2(500, 300)
-offset_left = 100.0
-offset_top = 100.0
-offset_right = 140.0
-offset_bottom = 100.0
+layout_mode = 0
+offset_top = 64.0
+offset_right = 536.0
+offset_bottom = 364.0
 
 [node name="TabBar" type="TabBar" parent="Panel"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.133
+offset_bottom = 0.099998474
 
 [node name="TabContainer" type="TabContainer" parent="Panel/TabBar"]
 custom_minimum_size = Vector2(500, 300)
-layout_mode = 0
-offset_right = 500.0
-offset_bottom = 300.0
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.77500004
+offset_left = 16.0
+offset_right = -16.0
+offset_bottom = 269.0
 theme_override_constants/tab_separation = 10
 theme_override_constants/outline_size = 0
 theme_override_styles/panel = SubResource("StyleBoxEmpty_13yec")

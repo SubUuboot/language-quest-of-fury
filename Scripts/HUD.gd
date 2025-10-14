@@ -69,7 +69,7 @@ func _process(delta):
 			hide_instructor_dialog()
 
 	# --- Debug overlay ---
-	if Input.is_action_just_pressed("toggle_debug"):
+	if Input.is_action_just_pressed("ui_debug"):
 		debug_visible = !debug_visible
 		if debug_overlay:
 			debug_overlay.visible = debug_visible

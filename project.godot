@@ -17,9 +17,9 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+InputBootstrap="*res://Scripts/systems/InputBootstrap.gd"
 MotherAI="*res://Scenes/main/MotherAI.tscn"
 DialogueSystem="*res://Core/Dialogue/DialoguesLoader.gd"
-InputBoostrap="*res://Scripts/systems/InputBoostrap.gd"
 
 [display]
 

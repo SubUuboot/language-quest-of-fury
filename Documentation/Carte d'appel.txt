@@ -1,0 +1,41 @@
+
+Carte d’appel – Structure logique du TankController2D
+
+
+TankController2D.gd
+│
+├── _ready()
+│   ├── _create_debug_hud()
+│   └── (initialisation du moteur, chenilles, variables)
+│
+├── _physics_process(delta)
+│   ├── _process_inputs(delta)        ← ⚠️ C’est ici que le joueur agit
+│   ├── get_engine_torque_at_rpm()    ← Calcul moteur
+│   ├── _apply_engine_brake(delta)    ← Frein moteur / calage
+│   ├── (mises à jour physiques)
+│   └── _update_debug_hud()           ← HUD de debug dynamique
+│
+├── _process_inputs(delta)
+│   ├── lit les entrées clavier/manette :
+│   │   - throttle (accélération)
+│   │   - brake
+│   │   - steer_left / steer_right
+│   │   - gear_up / gear_down
+│   │   - clutch (embrayage)
+│   ├── émet signaux `moved`, `gear_changed`, etc.
+│   └── met à jour les variables internes :
+│       - throttle_input
+│       - brake_input
+│       - steering_input
+│
+├── get_engine_torque_at_rpm(rpm)
+│   └── calcule le couple moteur selon la courbe prédéfinie
+│
+├── _apply_engine_brake(delta)
+│   └── gère le frein moteur ou le calage si RPM trop bas
+│
+├── _create_debug_hud()
+│   └── construit un panneau de debug pour afficher des valeurs runtime
+│
+└── _update_debug_hud()
+    └── met à jour visuellement les infos du HUD debug
