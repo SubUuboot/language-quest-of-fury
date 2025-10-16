@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://wcy20vyix1f8"
-path="res://.godot/imported/boue_64.png-fc92bfa47b3c61d8ed63ec3b4c4419c2.ctex"
+path="res://.godot/imported/boue_64.png-76245b2db303e8f55e75ac6b7c46096c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/boue_64.png"
-dest_files=["res://.godot/imported/boue_64.png-fc92bfa47b3c61d8ed63ec3b4c4419c2.ctex"]
+source_file="res://Assets/ground/boue_64.png"
+dest_files=["res://.godot/imported/boue_64.png-76245b2db303e8f55e75ac6b7c46096c.ctex"]
 
 [params]
 

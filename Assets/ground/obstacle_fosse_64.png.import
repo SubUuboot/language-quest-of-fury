@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b2bccg3nw1dmo"
-path="res://.godot/imported/obstacle_barriere_64.png-24591cf369f71825b5b4d55569708ebf.ctex"
+uid="uid://cwldnxjg8f7t1"
+path="res://.godot/imported/obstacle_fosse_64.png-964ad929f8695619bb1e994de3d6ef2e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/obstacle_barriere_64.png"
-dest_files=["res://.godot/imported/obstacle_barriere_64.png-24591cf369f71825b5b4d55569708ebf.ctex"]
+source_file="res://Assets/ground/obstacle_fosse_64.png"
+dest_files=["res://.godot/imported/obstacle_fosse_64.png-964ad929f8695619bb1e994de3d6ef2e.ctex"]
 
 [params]
 

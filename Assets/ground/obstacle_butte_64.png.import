@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://caockwh7o0mui"
-path="res://.godot/imported/Block_A_01.png-7786213d31d51cd7a274dca669ab31a2.ctex"
+uid="uid://cqnc5jbyujs2e"
+path="res://.godot/imported/obstacle_butte_64.png-555b4ad8414ea94774e6cace80bf4843.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Block_A_01.png"
-dest_files=["res://.godot/imported/Block_A_01.png-7786213d31d51cd7a274dca669ab31a2.ctex"]
+source_file="res://Assets/ground/obstacle_butte_64.png"
+dest_files=["res://.godot/imported/obstacle_butte_64.png-555b4ad8414ea94774e6cace80bf4843.ctex"]
 
 [params]
 

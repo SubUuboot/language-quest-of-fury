@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cbwck4sn3vctm"
-path="res://.godot/imported/asphalte_64.png-162d152219dc125939e5659712c48f6c.ctex"
+uid="uid://dv5eqgc3x8f0c"
+path="res://.godot/imported/obstacle_flaque_64.png-c8b79a7f9f0833b4b4827e8f1fc1cd31.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/asphalte_64.png"
-dest_files=["res://.godot/imported/asphalte_64.png-162d152219dc125939e5659712c48f6c.ctex"]
+source_file="res://Assets/ground/obstacle_flaque_64.png"
+dest_files=["res://.godot/imported/obstacle_flaque_64.png-c8b79a7f9f0833b4b4827e8f1fc1cd31.ctex"]
 
 [params]
 

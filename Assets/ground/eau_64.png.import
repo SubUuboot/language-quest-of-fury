@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d3fuu0b1x5vei"
-path="res://.godot/imported/sable_64.png-b6ff2fd1c475d380d290d415474351cc.ctex"
+uid="uid://cvmk2g7xac7yg"
+path="res://.godot/imported/eau_64.png-89c89e747ab8a78668490eae1435da75.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/sable_64.png"
-dest_files=["res://.godot/imported/sable_64.png-b6ff2fd1c475d380d290d415474351cc.ctex"]
+source_file="res://Assets/ground/eau_64.png"
+dest_files=["res://.godot/imported/eau_64.png-89c89e747ab8a78668490eae1435da75.ctex"]
 
 [params]
 

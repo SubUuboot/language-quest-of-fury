@@ -22,11 +22,6 @@ func _ready() -> void:
 	
 	await get_tree().process_frame  # ⏳ attend une frame que les autoloads soient prêts
 	
-	if Engine.has_singleton("InputBootstrap"):
-		print("✅ InputBootstrap est chargé et accessible !")
-	else:
-		push_warning("⚠️ InputBootstrap n'est PAS chargé au moment de _ready() !")
-	
 	tank = get_tree().get_first_node_in_group("tank")
 	if tank == null:
 		push_warning("[DebugMenu] Aucun tank trouvé dans la scène.")

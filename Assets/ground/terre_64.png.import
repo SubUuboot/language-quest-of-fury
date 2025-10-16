@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://beyg6e48me8h7"
-path="res://.godot/imported/Block_C_02.png-648bb1cef369b3588842b0b132e1b6ff.ctex"
+uid="uid://ek4lxxruajd4"
+path="res://.godot/imported/terre_64.png-17fa47a38d2525d1a5d1725e9320c509.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Block_C_02.png"
-dest_files=["res://.godot/imported/Block_C_02.png-648bb1cef369b3588842b0b132e1b6ff.ctex"]
+source_file="res://Assets/ground/terre_64.png"
+dest_files=["res://.godot/imported/terre_64.png-17fa47a38d2525d1a5d1725e9320c509.ctex"]
 
 [params]
 

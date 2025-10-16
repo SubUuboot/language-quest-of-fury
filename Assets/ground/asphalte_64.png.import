@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cvmk2g7xac7yg"
-path="res://.godot/imported/eau_64.png-ebc1b354af23a2011bae88d6b9040d4b.ctex"
+uid="uid://cbwck4sn3vctm"
+path="res://.godot/imported/asphalte_64.png-b3dd459d1ab8626059dce4df94a6d407.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/eau_64.png"
-dest_files=["res://.godot/imported/eau_64.png-ebc1b354af23a2011bae88d6b9040d4b.ctex"]
+source_file="res://Assets/ground/asphalte_64.png"
+dest_files=["res://.godot/imported/asphalte_64.png-b3dd459d1ab8626059dce4df94a6d407.ctex"]
 
 [params]
 
