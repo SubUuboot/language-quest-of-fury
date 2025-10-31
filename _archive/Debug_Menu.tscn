@@ -1,10 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://dhf6x4t4il8us"]
-
-[ext_resource type="Script" uid="uid://1am5awcrl06s" path="res://Scripts/systems/Debug_Menu.gd" id="1_ggho2"]
+[gd_scene load_steps=2 format=3 uid="uid://dhf6x4t4il8us"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_13yec"]
 
-[node name="DebugMenu" type="Control"]
+[node name="OldMenu" type="Control"]
 layout_mode = 3
 anchor_top = 0.59900004
 anchor_right = 0.46500003
@@ -13,7 +11,6 @@ offset_top = -64.15204
 offset_right = -535.68005
 offset_bottom = -364.17603
 grow_vertical = 2
-script = ExtResource("1_ggho2")
 
 [node name="Panel" type="Panel" parent="."]
 custom_minimum_size = Vector2(500, 300)

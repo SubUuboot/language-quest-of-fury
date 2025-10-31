@@ -1,17 +1,19 @@
-[gd_scene load_steps=2 format=3 uid="uid://c0wn8lv47u3bl"]
+[gd_scene format=3 uid="uid://c0wn8lv47u3bl"]
 
-[ext_resource type="Script" uid="uid://1am5awcrl06s" path="res://Scripts/systems/Debug_Menu.gd" id="1_ascks"]
-
-[node name="DevTools" type="Node"]
+[node name="DevTools" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+focus_mode = 2
+mouse_filter = 2
 
 [node name="DebugMenu" type="Control" parent="."]
-layout_mode = 3
+visible = false
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_ascks")
 
 [node name="ToggleButton" type="Button" parent="DebugMenu"]
 layout_mode = 0
@@ -79,6 +81,7 @@ text = "Delta: -"
 
 [node name="LogConsole" type="RichTextLabel" parent="."]
 custom_minimum_size = Vector2(400, 160)
+layout_mode = 0
 offset_left = 16.0
 offset_top = 300.0
 offset_right = 16.0
@@ -87,6 +90,7 @@ size_flags_horizontal = 3
 text = "[b]Log Console initialized[/b]"
 
 [node name="MetricsOverlay" type="Label" parent="."]
+layout_mode = 0
 offset_left = 16.0
 offset_top = 480.0
 offset_right = 16.0

@@ -13,6 +13,7 @@ Le projet est organisé avec `MainScene`, `Main`, `StageManager`, `Stage0`, etc.
 - éventuellement `InputBootstrap.gd` (pour les entrées clavier)
 - `MainScene.tscn` (liée à l’affichage du menu debug)
 
+Tout le projet est accéssible via GitHub et est contenu dans la branche "Refacto-"la branche Main dans GitHub est à ignorer, c'est une anciène version que je ne garde que par sécurité.
 ---
 
 # 🚨 SYMPTÔMES ACTUELS
@@ -73,10 +74,11 @@ W 0:00:03:500 The parameter "callback" is never used in the function "register_d
 
 # 📁 STRUCTURE DU PROJET
 
+
 <!-- Tu peux mettre soit un extrait résumé ici, soit indiquer où la trouver -->
 Structure complète disponible dans le repo GitHub :
-`documentation/project_structure.txt`
-
+`language-quest-of-fury/tree/Refacto-/Documentation/StructureNodes`
+`language-quest-of-fury/tree/Refacto-/Documentation/project_structure.txt`
 
 
 ---

@@ -35,6 +35,20 @@ version_control/autoload_on_startup=true
 
 enabled=PackedStringArray("res://addons/devtools_exporter/plugin.cfg")
 
+[file_customization]
+
+folder_colors={
+"res://Assets/": "red",
+"res://Content/": "orange",
+"res://Core/": "red",
+"res://Documentation/": "pink",
+"res://Scenes/": "orange",
+"res://Scripts/": "red",
+"res://_archive/": "gray",
+"res://addons/": "yellow",
+"res://tools/": "yellow"
+}
+
 [input]
 
 ui_left={

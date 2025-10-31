@@ -1,5 +1,5 @@
 extends Control
-class_name DebugMenu
+
 
 # --- Références principales ---
 @onready var tabs_container: TabContainer = $TabsContainer

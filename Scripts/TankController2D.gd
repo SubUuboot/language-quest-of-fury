@@ -36,7 +36,6 @@ signal action_performed(action: String)
 	 4:  1.0
 }
 
-
 var engine_on: bool = true
 var engine_rpm: float = engine_idle_rpm
 var prev_engine_rpm: float = engine_idle_rpm
@@ -44,26 +43,22 @@ var clutch_pressed: bool = false
 var current_gear: int = 0
 var max_gears: int = 4
 
-
-
 # ------------------------------------------------------------
 # ÉTAT DE CONTRÔLE JOUEUR / DEBUG
 # ------------------------------------------------------------
-var input_enabled: bool = true  # Permet de suspendre toutes les entrées joueur (ex: menu ouvert)
-
-
+var input_enabled: bool = true  # permet de suspendre toutes les entrées joueur
 
 # ------------------------------------------------------------
 # INPUTS
 # ------------------------------------------------------------
-@export var input_accelerate: String = "accelerate"	# Espace
-@export var input_brake: String = "brake"				# Ctrl
-@export var input_steer_left: String = "steer_left"	# Q
-@export var input_steer_right: String = "steer_right"	# D
-@export var input_gear_up: String = "gear_up"			# + num
-@export var input_gear_down: String = "gear_down"		# Entrée num
-@export var input_clutch: String = "clutch"				# 0 num
-@export var input_engine_start: String = "engine_start"	# E
+@export var input_accelerate: String = "accelerate"     # Espace (par ex.)
+@export var input_brake: String = "brake"               # Ctrl
+@export var input_steer_left: String = "steer_left"     # Q
+@export var input_steer_right: String = "steer_right"   # D
+@export var input_gear_up: String = "gear_up"           # + num
+@export var input_gear_down: String = "gear_down"       # Entrée num
+@export var input_clutch: String = "clutch"             # 0 num
+@export var input_engine_start: String = "engine_start" # E
 
 # ------------------------------------------------------------
 # CHENILLES
@@ -83,14 +78,26 @@ var _clutch_bar: ProgressBar
 var _engine_brake_bar: ProgressBar
 var _engine_status_label: Label
 
+@export var devtools_path: NodePath = NodePath("../../HUDLayer/DevTools")
+@onready var devtools: Node = get_node_or_null(devtools_path)
+
 # ------------------------------------------------------------
 # INITIALISATION
 # ------------------------------------------------------------
 func _ready() -> void:
-	add_to_group("tank")  # ← indispensable si pas déjà fait via l’éditeur
+	add_to_group("tank")
 	if debug_dashboard:
 		_create_debug_hud()
+
+	# 🔗 Connexion optionnelle au DevTools
+	if devtools and devtools.has_signal("devtools_toggled") and devtools is Node:
+		devtools.connect("devtools_toggled", Callable(self, "_on_devtools_toggled"))
+		print("🧭 Tank connecté à DevTools (devtools_toggled).")
+	else:
+		print("ℹ️ DevTools absent ou sans signal — le Tank fonctionne en autonome.")
+
 	print("✅ Tank initialisé avec couple moteur, calage et freinage différentiel.")
+
 
 
 # ------------------------------------------------------------
@@ -98,12 +105,13 @@ func _ready() -> void:
 # ------------------------------------------------------------
 func set_input_enabled(enable: bool) -> void:
 	input_enabled = enable
-
 	if not enable:
-		# Vide les événements clavier/manette en attente
+		# Purge des entrées tamponnées pour éviter les “fantômes”
 		Input.flush_buffered_events()
 
-
+func _on_devtools_toggled(is_open: bool) -> void:
+	set_input_enabled(not is_open)
+	print("🎛️ DevTools toggled → Tank input_enabled =", not is_open)
 
 # ------------------------------------------------------------
 # COURBE DE COUPLE MOTEUR
@@ -121,7 +129,6 @@ func get_engine_torque_at_rpm(rpm: float) -> float:
 # INPUTS JOUEUR
 # ------------------------------------------------------------
 func _process_inputs(delta: float) -> void:
-
 	if not input_enabled:
 		return
 
@@ -137,7 +144,7 @@ func _process_inputs(delta: float) -> void:
 		engine_rpm = engine_idle_rpm
 		print("🔑 Moteur redémarré.")
 
-	# Gestion des rapports
+	# Gestion des rapports (embrayage requis)
 	if Input.is_action_just_pressed(input_gear_up) and clutch_pressed:
 		current_gear = clamp(current_gear + 1, -1, max_gears)
 		emit_signal("gear_changed", current_gear)
@@ -166,14 +173,13 @@ func _process_inputs(delta: float) -> void:
 	# Détermination du couple dispo
 	var torque: float = get_engine_torque_at_rpm(engine_rpm)
 	var ratio: float = gear_ratios.get(current_gear, 0.0)
-	var drive_force: float = torque * ratio
+	var _drive_force: float = torque * ratio
 
 	left_target_speed = 0.0
 	right_target_speed = 0.0
 
 	# Si l’embrayage est enfoncé, pas de transmission
 	var can_drive: bool = engine_on and (not clutch_pressed) and ratio != 0.0
-
 	if can_drive:
 		var drive_accel: float = (engine_rpm / engine_max_rpm) * max_track_speed * absf(ratio)
 		if ratio < 0.0:
@@ -221,6 +227,18 @@ func _process_inputs(delta: float) -> void:
 # PHYSIQUE DU DÉPLACEMENT
 # ------------------------------------------------------------
 func _physics_process(delta: float) -> void:
+	# 🧱 Neutralisation douce quand les inputs sont désactivés (DevTools / menu ouverts)
+	if not input_enabled:
+		left_target_speed = move_toward(left_target_speed, 0.0, drag * delta)
+		right_target_speed = move_toward(right_target_speed, 0.0, drag * delta)
+		left_track_speed = move_toward(left_track_speed, 0.0, friction * delta)
+		right_track_speed = move_toward(right_track_speed, 0.0, friction * delta)
+		velocity = velocity.move_toward(Vector2.ZERO, brake_power * 0.5 * delta)
+		move_and_slide()
+		_update_debug_hud()
+		return
+
+	# --- comportement normal ---
 	_process_inputs(delta)
 
 	var forward_speed: float = (left_track_speed + right_track_speed) * 0.5 * visual_speed_factor
@@ -230,10 +248,9 @@ func _physics_process(delta: float) -> void:
 	velocity = forward_dir * forward_speed
 	rotation += rotation_speed_local * delta
 
-	# --- Frein moteur dynamique ---
 	_apply_engine_brake(delta)
 
-	# --- Friction naturelle (à l'arrêt ou sans input) ---
+	# Friction naturelle (à l'arrêt ou sans input)
 	if absf(left_target_speed) < 0.1 and absf(right_target_speed) < 0.1:
 		left_track_speed = move_toward(left_track_speed, 0.0, drag * delta)
 		right_track_speed = move_toward(right_track_speed, 0.0, drag * delta)
@@ -242,12 +259,11 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	_update_debug_hud()
 
-
 # ------------------------------------------------------------
 # FREIN MOTEUR / CALAGE
 # ------------------------------------------------------------
 func _apply_engine_brake(delta: float) -> void:
-	# Si moteur calé → appliquer frein moteur fort
+	# Si moteur calé → frein moteur fort
 	if not engine_on:
 		var brake_strength: float = clamp(velocity.length() * 4.0, 0.0, 60.0)
 		velocity = velocity.move_toward(Vector2.ZERO, brake_strength * delta)
@@ -255,7 +271,7 @@ func _apply_engine_brake(delta: float) -> void:
 		right_track_speed = move_toward(right_track_speed, 0.0, brake_strength * 0.5 * delta)
 		return
 
-	# Si moteur allumé mais faible RPM → frein moteur progressif
+	# Si moteur allumé mais faible RPM → frein moteur progressif (embrayage relâché)
 	if current_gear != 0 and not clutch_pressed:
 		var rpm_factor: float = 1.0 - ((engine_rpm - engine_idle_rpm) / (engine_max_rpm - engine_idle_rpm))
 		rpm_factor = clamp(rpm_factor, 0.0, 1.0)
@@ -266,12 +282,10 @@ func _apply_engine_brake(delta: float) -> void:
 		left_track_speed = move_toward(left_track_speed, 0.0, engine_brake_strength * 0.4 * delta)
 		right_track_speed = move_toward(right_track_speed, 0.0, engine_brake_strength * 0.4 * delta)
 
-
 # ==========================================================
 # HUD DEBUG — version organisée et lisible
 # ==========================================================
 func _create_debug_hud() -> void:
-	# Conteneur vertical pour tout aligner proprement
 	var hud_container := VBoxContainer.new()
 	hud_container.name = "DebugHUD"
 	hud_container.position = Vector2(10, 10)
@@ -312,7 +326,6 @@ func _create_debug_hud() -> void:
 	_engine_status_label.add_theme_font_size_override("font_size", 16)
 	hud_container.add_child(_engine_status_label)
 
-
 func _update_debug_hud() -> void:
 	if not debug_dashboard or _debug_label == null:
 		return
@@ -338,7 +351,6 @@ func _update_debug_hud() -> void:
 	else:
 		_rpm_bar.add_theme_color_override("fg_color", Color(0, 1, 0))
 
-
 	# --- Calcul visuel du frein moteur ---
 	var brake_strength: float = 0.0
 
@@ -360,22 +372,20 @@ func _update_debug_hud() -> void:
 		_engine_brake_bar.add_theme_color_override("fg_color", Color(1.0, 0.0, 0.0))
 
 	_debug_label.text += "\nEngine brake: %.2f" % brake_strength
-	
-		# --- État du moteur ---
+
+	# --- État du moteur ---
 	if not engine_on:
 		_engine_status_label.text = "⚠️ ENGINE OFF / STALLED"
 	else:
 		_engine_status_label.text = ""
-
-
 
 # ------------------------------------------------------------
 # INTERFACE DE DEBUG / DATABRIDGE
 # ------------------------------------------------------------
 func get_debug_data() -> Dictionary:
 	return {
-		"Speed": round(velocity.length() * 100.0) / 100.0,  # ✅ arrondi à 2 décimales
+		"Speed": round(velocity.length() * 100.0) / 100.0,
 		"Gear": current_gear,
-		"RPM": round(engine_rpm),                           # ✅ 1 argument max
+		"RPM": round(engine_rpm),
 		"EngineOn": engine_on
 	}

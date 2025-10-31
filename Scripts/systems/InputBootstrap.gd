@@ -28,10 +28,11 @@ func _ready() -> void:
 	_ensure_action("turret_right", [KEY_RIGHT, -JOY_AXIS_RIGHT_X])
 
 	# === Debug / Interface ===
-	_ensure_action("ui_debug_menu", [KEY_F1])  # utilisé par DebugMenu
+	_ensure_action("ui_devtools_menu", [KEY_F1])  # utilisé par DevTools
+
 
 	print("🎮 [InputBootstrap] Bindings clavier/manette initiaux enregistrés.")
-	print("🧩 [InputBootstrap] Debug menu (F1) activé.")
+	print("🧩 [InputBootstrap] DevTools (F1) activé.")
 
 
 # ------------------------------------------------------------
@@ -235,7 +236,7 @@ func repair_missing_bindings() -> void:
 		"steer_right": [KEY_D, -JOY_AXIS_LEFT_X],
 		"turret_left": [KEY_LEFT, JOY_AXIS_RIGHT_X],
 		"turret_right": [KEY_RIGHT, -JOY_AXIS_RIGHT_X],
-		"ui_debug_menu": [KEY_F1],
+		"ui_devtools_menu": [KEY_F1],
 	}
 
 	for action_name in required_actions.keys():
