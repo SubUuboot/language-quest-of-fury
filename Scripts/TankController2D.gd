@@ -90,13 +90,16 @@ func _ready() -> void:
 		_create_debug_hud()
 
 	# 🔗 Connexion optionnelle au DevTools
-	if devtools and devtools.has_signal("devtools_toggled") and devtools is Node:
-		devtools.connect("devtools_toggled", Callable(self, "_on_devtools_toggled"))
+	if devtools and devtools.has_signal("devtools_toggled"):
+		if not devtools.is_connected("devtools_toggled", Callable(self, "_on_devtools_toggled")):
+			devtools.connect("devtools_toggled", Callable(self, "_on_devtools_toggled"))
 		print("🧭 Tank connecté à DevTools (devtools_toggled).")
 	else:
 		print("ℹ️ DevTools absent ou sans signal — le Tank fonctionne en autonome.")
 
 	print("✅ Tank initialisé avec couple moteur, calage et freinage différentiel.")
+
+
 
 
 
