@@ -1,3 +1,7 @@
+# Request for Codex
+
+Please read this document and design a unified startup sequence for Super Language Quest Of Fury, including scene order, signal management, and input synchronization. Focus on creating a GameBootstrap scene as described.
+
 # Game Bootstrap & Initialization Refactor Plan
 
 ## 🎯 Objective
