@@ -1,0 +1,98 @@
+[gd_scene format=3 uid="uid://c0wn8lv47u3bl"]
+
+[node name="DevTools" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+focus_mode = 2
+mouse_filter = 2
+
+[node name="DebugMenu" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ToggleButton" type="Button" parent="DebugMenu"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 16.0
+offset_bottom = 16.0
+text = "Toggle Debug"
+
+[node name="TabsContainer" type="TabContainer" parent="DebugMenu"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 48.0
+offset_bottom = 48.0
+current_tab = 0
+
+[node name="Tank" type="VBoxContainer" parent="DebugMenu/TabsContainer"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="Speed" type="Label" parent="DebugMenu/TabsContainer/Tank"]
+layout_mode = 2
+text = "Speed: -"
+
+[node name="Gear" type="Label" parent="DebugMenu/TabsContainer/Tank"]
+layout_mode = 2
+text = "Gear: -"
+
+[node name="Fuel" type="Label" parent="DebugMenu/TabsContainer/Tank"]
+layout_mode = 2
+text = "Fuel: -"
+
+[node name="Camera" type="VBoxContainer" parent="DebugMenu/TabsContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="Zoom" type="Label" parent="DebugMenu/TabsContainer/Camera"]
+layout_mode = 2
+text = "Zoom: -"
+
+[node name="OffsetX" type="Label" parent="DebugMenu/TabsContainer/Camera"]
+layout_mode = 2
+text = "OffsetX: -"
+
+[node name="OffsetY" type="Label" parent="DebugMenu/TabsContainer/Camera"]
+layout_mode = 2
+text = "OffsetY: -"
+
+[node name="System" type="VBoxContainer" parent="DebugMenu/TabsContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="FPS" type="Label" parent="DebugMenu/TabsContainer/System"]
+layout_mode = 2
+text = "FPS: -"
+
+[node name="Delta" type="Label" parent="DebugMenu/TabsContainer/System"]
+layout_mode = 2
+text = "Delta: -"
+
+[node name="KeyListener" type="Node" parent="DebugMenu"]
+
+[node name="LogConsole" type="RichTextLabel" parent="."]
+custom_minimum_size = Vector2(400, 160)
+layout_mode = 0
+offset_left = 16.0
+offset_top = 300.0
+offset_right = 16.0
+offset_bottom = 300.0
+size_flags_horizontal = 3
+text = "[b]Log Console initialized[/b]"
+
+[node name="MetricsOverlay" type="Label" parent="."]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 480.0
+offset_right = 16.0
+offset_bottom = 480.0
+text = "Metrics: ---"

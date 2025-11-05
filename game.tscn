@@ -1,59 +1,23 @@
-[gd_scene load_steps=13 format=3 uid="uid://3cs7skbu0lmi"]
+[gd_scene load_steps=7 format=3 uid="uid://3cs7skbu0lmi"]
 
 [ext_resource type="PackedScene" uid="uid://wr26b50e836f" path="res://main.tscn" id="1_e2o6t"]
 [ext_resource type="Script" uid="uid://d3vosmta1es4n" path="res://Scripts/Game.gd" id="1_j5wjh"]
-[ext_resource type="PackedScene" uid="uid://bcu5lifpcai6t" path="res://hud.tscn" id="2_feb5d"]
-[ext_resource type="Script" uid="uid://b3b67rxop3yqk" path="res://Scripts/Generate_Path.gd" id="3_7jktm"]
-[ext_resource type="PackedScene" uid="uid://b1iv7cu2kcque" path="res://Scenes/Segments/Segment_Straight.tscn" id="3_fc0e3"]
-[ext_resource type="PackedScene" uid="uid://66tsrso42j83" path="res://Scenes/Segments/Segment_Template.tscn" id="5_vef74"]
-[ext_resource type="PackedScene" uid="uid://4u4o7ab1jwum" path="res://Scenes/Segments/Segment_Left.tscn" id="6_hve3p"]
-[ext_resource type="PackedScene" uid="uid://qeuhdcrd0shq" path="res://Scenes/Segments/Segment_Right.tscn" id="6_vef74"]
-[ext_resource type="PackedScene" uid="uid://ce7seuc3bnqcc" path="res://Scenes/Segments/Segment_Butte.tscn" id="7_hve3p"]
-[ext_resource type="PackedScene" uid="uid://che6id8xuwbyr" path="res://Scenes/Segments/Segment_Fosse.tscn" id="8_mfdv2"]
-[ext_resource type="PackedScene" uid="uid://cirx51x6vw8rk" path="res://Scenes/Segments/Segment_Stop.tscn" id="11_mfdv2"]
-[ext_resource type="Script" uid="uid://vw82sgar2it0" path="res://Scripts/SegmentRow.gd" id="12_iotsf"]
+[ext_resource type="Script" uid="uid://cpnbjnrgfynah" path="res://Scripts/systems/StageManager.gd" id="2_ryrav"]
+[ext_resource type="PackedScene" uid="uid://inj3nv1y5esk" path="res://Scenes/Stages/Stage0_Hangar.tscn" id="3_7jktm"]
+[ext_resource type="PackedScene" uid="uid://bs6ioal1kfhf8" path="res://Scenes/Stages/Stage1_TrainingGround.tscn" id="4_ryrav"]
+[ext_resource type="PackedScene" uid="uid://cxog4wx4hf5bx" path="res://Scenes/main/MotherAI.tscn" id="6_ryrav"]
 
 [node name="Game" type="Node"]
 script = ExtResource("1_j5wjh")
 
+[node name="StageManager" type="Node" parent="."]
+script = ExtResource("2_ryrav")
+
+[node name="Stage0_Hangar" parent="StageManager" instance=ExtResource("3_7jktm")]
+
+[node name="Stage1_TrainingGround" parent="StageManager" instance=ExtResource("4_ryrav")]
+
 [node name="Main" parent="." instance=ExtResource("1_e2o6t")]
 position = Vector2(1, 0)
 
-[node name="HUDLayer" parent="Main" instance=ExtResource("2_feb5d")]
-layer = 2
-
-[node name="Segments" type="Node2D" parent="."]
-unique_name_in_owner = true
-script = ExtResource("3_7jktm")
-
-[node name="Segment_Straight" parent="Segments" instance=ExtResource("3_fc0e3")]
-script = null
-
-[node name="Segment_Right" parent="Segments" instance=ExtResource("6_vef74")]
-script = null
-
-[node name="Segment_Left" parent="Segments" instance=ExtResource("6_hve3p")]
-script = null
-
-[node name="Segment_Stop" parent="Segments" instance=ExtResource("11_mfdv2")]
-script = null
-
-[node name="Segment_Butte" parent="Segments" instance=ExtResource("7_hve3p")]
-script = null
-
-[node name="Segment_Fosse" parent="Segments" instance=ExtResource("8_mfdv2")]
-script = null
-
-[node name="Segment_Template" parent="Segments" instance=ExtResource("5_vef74")]
-script = null
-
-[node name="SegmentRow" type="Node2D" parent="."]
-script = ExtResource("12_iotsf")
-
-[node name="slot0" type="Node2D" parent="SegmentRow"]
-
-[node name="slot1" type="Node2D" parent="SegmentRow"]
-
-[node name="slot2" type="Node2D" parent="SegmentRow"]
-
-[node name="slot3" type="Node2D" parent="SegmentRow"]
+[node name="MotherAI" parent="." instance=ExtResource("6_ryrav")]

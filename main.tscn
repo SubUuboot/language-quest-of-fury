@@ -1,14 +1,66 @@
-[gd_scene load_steps=12 format=3 uid="uid://wr26b50e836f"]
+[gd_scene load_steps=23 format=3 uid="uid://wr26b50e836f"]
 
-[ext_resource type="Script" uid="uid://dyh3b5v8h3iq1" path="res://Scripts/Main.gd" id="1_5vw27"]
-[ext_resource type="Script" uid="uid://bye0dca81bllt" path="res://Scripts/Tank.gd" id="1_7mycd"]
-[ext_resource type="Texture2D" uid="uid://3ba6jqdcnuql" path="res://Assets/tank/Hulls_Color_D/Hull_01.png" id="2_272bh"]
-[ext_resource type="Texture2D" uid="uid://b46v86at470me" path="res://Assets/tank/Weapon_Color_D/Gun_01.png" id="3_5vw27"]
-[ext_resource type="Script" uid="uid://6k05yl7w8c2a" path="res://Scripts/Instructor.gd" id="5_4c57u"]
-[ext_resource type="Script" uid="uid://dwsnlo6lt567d" path="res://Scripts/Commander.gd" id="6_272bh"]
-[ext_resource type="Script" uid="uid://c3714oq4kbn4y" path="res://Scripts/Level.gd" id="6_efxa6"]
-[ext_resource type="Script" uid="uid://devr6alcpyuyg" path="res://Scripts/HangarDoor.gd" id="7_5vw27"]
-[ext_resource type="PackedScene" uid="uid://dam42vxh421u1" path="res://Scenes/Segments/ground.tscn" id="8_kek77"]
+[ext_resource type="Script" uid="uid://cag7srbirdqpw" path="res://Scripts/TankController2D.gd" id="1_4c57u"]
+[ext_resource type="Texture2D" uid="uid://cbhhgxjtapdj1" path="res://Assets/tank/Hulls_Color_D/Hull_04.png" id="3_kek77"]
+[ext_resource type="Texture2D" uid="uid://cjcl4dpiqbbtn" path="res://Assets/tank/Weapon_Color_D/Gun_04.png" id="4_4c57u"]
+[ext_resource type="Texture2D" uid="uid://daxx3tkmm2dvm" path="res://Assets/effects/halo_soft.png" id="4_7mycd"]
+[ext_resource type="Shader" uid="uid://c1admgcuh6mgh" path="res://shaders/heat_distortion.gdshader" id="4_272bh"]
+[ext_resource type="PackedScene" uid="uid://bcu5lifpcai6t" path="res://hud.tscn" id="4_lquwl"]
+[ext_resource type="Script" uid="uid://6k05yl7w8c2a" path="res://Scripts/Instructor.gd" id="6_4c57u"]
+[ext_resource type="PackedScene" uid="uid://dpwrbabn3fnhu" path="res://Scenes/main/hud.tscn" id="7_kek77"]
+[ext_resource type="Script" uid="uid://duektskxilr8" path="res://Scripts/systems/DevTools.gd" id="9_efxa6"]
+[ext_resource type="Script" uid="uid://xnxmifbiuugt" path="res://Core/Config/SettingsManager.gd" id="9_kek77"]
+[ext_resource type="PackedScene" uid="uid://c0wn8lv47u3bl" path="res://Scenes/DevTools.tscn" id="10_dg77c"]
+
+[sub_resource type="GDScript" id="GDScript_efxa6"]
+script/source = "extends \"res://Scripts/systems/InputSniffer.gd\"
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7mycd"]
+size = Vector2(103.5, 171)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7mycd"]
+shader = ExtResource("4_272bh")
+shader_parameter/strength = 0.6
+shader_parameter/speed = 1.2
+shader_parameter/scale = 35.0
+shader_parameter/flow_dir = Vector2(0, -1)
+shader_parameter/offset_px = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_272bh"]
+shader = ExtResource("4_272bh")
+shader_parameter/strength = 0.6
+shader_parameter/speed = 1.2
+shader_parameter/scale = 35.0
+shader_parameter/flow_dir = Vector2(0, -1)
+shader_parameter/offset_px = 0.0
+
+[sub_resource type="Gradient" id="Gradient_272bh"]
+colors = PackedColorArray(0, 0, 0, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_5vw27"]
+gradient = SubResource("Gradient_272bh")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_kek77"]
+particle_flag_disable_z = true
+direction = Vector3(0, 1, 0)
+initial_velocity_min = 25.0
+initial_velocity_max = 60.0
+gravity = Vector3(0, -20, 0)
+scale_min = 0.59999996
+scale_max = 1.5
+color_ramp = SubResource("GradientTexture1D_5vw27")
+
+[sub_resource type="SystemFont" id="SystemFont_4c57u"]
+font_names = PackedStringArray("Agency FB", "Corbel")
+font_weight = 300
+font_stretch = 200
+subpixel_positioning = 0
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_efxa6"]
+color = Color(0.35780492, 0.51919645, 0.28523287, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_272bh"]
 
 [sub_resource type="GDScript" id="GDScript_lquwl"]
 resource_name = "CameraShake"
@@ -18,7 +70,13 @@ var trauma := 0.0
 func add_trauma(amount: float) -> void:
 	trauma = clamp(trauma + amount, 0.0, 1.0)
 
+
 func _process(delta: float) -> void:
+	
+	var tank = get_node(\"%Tank\")  # ou \"../Characters/Tank\" si c’est dans un sous-node
+	if tank:
+		position = tank.position
+	
 	if trauma > 0.0:
 		offset = Vector2(
 			(randf() - 0.5) * 6.0 * trauma,
@@ -29,66 +87,250 @@ func _process(delta: float) -> void:
 		offset = Vector2.ZERO
 "
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_7mycd"]
-size = Vector2(150, 224)
-
 [node name="Main" type="Node2D"]
-position = Vector2(100, 100)
-scale = Vector2(2, 2)
-script = ExtResource("1_5vw27")
+position = Vector2(712, 467)
+script = SubResource("GDScript_efxa6")
 
-[node name="Tank" type="CharacterBody2D" parent="."]
+[node name="Characters" type="Node" parent="."]
+
+[node name="Rusty" type="Node2D" parent="Characters"]
+position = Vector2(812, 567)
+scale = Vector2(2, 2)
+
+[node name="Tank" type="CharacterBody2D" parent="Characters"]
 unique_name_in_owner = true
 z_index = 10
+position = Vector2(812, 567)
+scale = Vector2(2, 2)
 collision_mask = 2
-script = ExtResource("1_7mycd")
+script = ExtResource("1_4c57u")
+rotation_gain = 0.3
+visual_speed_factor = 64.0
 
-[node name="Camera2D" type="Camera2D" parent="Tank"]
-script = SubResource("GDScript_lquwl")
+[node name="SpriteBody" type="Sprite2D" parent="Characters/Tank"]
+texture = ExtResource("3_kek77")
 
-[node name="Sprite2D" type="Sprite2D" parent="Tank"]
-texture = ExtResource("2_272bh")
+[node name="SpriteTurret" type="Sprite2D" parent="Characters/Tank"]
+texture = ExtResource("4_4c57u")
 
-[node name="Sprite2D2" type="Sprite2D" parent="Tank"]
-texture = ExtResource("3_5vw27")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Tank"]
-position = Vector2(0, 4)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Characters/Tank"]
+position = Vector2(0.25, 7)
 shape = SubResource("RectangleShape2D_7mycd")
 
-[node name="Level" type="Node2D" parent="."]
-script = ExtResource("6_efxa6")
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Characters/Tank"]
 
-[node name="Instructor" type="Node" parent="."]
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="Characters/Tank"]
+
+[node name="HeatDistortion" type="Sprite2D" parent="Characters/Tank"]
+material = SubResource("ShaderMaterial_7mycd")
+position = Vector2(26, 122)
+texture = ExtResource("4_7mycd")
+
+[node name="TextureRect" type="TextureRect" parent="Characters/Tank/HeatDistortion"]
+material = SubResource("ShaderMaterial_272bh")
+offset_left = 252.0
+offset_top = 160.5
+offset_right = 380.0
+offset_bottom = 288.5
+texture = ExtResource("4_7mycd")
+metadata/_edit_use_anchors_ = true
+
+[node name="ExhaustSmoke" type="GPUParticles2D" parent="Characters/Tank"]
+position = Vector2(26, 122)
+emitting = false
+amount = 50
+lifetime = 1.8
+explosiveness = 0.6
+process_material = SubResource("ParticleProcessMaterial_kek77")
+
+[node name="Instructor" type="Node" parent="Characters"]
 unique_name_in_owner = true
-script = ExtResource("5_4c57u")
+script = ExtResource("6_4c57u")
+hud_path = NodePath("../../HUDLayer/HUD")
+tank_path = NodePath("../Tank")
 
-[node name="CommandTimer" type="Timer" parent="Instructor"]
-
-[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="Instructor"]
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="Characters/Instructor"]
 position = Vector2(545, -357)
 
-[node name="Commander" type="Node" parent="."]
+[node name="CommandTimer" type="Timer" parent="Characters/Instructor"]
+
+[node name="HUDLayer" parent="." instance=ExtResource("4_lquwl")]
+layer = 10
+
+[node name="DevTools" parent="HUDLayer" instance=ExtResource("10_dg77c")]
+process_mode = 3
+visible = false
+script = ExtResource("9_efxa6")
+
+[node name="HUD" parent="HUDLayer" instance=ExtResource("7_kek77")]
 unique_name_in_owner = true
-script = ExtResource("6_272bh")
+offset_left = 40.0
+offset_top = 32.0
+offset_right = 40.0
+offset_bottom = 32.0
+tank_path = NodePath("../../TankController2D")
 
-[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="Commander"]
-position = Vector2(545, -357)
+[node name="InstructorDialog" type="Label" parent="HUDLayer/HUD"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -50.0
+offset_top = -400.0
+offset_right = 50.0
+grow_horizontal = 2
+grow_vertical = 0
+scale = Vector2(3, 3)
 
-[node name="HangarDoor" type="Node2D" parent="."]
-unique_name_in_owner = true
-script = ExtResource("7_5vw27")
+[node name="MovementIndicator" type="Label" parent="HUDLayer/HUD"]
+layout_direction = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0486112
+anchor_top = 1.1049383
+anchor_right = 1.0486112
+anchor_bottom = 1.1049383
+offset_left = -952.0
+offset_top = -460.0
+offset_right = -880.5
+offset_bottom = -313.0
+grow_horizontal = 0
+grow_vertical = 2
+scale = Vector2(3, 3)
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="HangarDoor"]
+[node name="SpeedPanel" type="NinePatchRect" parent="HUDLayer/HUD"]
+z_index = 2
+custom_minimum_size = Vector2(260, 64)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5625
+anchor_top = -0.19753087
+anchor_right = 0.5625
+anchor_bottom = -0.19753087
+offset_left = -256.0
+offset_top = 368.0
+offset_right = 4.0
+offset_bottom = 638.0
 
-[node name="Hangar" parent="." instance=ExtResource("8_kek77")]
+[node name="SpeedLabel" type="Label" parent="HUDLayer/HUD/SpeedPanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.6
+anchor_top = -1.2444445
+anchor_right = 2.6
+anchor_bottom = -0.24444444
+offset_left = -416.0
+offset_top = 336.0
+offset_right = -580.0
+offset_bottom = 144.33334
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(3, 3)
 
-[node name="Obstacles" type="Node2D" parent="."]
+[node name="GearLabel" type="Label" parent="HUDLayer/HUD"]
+layout_mode = 0
+offset_left = 984.0
+offset_top = 448.0
+offset_right = 1120.0
+offset_bottom = 560.0
 
-[node name="ZoneCross" type="Area2D" parent="Obstacles"]
+[node name="CommandPanel" type="NinePatchRect" parent="HUDLayer/HUD"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_top = 224.0
+offset_right = 300.0
+offset_bottom = 264.5
+grow_horizontal = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/ZoneCross"]
+[node name="CommandLabel" type="Label" parent="HUDLayer/HUD/CommandPanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.785
+anchor_top = 7.2469134
+anchor_right = -0.46
+anchor_bottom = 9.975308
+offset_left = 454.5
+offset_top = -298.5
+offset_right = 545.0
+offset_bottom = -244.5
 
-[node name="ZoneClimb" type="Area2D" parent="Obstacles"]
+[node name="PronunciationLabel" type="Label" parent="HUDLayer/HUD/CommandPanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.035
+anchor_top = 27.17284
+anchor_right = 0.19166666
+anchor_bottom = 29.83951
+offset_left = -10.5
+offset_top = -1100.5
+offset_right = 93.0
+offset_bottom = -1051.0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/ZoneClimb"]
+[node name="FuelPanel" type="NinePatchRect" parent="HUDLayer/HUD"]
+layout_direction = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.7708333
+anchor_top = 0.9259259
+anchor_right = 0.7708333
+anchor_bottom = 0.9259259
+offset_left = -144.0
+offset_top = -385.0
+offset_right = -122.666626
+offset_bottom = -352.66666
+grow_horizontal = 0
+scale = Vector2(3, 3)
+
+[node name="FuelBar" type="ProgressBar" parent="HUDLayer/HUD/FuelPanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.5419445
+anchor_top = 1.5802472
+anchor_right = -0.5419445
+anchor_bottom = 1.5802472
+offset_left = 14.228168
+offset_top = -40.094673
+offset_right = 27.561512
+offset_bottom = -13.094673
+theme_override_fonts/font = SubResource("SystemFont_4c57u")
+theme_override_font_sizes/font_size = 8
+theme_override_styles/fill = SubResource("StyleBoxLine_efxa6")
+
+[node name="LogContainer" type="VBoxContainer" parent="HUDLayer/HUD"]
+layout_mode = 0
+offset_left = -496.0
+offset_top = 144.0
+offset_right = -456.0
+offset_bottom = 184.0
+
+[node name="DebugOverlay" type="Label" parent="HUDLayer/HUD"]
+z_index = 10
+custom_minimum_size = Vector2(100, 200)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.57600003
+anchor_top = 0.30900002
+anchor_right = 0.68100005
+anchor_bottom = 0.432
+offset_left = -172.60803
+offset_top = 1007.04
+offset_right = 10.432007
+offset_bottom = 1167.3359
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.73333335)
+theme_override_colors/font_outline_color = Color(0.21176471, 0.69803923, 0, 1)
+label_settings = SubResource("LabelSettings_272bh")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SettingsManager" type="Node" parent="."]
+script = ExtResource("9_kek77")
+
+[node name="CameraRig2D" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="CameraRig2D"]
+script = SubResource("GDScript_lquwl")

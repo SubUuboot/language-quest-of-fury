@@ -41,6 +41,7 @@ script = ExtResource("3_luyxj")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ZoneRight"]
 position = Vector2(192, 139.75)
 shape = SubResource("RectangleShape2D_q6tuu")
+metadata/expected_command = "Left"
 
 [node name="Rock" parent="." instance=ExtResource("4_bq6nl")]
 position = Vector2(584, 480)

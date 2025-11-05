@@ -1,0 +1,108 @@
+
+Content
+│   RussianTraining
+│   │   Config
+│   │   │   GameConfig.tres
+│   │   Dialogues
+│   │   │   dialogues.json
+Core
+│   Config
+│   │   GameConfig.gd
+│   │   SettingsManager.gd
+│   Dialogue
+│   │   DialoguesLoader.gd
+│   │   Вперёд.wav
+│   │   Назад.wav
+│   │   Налево.wav
+│   │   Направо.wav
+│   │   Повторите.wav
+│   │   Протокол завершён..wav
+│   │   Протокол инициализации. Следуйте приказам..wav
+│   │   Стоп.wav
+│   │   Хорошо.wav
+Documentation
+│   Carte d'appel.txt
+│   CommunicationMap.txt
+│   signal_flow.mmd
+export_presets.cfg
+game.tscn
+hud.tscn
+main.tscn
+project.godot
+README.md
+Scenes
+│   DevTools.tscn
+│   input_assignment
+│   │   InputAssignmentScene.tscn
+│   main
+│   │   hud.tscn
+│   │   main.gd
+│   │   main.gd.uid
+│   │   main.tscn
+│   │   MotherAI.tscn
+│   obstacles
+│   │   obstacle.tscn
+│   │   Obstacle_Stop.tscn
+│   Segments
+│   │   SegmentRow.tscn
+│   │   segments.tscn
+│   │   Segment_Butte.tscn
+│   │   Segment_Field.tscn
+│   │   Segment_Fosse.tscn
+│   │   Segment_Left.tscn
+│   │   Segment_Right.tscn
+│   │   Segment_Stop.tscn
+│   │   Segment_Straight.tscn
+│   │   Segment_Template.tscn
+│   Stages
+│   │   Stage0_Hangar.tscn
+│   │   Stage1_TrainingGround.tscn
+Scripts
+│   Commander.gd
+│   FirstInstructions.gd
+│   Game.gd
+│   Generate_Path.gd
+│   Ground.gd
+│   HangarDoor.gd
+│   HUD.gd
+│   HUDDebug.gd
+│   InputAssigner.gd
+│   Instructor.gd
+│   Level.gd
+│   MotherAI_Physical.gd
+│   Obstacle.gd
+│   Segment.gd
+│   SegmentRow.gd
+│   Segment_Straight.gd
+│   stages
+│   │   Stage0_Controller.gd
+│   │   Stage0_Manager.gd
+│   │   Stage1.gd
+│   systems
+│   │   Debug_Menu.gd
+│   │   Debug_Menu_Old.gd
+│   │   InputBootstrap.gd
+│   │   MotherAI.gd
+│   │   Pathfinder.gd
+│   │   SegmentRow.gd
+│   │   StageManager.gd
+│   │   TerrainGenerator.gd
+│   Tank.gd
+│   TankController2D.gd
+│   Utils
+│   │   NodeUtils.gd
+│   ValidationZone.gd
+shaders
+│   heat_distortion.gdshader
+Structure_Path
+Tiles
+│   TerrainTileset.tres
+tools
+│   build_devtools.gd
+│   Execute Editor Script.gd
+│   Export Strucutre Current Scene.gd
+│   node_build_DebugMenu.tscn
+│   node_build_Structure_Project.tscn
+│   save.tscn
+ui
+│   Debug_Menu.tscn
