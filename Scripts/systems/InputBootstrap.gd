@@ -1,5 +1,10 @@
 extends Node
 
+signal actions_ready
+signal devtools_toggle_requested
+
+var _actions_registered: bool = false
+
 ## ============================================================
 ## InputBootstrap
 ## Initialise les entrées par défaut du jeu (clavier + manette).
@@ -7,6 +12,7 @@ extends Node
 ## ============================================================
 
 func _ready() -> void:
+	set_process_unhandled_input(true)
 	# --- Tente de recharger les bindings personnalisés ---
 	load_bindings()
 	repair_missing_bindings()
@@ -34,6 +40,23 @@ func _ready() -> void:
 	print("🎮 [InputBootstrap] Bindings clavier/manette initiaux enregistrés.")
 	print("🧩 [InputBootstrap] DevTools (F1) activé.")
 
+	_actions_registered = true
+	emit_signal("actions_ready")
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not _actions_registered:
+		return
+	if event.is_action_pressed("ui_devtools_menu"):
+		emit_signal("devtools_toggle_requested")
+		get_viewport().set_input_as_handled()
+
+func await_ready() -> void:
+	if _actions_registered:
+		return
+	await actions_ready
+
+func is_ready() -> bool:
+	return _actions_registered
 
 # ------------------------------------------------------------
 # Enregistre ou met à jour une action d'entrée donnée.
