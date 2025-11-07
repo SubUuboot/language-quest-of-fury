@@ -86,6 +86,7 @@ var _engine_status_label: Label
 # ------------------------------------------------------------
 func _ready() -> void:
 	add_to_group("tank")
+	await _await_input_system()
 	if debug_dashboard:
 		_create_debug_hud()
 
@@ -115,6 +116,30 @@ func set_input_enabled(enable: bool) -> void:
 func _on_devtools_toggled(is_open: bool) -> void:
 	set_input_enabled(not is_open)
 	print("🎛️ DevTools toggled → Tank input_enabled =", not is_open)
+
+func _await_input_system() -> void:
+	var bootstrap: Node = get_tree().root.get_node_or_null("InputBootstrap")
+	while bootstrap == null:
+		await get_tree().process_frame
+		bootstrap = get_tree().root.get_node_or_null("InputBootstrap")
+	if bootstrap and bootstrap.has_method("await_ready"):
+		await bootstrap.await_ready()
+	_validate_required_inputs()
+
+func _validate_required_inputs() -> void:
+	var required_actions: Array[String] = [
+		input_accelerate,
+		input_brake,
+		input_steer_left,
+		input_steer_right,
+		input_gear_up,
+		input_gear_down,
+		input_clutch,
+		input_engine_start,
+	]
+	for action_name in required_actions:
+		if not InputMap.has_action(action_name):
+			push_warning("[TankController2D] Action d'entrée manquante: %s" % action_name)
 
 # ------------------------------------------------------------
 # COURBE DE COUPLE MOTEUR

@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="LanguageQuestOfFury"
-run/main_scene="uid://3cs7skbu0lmi"
+run/main_scene="uid://edd49746fea74446afae6a"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://icon.svg"
 
