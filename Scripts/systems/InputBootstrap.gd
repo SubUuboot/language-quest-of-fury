@@ -16,18 +16,23 @@ func _ready() -> void:
 	# --- Tente de recharger les bindings personnalisés ---
 	load_bindings()
 	repair_missing_bindings()
-	
+
+	# === Key non reconnues pour l'instant ===
+	#_ensure_action("gear_up",   [KEY_KP_ADD, JOY_BUTTON_RIGHT_SHOULDER])   # Pavé num + / R1
+	#_ensure_action("gear_down", [KEY_KP_ENTER, JOY_BUTTON_LEFT_SHOULDER])  # Pavé num Entrée / L1
+	#_ensure_action("clutch",    [KEY_KP_0, JOY_BUTTON_X])                  # Pavé num 0 / X
+
 	# === Transmission ===
-	_ensure_action("gear_up",   [KEY_KP_ADD, JOY_BUTTON_RIGHT_SHOULDER])   # Pavé num + / R1
-	_ensure_action("gear_down", [KEY_KP_ENTER, JOY_BUTTON_LEFT_SHOULDER])  # Pavé num Entrée / L1
-	_ensure_action("clutch",    [KEY_KP_0, JOY_BUTTON_X])                  # Pavé num 0 / X
+	_ensure_action("gear_up",   [KEY_P, JOY_BUTTON_RIGHT_SHOULDER])    # Pavé num + / R1
+	_ensure_action("gear_down", [KEY_M, JOY_BUTTON_LEFT_SHOULDER])   # Pavé num Entrée / L1
+	_ensure_action("clutch",    [KEY_O, JOY_BUTTON_X])                  # Pavé num 0 / X
 
 	# === Conduite du tank ===
 	_ensure_action("engine_start", [KEY_E, JOY_BUTTON_START])
 	_ensure_action("accelerate",   [KEY_SPACE, JOY_BUTTON_A])
-	_ensure_action("brake",        [KEY_CTRL, JOY_BUTTON_B])
-	_ensure_action("steer_left",   [KEY_Q, JOY_AXIS_LEFT_X])               # axe analogique gauche
-	_ensure_action("steer_right",  [KEY_D, -JOY_AXIS_LEFT_X])              # axe analogique gauche inversé
+	_ensure_action("brake",        [KEY_L, JOY_BUTTON_B])
+	_ensure_action("steer_left",   [KEY_Q, JOY_AXIS_LEFT_X])                # axe analogique gauche
+	_ensure_action("steer_right",  [KEY_D, -JOY_AXIS_LEFT_X])               # axe analogique gauche inversé
 
 	# === Tourelle ===
 	_ensure_action("turret_left",  [KEY_LEFT, JOY_AXIS_RIGHT_X])
@@ -43,10 +48,30 @@ func _ready() -> void:
 	_actions_registered = true
 	emit_signal("actions_ready")
 
+	print("🎛️ [Debug] Actions disponibles:", InputMap.get_actions())
+	for a in InputMap.get_actions():
+		if a == "ui_devtools_menu":
+			print("🎛️ [Debug] Action 'ui_devtools_menu' events:", InputMap.action_get_events(a))
+
+
+		# --- Vérifie et recrée le binding F1 si vide ---
+	var events := InputMap.action_get_events("ui_devtools_menu")
+	if events.is_empty():
+		var ev := InputEventKey.new()
+		ev.keycode = KEY_F1
+		InputMap.action_add_event("ui_devtools_menu", ev)
+		print("🧩 [Hotfix] F1 rebind → ui_devtools_menu")
+
+
 func _unhandled_input(event: InputEvent) -> void:
+
+	if event is InputEventKey:
+		print("⌨️ Key pressed:", OS.get_keycode_string(event.keycode), "handled=", event.is_action_pressed("ui_devtools_menu"))
+
 	if not _actions_registered:
 		return
 	if event.is_action_pressed("ui_devtools_menu"):
+		print("🎛️ [TEST] F1 capté par InputBootstrap")
 		emit_signal("devtools_toggle_requested")
 		get_viewport().set_input_as_handled()
 
@@ -141,7 +166,7 @@ func remap_action(action_name: String, new_input: InputEvent) -> void:
 		input_label = "Axis %d (%.1f)" % [new_input.axis, new_input.axis_value]
 
 	print("🎛️ [InputBootstrap] Action '%s' remappée sur %s" % [action_name, input_label])
-	
+
 	save_bindings()
 	print("🎛️ [InputBootstrap] bindings sauvegarder dans user://bindings.json" )
 

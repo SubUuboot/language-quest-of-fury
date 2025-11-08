@@ -3,7 +3,6 @@
 extends Control
 class_name DevTools
 
-
 signal devtools_toggled(is_open: bool)
 
 var is_open: bool = false
@@ -13,6 +12,13 @@ var is_open: bool = false
 @onready var _tabs_container: TabContainer = %DebugMenu/TabsContainer
 
 func _ready() -> void:
+	
+	# 🔒 Évite l’exécution dans l’éditeur
+	if Engine.is_editor_hint():
+		set_process(false)
+		return
+	
+	
 	visible = false
 	is_open = false
 	mouse_filter = Control.MOUSE_FILTER_IGNORE

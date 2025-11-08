@@ -7,6 +7,7 @@ focus_mode = 2
 mouse_filter = 2
 
 [node name="DebugMenu" type="Control" parent="."]
+unique_name_in_owner = true
 visible = false
 layout_mode = 1
 anchors_preset = 15

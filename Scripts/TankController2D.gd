@@ -108,6 +108,10 @@ func _ready() -> void:
 # CONTRÔLE D’ENTRÉE EXTERNE
 # ------------------------------------------------------------
 func set_input_enabled(enable: bool) -> void:
+	print("🎮 Actions Tank connues:", [
+	input_accelerate, input_brake, input_steer_left,
+	input_steer_right, input_gear_up, input_gear_down, input_clutch])
+	
 	input_enabled = enable
 	if not enable:
 		# Purge des entrées tamponnées pour éviter les “fantômes”
@@ -127,6 +131,10 @@ func _await_input_system() -> void:
 	_validate_required_inputs()
 
 func _validate_required_inputs() -> void:
+	
+
+
+	
 	var required_actions: Array[String] = [
 		input_accelerate,
 		input_brake,
@@ -157,6 +165,10 @@ func get_engine_torque_at_rpm(rpm: float) -> float:
 # INPUTS JOUEUR
 # ------------------------------------------------------------
 func _process_inputs(delta: float) -> void:
+	
+	print("🎮 Tank écoute:", input_accelerate, input_brake, input_gear_up, input_gear_down, input_clutch)
+
+	
 	if not input_enabled:
 		return
 
@@ -255,6 +267,15 @@ func _process_inputs(delta: float) -> void:
 # PHYSIQUE DU DÉPLACEMENT
 # ------------------------------------------------------------
 func _physics_process(delta: float) -> void:
+	
+	if Input.is_action_pressed(input_accelerate):
+		print("🚗 Accelerate pressed")
+	if Input.is_action_pressed(input_gear_up):
+		print("⚙️ Gear up")
+	if Input.is_action_pressed(input_clutch):
+		print("🧤 Clutch")
+
+	
 	# 🧱 Neutralisation douce quand les inputs sont désactivés (DevTools / menu ouverts)
 	if not input_enabled:
 		left_target_speed = move_toward(left_target_speed, 0.0, drag * delta)

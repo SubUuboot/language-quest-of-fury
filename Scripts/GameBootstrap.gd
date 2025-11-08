@@ -4,24 +4,47 @@ const GAME_SCENE: PackedScene = preload("res://game.tscn")
 const DEVTOOLS_SCENE: PackedScene = preload("res://Scenes/DevTools.tscn")
 const TANK_CONTROLLER_SCRIPT: Script = preload("res://Scripts/TankController2D.gd")
 
-@onready var _status_label: Label = %StatusLabel
-@onready var _progress_bar: ProgressBar = %ProgressBar
-@onready var _start_timer: Timer = %StartTimer
+var _status_label: Label
+var _progress_bar: ProgressBar
+var _start_timer: Timer
 
 func _ready() -> void:
+	print("🧠 GameBootstrap _ready() called — scheduling deferred init…")
+	_status_label = get_node("Overlay/VBox/StatusLabel")
+	_progress_bar = get_node("Overlay/VBox/ProgressBar")
+	_start_timer = get_node("StartTimer")
+	call_deferred("_deferred_ready")
+
+func _deferred_ready() -> void:
+	print("🚀 GameBootstrap _deferred_ready() started")
+	print("  ⏱️ Nodes:", _status_label, _progress_bar, _start_timer)
+	
+	if _status_label == null:
+		push_error("❌ StatusLabel introuvable — vérifie le nom exact dans la scène GameBootstrap.tscn")
+		return
+	if _progress_bar == null:
+		push_error("❌ ProgressBar introuvable — vérifie le nom exact dans la scène GameBootstrap.tscn")
+		return
+	if _start_timer == null:
+		push_error("❌ StartTimer introuvable — vérifie le nom exact dans la scène GameBootstrap.tscn")
+		return
+
 	_status_label.text = "Preparing systems..."
-	_progress_bar.value = 0.0
+	_progress_bar.value = 0.1
+	print("🧩 Boot overlay visible → timer started")
 	_start_timer.start()
 	await _start_timer.timeout
 	await _run_bootstrap()
 
 func _run_bootstrap() -> void:
+	print("⚙️ Running bootstrap sequence…")
 	await _ensure_input_bootstrap()
 	await _prewarm_devtools()
 	await _prewarm_stage_manager()
 	await _prewarm_tank_controller()
 	_update_status("Launching mission...", 1.0)
 	await get_tree().process_frame
+	print("✅ Switching to GAME_SCENE =", GAME_SCENE)
 	get_tree().change_scene_to_packed(GAME_SCENE)
 
 func _ensure_input_bootstrap() -> void:
@@ -56,5 +79,8 @@ func _prewarm_tank_controller() -> void:
 	await get_tree().process_frame
 
 func _update_status(message: String, progress: float) -> void:
-	_status_label.text = message
-	_progress_bar.value = clamp(progress, 0.0, 1.0)
+	print("📶", message)
+	if _status_label:
+		_status_label.text = message
+	if _progress_bar:
+		_progress_bar.value = clamp(progress, 0.0, 1.0)
