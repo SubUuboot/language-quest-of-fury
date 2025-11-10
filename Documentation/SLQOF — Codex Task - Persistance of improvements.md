@@ -1,4 +1,3 @@
----
 # 🧭 Super Language Quest of Fury  
 ## DevTools v2.2.2 — Input & Persistence Improvements  
 **Branch:** `refacto-codex-devtools-task`  
@@ -117,4 +116,3 @@ Optionally, disable `_tabs_container` and `_input_action_selector` while listeni
 
 ### 📁 File destination
 `/Documentation/DevTools_Task_v2.2.2_Input_Persistence.md`
----
