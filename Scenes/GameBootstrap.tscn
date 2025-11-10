@@ -55,5 +55,5 @@ max_value = 1.0
 step = 0.0
 
 [node name="StartTimer" type="Timer" parent="."]
-wait_time = 0.1
+wait_time = 2.0
 one_shot = true

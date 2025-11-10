@@ -1,0 +1,68 @@
+@startuml
+' =====================================================
+' Super Language Quest of Fury – StageFlow Canonique
+' Auteur : Kot
+' Version : 1.0 (2025-11-09)
+' =====================================================
+
+skinparam componentStyle rectangle
+skinparam rectangle {
+	BackgroundColor #2e3a52
+	FontColor white
+	RoundCorner 8
+}
+skinparam arrowThickness 1.2
+skinparam arrowColor #aaaaaa
+skinparam defaultFontName Monospace
+skinparam dpi 150
+
+' -------------------------------
+'  STAGES PRINCIPAUX
+' -------------------------------
+
+rectangle "SplashScreen\n(Point d'entrée / boot minimal)" as SplashScreen
+rectangle "StartMenu\n(Sélection langue / mode)" as StartMenu
+rectangle "Level0 – Hangar\n(Assignation / Commander / Technicians)" as Level0
+rectangle "Level1 – TrainingGround\n(Procédural / Instructor / Progression)" as Level1
+rectangle "Level2 – Mission\n(Objectifs narratifs / Clôture d'arc)" as Level2
+
+' -------------------------------
+'  SYSTÈMES GLOBAUX (AUTOLOADS)
+' -------------------------------
+
+rectangle "InputBootstrap\nVérifie / répare les actions\nÉmet signaux d'input" as InputBootstrap #3d3d3d
+rectangle "DialogueSystem\nCharge dialogues JSON\nSynchronise scènes & triggers" as DialogueSystem #3d3d3d
+rectangle "MotherAI\nSupervise logique narrative\nSuit progression du joueur" as MotherAI #3d3d3d
+rectangle "StageManager\nCoordonne transitions\nÉmet signaux d’étape" as StageManager #3d3d3d
+
+' -------------------------------
+'  FLUX PRINCIPAL DU JEU
+' -------------------------------
+
+SplashScreen --> StartMenu : on_boot_complete
+StartMenu --> Level0 : on_game_start
+Level0 --> Level1 : on_assignment_complete
+Level1 --> Level2 : on_training_complete
+Level1 --> Level0 : on_reset
+Level2 --> SplashScreen : end_of_arc (boucle)
+
+' -------------------------------
+'  CONNEXIONS TRANSVERSALES
+' -------------------------------
+
+SplashScreen ..> StageManager : initialise()
+StageManager ..> Level0 : load(stage)
+StageManager ..> Level1 : load(stage)
+StageManager ..> Level2 : load(stage)
+
+Level0 ..> InputBootstrap : binding / assignation
+Level1 ..> InputBootstrap : test inputs
+Level0 ..> DialogueSystem : dialogues d’instruction
+Level1 ..> MotherAI : progression / feedback
+Level2 ..> MotherAI : arc closure
+
+MotherAI ..> DialogueSystem : activeDialogue()
+DialogueSystem ..> MotherAI : onDialogueComplete()
+InputBootstrap ..> StageManager : on_assignment_complete()
+
+@enduml
