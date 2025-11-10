@@ -6,7 +6,7 @@ class_name DevTools
 signal devtools_toggled(is_open: bool)
 
 const MAX_SIGNAL_HISTORY: int = 20
-const SANDBOX_STAGE_KEYWORDS: Array[String] = ["sandbox", "debug", "test"]
+const SANDBOX_STAGE_KEYWORDS: Array[String] = ["sandbox", "debug", "test", "stage0"]
 
 var is_open: bool = false
 var _sandbox_enabled: bool = false
@@ -135,8 +135,9 @@ func _collect_stage_manager() -> void:
 		_stage_manager = root.get_node("Game/StageManager")
 	elif root.has_node("StageManager"):
 		_stage_manager = root.get_node("StageManager")
-	if _stage_manager and _stage_manager.has_variable("current_stage_name"):
+	if _stage_manager:
 		_current_stage_name = _stage_manager.current_stage_name
+
 
 func _collect_mother_ai() -> void:
 	if Engine.has_singleton("MotherAI"):
@@ -520,9 +521,20 @@ func _on_tank_action(action: String) -> void:
 func _on_tank_tree_exited() -> void:
 	_tank = null
 	_append_signal_entry("Tank node exited scene tree.")
-	await _collect_tank()
-	_setup_mechanics_controls()
-	_connect_signals()
+
+	# Vérifie que DevTools est toujours dans l'arbre avant d'accéder au SceneTree
+	if get_tree() == null:
+		return
+
+	# Attendre un court instant avant de relancer la recherche du tank
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	if get_tree() != null:
+		await _collect_tank()
+		_setup_mechanics_controls()
+		_connect_signals()
+
 
 func _on_stage_loaded(stage_name: String) -> void:
 	_current_stage_name = stage_name
@@ -603,21 +615,31 @@ func _update_mother_ai_panel() -> void:
 	if _mother_ai == null:
 		_mother_ai_info.text = "MotherAI offline."
 		return
+
+	var props: Array = []
+	if _mother_ai.has_method("get_property_list"):
+		props = _mother_ai.get_property_list().map(func(p): return p.name)
+
 	var active_scenes_count: int = 0
-	if _mother_ai.has_variable("active_scenes"):
+	if "active_scenes" in props:
 		active_scenes_count = (_mother_ai.active_scenes as Dictionary).size()
+
 	var queue_size: int = 0
-	if _mother_ai.has_variable("task_queue"):
+	if "task_queue" in props:
 		queue_size = (_mother_ai.task_queue as Array).size()
+
 	var busy_text: String = "true"
-	if _mother_ai.has_variable("is_busy"):
+	if "is_busy" in props:
 		busy_text = "true" if _mother_ai.is_busy else "false"
+
 	var lines: Array[String] = []
 	lines.append("[b]MotherAI[/b]")
 	lines.append("Active scenes: %d" % active_scenes_count)
 	lines.append("Queue size: %d" % queue_size)
 	lines.append("Busy: %s" % busy_text)
 	_mother_ai_info.text = "\n".join(lines)
+
+
 
 func _update_metrics_overlay() -> void:
 	if _metrics_overlay == null:
