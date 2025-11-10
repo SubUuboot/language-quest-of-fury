@@ -480,13 +480,15 @@ func _on_toggle_button_pressed() -> void:
 func _toggle_menu() -> void:
 	is_open = not is_open
 	if is_open:
-		raise()
+		set_z_index(1024)
+		move_to_front()
 	visible = is_open
 	mouse_filter = Control.MOUSE_FILTER_STOP if is_open else Control.MOUSE_FILTER_IGNORE
 	z_index = 1024 if is_open else 0
 	if _debug_menu:
 		if is_open:
-			_debug_menu.raise()
+			_debug_menu.set_z_index(1024)
+			_debug_menu.move_to_front()
 		_debug_menu.visible = is_open
 		_debug_menu.mouse_filter = Control.MOUSE_FILTER_STOP if is_open else Control.MOUSE_FILTER_IGNORE
 		_debug_menu.z_index = 1024 if is_open else 0
