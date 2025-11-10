@@ -478,15 +478,31 @@ func _on_toggle_button_pressed() -> void:
 
 func _toggle_menu() -> void:
 	is_open = not is_open
+	if is_open:
+		raise()
 	visible = is_open
 	mouse_filter = Control.MOUSE_FILTER_STOP if is_open else Control.MOUSE_FILTER_IGNORE
+	z_index = 1024 if is_open else 0
 	if _debug_menu:
+		if is_open:
+			_debug_menu.raise()
 		_debug_menu.visible = is_open
 		_debug_menu.mouse_filter = Control.MOUSE_FILTER_STOP if is_open else Control.MOUSE_FILTER_IGNORE
+		_debug_menu.z_index = 1024 if is_open else 0
 	if is_open:
+		if has_focus():
+			release_focus()
+		get_viewport().gui_release_focus()
 		grab_focus()
+		if _debug_menu:
+			_debug_menu.grab_focus()
 		_refresh_binding_display(_get_selected_action())
 	else:
+		if has_focus():
+			release_focus()
+		get_viewport().gui_release_focus()
+		if _debug_menu and _debug_menu.has_focus():
+			_debug_menu.release_focus()
 		_listening_action = &""
 	emit_signal("devtools_toggled", is_open)
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE if is_open else Input.MOUSE_MODE_CAPTURED)
