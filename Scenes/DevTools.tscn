@@ -2,12 +2,12 @@
 
 [node name="DevTools" type="Control"]
 layout_mode = 3
-anchor_right = 0.402
-anchor_bottom = 0.874
+anchor_right = 1.0
+anchor_bottom = 1.0
 offset_left = 214.0
 offset_top = 156.0
-offset_right = -249.104
-offset_bottom = -410.352
+offset_right = -938.0
+offset_bottom = -492.0
 focus_mode = 2
 mouse_filter = 2
 
@@ -368,6 +368,10 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 
+[node name="SaveInputBindingsButton" type="Button" parent="DebugMenu/VBox/TabsContainer/InputRemap"]
+layout_mode = 2
+text = "Save input bindings"
+
 [node name="Debug" type="VBoxContainer" parent="DebugMenu/VBox/TabsContainer"]
 unique_name_in_owner = true
 visible = false
@@ -432,10 +436,10 @@ text = "MotherAI status pending..."
 unique_name_in_owner = true
 custom_minimum_size = Vector2(420, 200)
 layout_mode = 0
-offset_left = 511.0
-offset_top = -77.0
-offset_right = 931.0
-offset_bottom = 123.0
+offset_left = 979.0
+offset_top = -25.0
+offset_right = 1399.0
+offset_bottom = 175.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 bbcode_enabled = true
@@ -444,8 +448,8 @@ text = "[b]Log Console initialized[/b]"
 [node name="MetricsOverlay" type="Label" parent="."]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 607.0
+offset_left = 996.0
 offset_top = -135.0
-offset_right = 689.0
+offset_right = 1078.0
 offset_bottom = -112.0
 text = "Metrics: ---"
