@@ -59,6 +59,7 @@ var input_enabled: bool = true  # permet de suspendre toutes les entrées joueur
 @export var input_gear_down: String = "gear_down"       # Entrée num
 @export var input_clutch: String = "clutch"             # 0 num
 @export var input_engine_start: String = "engine_start" # E
+@export var invert_steering: bool = false
 
 # ------------------------------------------------------------
 # CHENILLES
@@ -173,11 +174,15 @@ func _process_inputs(delta: float) -> void:
 	if not input_enabled:
 		return
 
-	var throttle_input: float = Input.get_action_strength(input_accelerate)
-	var brake_input: float = Input.get_action_strength(input_brake)
-	var turn_left: float = Input.get_action_strength(input_steer_left)
-	var turn_right: float = Input.get_action_strength(input_steer_right)
-	clutch_pressed = Input.is_action_pressed(input_clutch)
+        var throttle_input: float = Input.get_action_strength(input_accelerate)
+        var brake_input: float = Input.get_action_strength(input_brake)
+        var turn_left: float = Input.get_action_strength(input_steer_left)
+        var turn_right: float = Input.get_action_strength(input_steer_right)
+        if invert_steering:
+                var temp_turn: float = turn_left
+                turn_left = turn_right
+                turn_right = temp_turn
+        clutch_pressed = Input.is_action_pressed(input_clutch)
 
 	# Démarrage moteur
 	if Input.is_action_just_pressed(input_engine_start) and not engine_on:
