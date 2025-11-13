@@ -68,6 +68,8 @@ var right_track_speed: float = 0.0
 var left_target_speed: float = 0.0
 var right_target_speed: float = 0.0
 
+var invert_steering: bool = true
+
 # ------------------------------------------------------------
 # HUD DEBUG
 # ------------------------------------------------------------
@@ -86,6 +88,7 @@ var _engine_status_label: Label
 # ------------------------------------------------------------
 func _ready() -> void:
 	add_to_group("tank")
+	await _await_input_system()
 	if debug_dashboard:
 		_create_debug_hud()
 
@@ -107,6 +110,10 @@ func _ready() -> void:
 # CONTRÔLE D’ENTRÉE EXTERNE
 # ------------------------------------------------------------
 func set_input_enabled(enable: bool) -> void:
+	print("🎮 Actions Tank connues:", [
+	input_accelerate, input_brake, input_steer_left,
+	input_steer_right, input_gear_up, input_gear_down, input_clutch])
+	
 	input_enabled = enable
 	if not enable:
 		# Purge des entrées tamponnées pour éviter les “fantômes”
@@ -115,6 +122,34 @@ func set_input_enabled(enable: bool) -> void:
 func _on_devtools_toggled(is_open: bool) -> void:
 	set_input_enabled(not is_open)
 	print("🎛️ DevTools toggled → Tank input_enabled =", not is_open)
+
+func _await_input_system() -> void:
+	var bootstrap: Node = get_tree().root.get_node_or_null("InputBootstrap")
+	while bootstrap == null:
+		await get_tree().process_frame
+		bootstrap = get_tree().root.get_node_or_null("InputBootstrap")
+	if bootstrap and bootstrap.has_method("await_ready"):
+		await bootstrap.await_ready()
+	_validate_required_inputs()
+
+func _validate_required_inputs() -> void:
+	
+
+
+	
+	var required_actions: Array[String] = [
+		input_accelerate,
+		input_brake,
+		input_steer_left,
+		input_steer_right,
+		input_gear_up,
+		input_gear_down,
+		input_clutch,
+		input_engine_start,
+	]
+	for action_name in required_actions:
+		if not InputMap.has_action(action_name):
+			push_warning("[TankController2D] Action d'entrée manquante: %s" % action_name)
 
 # ------------------------------------------------------------
 # COURBE DE COUPLE MOTEUR
@@ -132,6 +167,9 @@ func get_engine_torque_at_rpm(rpm: float) -> float:
 # INPUTS JOUEUR
 # ------------------------------------------------------------
 func _process_inputs(delta: float) -> void:
+
+	print("🎮 Tank écoute:", input_accelerate, input_brake, input_gear_up, input_gear_down, input_clutch)
+
 	if not input_enabled:
 		return
 
@@ -230,6 +268,15 @@ func _process_inputs(delta: float) -> void:
 # PHYSIQUE DU DÉPLACEMENT
 # ------------------------------------------------------------
 func _physics_process(delta: float) -> void:
+	
+	if Input.is_action_pressed(input_accelerate):
+		print("🚗 Accelerate pressed")
+	if Input.is_action_pressed(input_gear_up):
+		print("⚙️ Gear up")
+	if Input.is_action_pressed(input_clutch):
+		print("🧤 Clutch")
+
+	
 	# 🧱 Neutralisation douce quand les inputs sont désactivés (DevTools / menu ouverts)
 	if not input_enabled:
 		left_target_speed = move_toward(left_target_speed, 0.0, drag * delta)
@@ -249,7 +296,8 @@ func _physics_process(delta: float) -> void:
 
 	var forward_dir: Vector2 = Vector2.UP.rotated(rotation)
 	velocity = forward_dir * forward_speed
-	rotation += rotation_speed_local * delta
+	var direction_factor: float = -1.0 if invert_steering else 1.0
+	rotation += rotation_speed_local * delta * direction_factor
 
 	_apply_engine_brake(delta)
 

@@ -1,12 +1,3 @@
-# ================================================
-# 🧭 INPUT BOOTSTRAP — SAVE/LOAD SYSTEM (PATCH v2.2)
-# ================================================
-# This script adds human-readable key labels to your input bindings file.
-# Ce script ajoute des labels lisibles pour les humains dans le fichier JSON des touches.
-# It preserves full backward compatibility with your previous JSON structure.
-# Il reste rétrocompatible avec le format précédent.
-# ================================================
-
 extends Node
 
 signal actions_ready
@@ -14,14 +5,17 @@ signal devtools_toggle_requested
 
 var _actions_registered: bool = false
 
-const BINDINGS_PATH: String = "user://input_bindings.json"
+## ============================================================
+## InputBootstrap
+## Initialise les entrées par défaut du jeu (clavier + manette).
+## Appelé automatiquement au démarrage (autoload).
+## ============================================================
 
-# Called on startup — load existing bindings if any
 func _ready() -> void:
 	set_process_unhandled_input(true)
 	# --- Tente de recharger les bindings personnalisés ---
 	load_bindings()
-	#repair_missing_bindings()
+	repair_missing_bindings()
 
 	# === Key non reconnues pour l'instant ===
 	#_ensure_action("gear_up",   [KEY_KP_ADD, JOY_BUTTON_RIGHT_SHOULDER])   # Pavé num + / R1
@@ -174,163 +168,104 @@ func remap_action(action_name: String, new_input: InputEvent) -> void:
 	print("🎛️ [InputBootstrap] Action '%s' remappée sur %s" % [action_name, input_label])
 
 	save_bindings()
-	print("🎛️ [InputBootstrap] Bindings sauvegardés dans ", BINDINGS_PATH)
-
+	print("🎛️ [InputBootstrap] bindings sauvegarder dans res://Scripts/systems/bindings.json" )
 
 # ------------------------------------------------------------
 # SAUVEGARDE ET CHARGEMENT DES BINDINGS UTILISATEUR
 # ------------------------------------------------------------
 
-#const BINDINGS_FILE := "res://Scripts/systems/bindings.json"
+const BINDINGS_FILE := "res://Scripts/systems/bindings.json"
 
 # Sauvegarde tous les bindings actuels dans un fichier JSON
-# Saves all InputMap actions into a readable JSON file with labels.
-# Sauvegarde toutes les actions InputMap dans un JSON lisible avec les labels.
 func save_bindings() -> void:
-	var config: Dictionary = {}
-
-	# Capture l’état courant du InputMap, pas une copie périmée
-	for action_name in InputMap.get_actions():
+	var data: Dictionary = {}
+	for action in InputMap.get_actions():
 		var events: Array = []
-		for e in InputMap.action_get_events(action_name):
-			if e is InputEventKey:
-				events.append({
-					"type": "key",
-					"keycode": e.keycode,
-					"label": OS.get_keycode_string(e.keycode)
-				})
-			elif e is InputEventJoypadButton:
-				events.append({
-					"type": "joypad_button",
-					"button_index": e.button_index,
-					"label": "Joy Button %d" % e.button_index
-				})
-			elif e is InputEventJoypadMotion:
-				events.append({
-					"type": "joypad_axis",
-					"axis": e.axis,
-					"axis_value": e.axis_value,
-					"label": "Joy Axis %d (%.1f)" % [e.axis, e.axis_value]
-				})
-		config[action_name] = events
+		for ev in InputMap.action_get_events(action):
+			var entry := {}
+			if ev is InputEventKey:
+				entry["type"] = "key"
+				entry["keycode"] = ev.keycode
+			elif ev is InputEventJoypadButton:
+				entry["type"] = "joy_button"
+				entry["button_index"] = ev.button_index
+			elif ev is InputEventJoypadMotion:
+				entry["type"] = "joy_axis"
+				entry["axis"] = ev.axis
+				entry["axis_value"] = ev.axis_value
+			events.append(entry)
+		data[action] = events
 
-	var file := FileAccess.open(BINDINGS_PATH, FileAccess.WRITE)
-	if file == null:
-		push_warning("[InputBootstrap] Impossible d’écrire dans %s" % BINDINGS_PATH)
-		return
-
-	# JSON lisible et complet
-	file.store_string(JSON.stringify(config, "\t"))
-	file.close()
-
-	# Vérifie immédiatement après écriture
-	if FileAccess.file_exists(BINDINGS_PATH):
-		var check := FileAccess.open(BINDINGS_PATH, FileAccess.READ)
-		if check:
-			var content := check.get_as_text()
-			check.close()
-			print("💾 [InputBootstrap] Saved %d actions to %s (%d chars)" %
-				[config.size(), BINDINGS_PATH, content.length()])
-		else:
-			push_warning("[InputBootstrap] Fichier écrit mais illisible !")
+	var file := FileAccess.open(BINDINGS_FILE, FileAccess.WRITE)
+	if file:
+		file.store_string(JSON.stringify(data, "\t"))  # indenté pour lisibilité
+		file.close()
+		print("💾 [InputBootstrap] Bindings sauvegardés dans", BINDINGS_FILE)
 	else:
-		push_warning("[InputBootstrap] Écriture échouée, fichier absent.")
+		push_warning("[InputBootstrap] Impossible d’écrire dans " + BINDINGS_FILE)
 
 
-# ================================================
-# 🔹 LOAD INPUT MAP FROM JSON FILE
-# ================================================
-# Loads previously saved bindings and applies them to the InputMap.
-# Charge les bindings sauvegardés et les applique dans l'InputMap.
 # Recharge les bindings depuis le fichier JSON s’il existe
 # ------------------------------------------------------------
 # Recharge les bindings depuis le fichier JSON s’il existe,
 # sans jamais casser les contrôles par défaut.
 # ------------------------------------------------------------
 func load_bindings() -> void:
-	if not FileAccess.file_exists(BINDINGS_PATH):
+	if not FileAccess.file_exists(BINDINGS_FILE):
 		print("📁 [InputBootstrap] Aucun fichier de bindings trouvé — valeurs par défaut conservées.")
 		return
 
-	var file: FileAccess = FileAccess.open(BINDINGS_PATH, FileAccess.READ)
-	if file == null:
-		push_warning("[InputBootstrap] Échec de lecture du fichier " + BINDINGS_PATH)
+	var file := FileAccess.open(BINDINGS_FILE, FileAccess.READ)
+	if not file:
+		push_warning("[InputBootstrap] Échec de lecture du fichier " + BINDINGS_FILE)
 		return
 
-	# On supporte 2 formats:
-	# 1) Ancien format binaire (store_var)
-	# 2) Nouveau format JSON lisible (store_string)
-	var config: Dictionary = {}
-	var ok: bool = false
-
-	# Tentative 1: lecture binaire (store_var)
-	file.seek(0)
-	var bin_try: Variant = file.get_var(true)  # allow_objects = true au cas où
-	if typeof(bin_try) == TYPE_DICTIONARY:
-		config = bin_try as Dictionary
-		ok = true
-	else:
-		# Tentative 2: JSON texte
-		file.seek(0)
-		var text: String = file.get_as_text()
-
-		# Option A: parse statique
-		var parsed_any: Variant = JSON.parse_string(text)
-		if typeof(parsed_any) == TYPE_DICTIONARY:
-			config = parsed_any as Dictionary
-			ok = true
-		else:
-			# Option B: parseur objet, pour logs plus précis
-			var json := JSON.new()
-			var parse_err: Error = json.parse(text)
-			if parse_err == OK:
-				var data_any: Variant = json.get_data()
-				if typeof(data_any) == TYPE_DICTIONARY:
-					config = data_any as Dictionary
-					ok = true
-
+	var content := file.get_as_text()
 	file.close()
 
-	if not ok:
-		push_warning("[InputBootstrap] Format de bindings invalide dans le fichier.")
+	var result: Variant = JSON.parse_string(content)
+	if typeof(result) != TYPE_DICTIONARY:
+		push_warning("[InputBootstrap] Fichier de bindings corrompu ou vide — valeurs par défaut conservées.")
 		return
 
-	# Applique proprement les événements
-	for action_name_any in config.keys():
-		var action_name: String = String(action_name_any)
+	# Vérifie que le fichier contient au moins une action cohérente
+	var valid_entries := 0
+	for action_name in result.keys():
+		if typeof(result[action_name]) == TYPE_ARRAY and result[action_name].size() > 0:
+			valid_entries += 1
+	if valid_entries == 0:
+		push_warning("[InputBootstrap] Aucun binding valide trouvé — valeurs par défaut conservées.")
+		return
+
+	print("🔁 [InputBootstrap] Fichier de bindings utilisateur détecté, application en cours…")
+
+	# Recharge uniquement les actions connues et valides
+	for action_name in result.keys():
+		if not InputMap.has_action(action_name):
+			print("[InputBootstrap] ⚠️ Action inconnue '%s' ignorée." % action_name)
+			continue
+
+		# Nettoie uniquement cette action (pas tout)
 		InputMap.action_erase_events(action_name)
 
-		var events_any: Variant = config[action_name]
-		var events_list: Array = (events_any as Array)
-
-		for ev_any in events_list:
-			var ev_dict: Dictionary = (ev_any as Dictionary)
-			var ev_type_any: Variant = ev_dict.get("type", "")
-			var ev_type: String = String(ev_type_any)
-
+		for entry in result[action_name]:
 			var ev: InputEvent = null
-			match ev_type:
+			match entry.get("type", ""):
 				"key":
-					var ev_key := InputEventKey.new()
-					ev_key.keycode = int(ev_dict.get("keycode", 0))
-					ev = ev_key
-				"joypad_button":
-					var ev_button := InputEventJoypadButton.new()
-					ev_button.button_index = int(ev_dict.get("button_index", 0))
-					ev = ev_button
-				"joypad_axis":
-					var ev_axis := InputEventJoypadMotion.new()
-					ev_axis.axis = int(ev_dict.get("axis", 0))
-					ev_axis.axis_value = float(ev_dict.get("axis_value", 0.0))
-					ev = ev_axis
-				_:
-					# TODO/À FAIRE: gérer souris / autres types si tu les sauvegardes un jour
-					pass
-
-			if ev != null:
+					ev = InputEventKey.new()
+					ev.keycode = entry.get("keycode", 0)
+				"joy_button":
+					ev = InputEventJoypadButton.new()
+					ev.button_index = entry.get("button_index", 0)
+				"joy_axis":
+					ev = InputEventJoypadMotion.new()
+					ev.axis = entry.get("axis", 0)
+					ev.axis_value = entry.get("axis_value", 1.0)
+			if ev:
 				InputMap.action_add_event(action_name, ev)
 
-	print("✅ [InputBootstrap] Bindings personnalisés chargés depuis: ", BINDINGS_PATH)
+	print("✅ [InputBootstrap] Bindings personnalisés appliqués sans perte de commandes.")
+
 
 # ------------------------------------------------------------
 # AUTO-RÉPARATION DES BINDINGS

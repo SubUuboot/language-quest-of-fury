@@ -1,0 +1,47 @@
+# ==========================================================
+# Codex Init — Super Language Quest Of Fury
+# ==========================================================
+# Project type:
+#     2D narrative & educational game built with Godot Engine 4.5
+# Language:
+#     GDScript 4.5 (typed, tab-indented, no spaces)
+# Repository:
+#     SubUuboot/language-quest-of-fury
+# Active branch:
+#     Refacto- (current development branch)
+# ==========================================================
+
+## === 🧭 Technical Guidelines ===
+- Use explicit type annotations for all variables and constants.
+- Use tabs for indentation only (never spaces).
+- Avoid the ternary operator (?) — use `value if condition else other`.
+- Always declare `@export` variables for editor-exposed parameters.
+- Functions must include explicit return types (`-> void`, `-> int`, etc.) when applicable.
+- Use `set_process_unhandled_input(true)` for UI layers like DevTools to capture input under CanvasLayer.
+- Prefer `_unhandled_input()` over `_input()` for top-level debug controls (F1 toggle, etc.).
+- Follow Godot naming conventions: PascalCase for classes, snake_case for variables and functions.
+
+## === 🧩 Systems Overview ===
+- **GameBootstrap**: initializes InputBootstrap, DevTools, StageManager, TankController2D, and optional splash screen.
+- **InputBootstrap**: registers all actions (tank controls + UI toggle), manages signal routing between systems.
+- **DevTools**: CanvasLayer with toggleable debug UI (F1 key), emits `devtools_toggled` and manages time scale, tabs, etc.
+- **TankController2D**: manages tank movement, clutch, gear, throttle, and locks input when DevTools is open.
+- **StageManager**: handles scene loading/unloading and stage progression (Stage0_Hangar, Stage1_TrainingGround, etc.).
+
+## === 🧠 Codex Role ===
+- Maintain consistency and interoperability between all major systems.
+- Ensure deterministic initialization (Bootstrap loads all systems in the right order).
+- Keep the signal-based architecture coherent: InputBootstrap ⇄ DevTools ⇄ TankController2D ⇄ StageManager.
+- Provide modular refactoring when new gameplay modules or UI systems are added.
+- Write GDScript that is production-ready, maintainable, and idiomatic for Godot 4.5.
+- When uncertainty arises, favor clarity and explicit control flow over cleverness.
+
+## === ⚙️ Future Integrations ===
+- Extend DevTools with tabs for performance metrics, camera settings, and physics toggles.
+- Introduce a main menu / splash system to allow slow initialization of heavy systems (Input, AI, etc.).
+- Support multi-language learning arcs (Russian, Korean, French, etc.) via modular stage scripts.
+- Maintain compatibility with existing assets and node hierarchies.
+
+# ==========================================================
+# End of init file
+# ==========================================================

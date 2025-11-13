@@ -2,11 +2,17 @@
 
 [node name="DevTools" type="Control"]
 layout_mode = 3
-anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 214.0
+offset_top = 156.0
+offset_right = -938.0
+offset_bottom = -492.0
 focus_mode = 2
 mouse_filter = 2
 
-[node name="DebugMenu" type="Control" parent="."]
+[node name="DebugMenu" type="Panel" parent="."]
+unique_name_in_owner = true
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -15,84 +21,435 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ToggleButton" type="Button" parent="DebugMenu"]
-layout_mode = 0
-offset_left = 16.0
-offset_top = 16.0
-offset_right = 16.0
-offset_bottom = 16.0
-text = "Toggle Debug"
-
-[node name="TabsContainer" type="TabContainer" parent="DebugMenu"]
-layout_mode = 0
+[node name="VBox" type="VBoxContainer" parent="DebugMenu"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 48.0
-offset_bottom = 48.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="Toolbar" type="HBoxContainer" parent="DebugMenu/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ToggleButton" type="Button" parent="DebugMenu/VBox/Toolbar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Close"
+
+[node name="SandboxToggle" type="CheckButton" parent="DebugMenu/VBox/Toolbar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Sandbox"
+
+[node name="SandboxStatus" type="Label" parent="DebugMenu/VBox/Toolbar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Sandbox disabled"
+
+[node name="TabsContainer" type="TabContainer" parent="DebugMenu/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
 current_tab = 0
 
-[node name="Tank" type="VBoxContainer" parent="DebugMenu/TabsContainer"]
+[node name="Mechanics" type="VBoxContainer" parent="DebugMenu/VBox/TabsContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 6
+metadata/_tab_index = 0
+
+[node name="MechanicsHeader" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics"]
+layout_mode = 2
+text = "Adjust tank mechanics when sandbox mode is enabled."
+
+[node name="TrackAccelRow" type="HBoxContainer" parent="DebugMenu/VBox/TabsContainer/Mechanics"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TrackAccelLabel" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/TrackAccelRow"]
+layout_mode = 2
+text = "Track Accel"
+
+[node name="TrackAccelSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/TrackAccelRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 40.0
+step = 0.1
+
+[node name="TrackAccelValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/TrackAccelRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0.00"
+
+[node name="MaxTrackSpeedRow" type="HBoxContainer" parent="DebugMenu/VBox/TabsContainer/Mechanics"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="MaxTrackSpeedLabel" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/MaxTrackSpeedRow"]
+layout_mode = 2
+text = "Max Track Speed"
+
+[node name="MaxTrackSpeedSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/MaxTrackSpeedRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 40.0
+step = 0.1
+
+[node name="MaxTrackSpeedValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/MaxTrackSpeedRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0.00"
+
+[node name="RotationGainRow" type="HBoxContainer" parent="DebugMenu/VBox/TabsContainer/Mechanics"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="RotationGainLabel" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/RotationGainRow"]
+layout_mode = 2
+text = "Rotation Gain"
+
+[node name="RotationGainSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/RotationGainRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.01
+
+[node name="RotationGainValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/RotationGainRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0.00"
+
+[node name="FrictionRow" type="HBoxContainer" parent="DebugMenu/VBox/TabsContainer/Mechanics"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="FrictionLabel" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/FrictionRow"]
+layout_mode = 2
+text = "Friction"
+
+[node name="FrictionSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/FrictionRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 10.0
+step = 0.05
+
+[node name="FrictionValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/FrictionRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0.00"
+
+[node name="BrakePowerRow" type="HBoxContainer" parent="DebugMenu/VBox/TabsContainer/Mechanics"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="BrakePowerLabel" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/BrakePowerRow"]
+layout_mode = 2
+text = "Brake Power"
+
+[node name="BrakePowerSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/BrakePowerRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 40.0
+step = 0.1
+
+[node name="BrakePowerValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/BrakePowerRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0.00"
+
+[node name="VisualSpeedRow" type="HBoxContainer" parent="DebugMenu/VBox/TabsContainer/Mechanics"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="VisualSpeedLabel" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/VisualSpeedRow"]
+layout_mode = 2
+text = "Visual Speed"
+
+[node name="VisualSpeedSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/VisualSpeedRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 256.0
+
+[node name="VisualSpeedValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/VisualSpeedRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+
+[node name="EngineIdleRow" type="HBoxContainer" parent="DebugMenu/VBox/TabsContainer/Mechanics"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="EngineIdleLabel" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/EngineIdleRow"]
+layout_mode = 2
+text = "Engine Idle RPM"
+
+[node name="EngineIdleSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/EngineIdleRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 400.0
+max_value = 1600.0
+step = 10.0
+value = 400.0
+
+[node name="EngineIdleValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/EngineIdleRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+
+[node name="EngineMaxRow" type="HBoxContainer" parent="DebugMenu/VBox/TabsContainer/Mechanics"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="EngineMaxLabel" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/EngineMaxRow"]
+layout_mode = 2
+text = "Engine Max RPM"
+
+[node name="EngineMaxSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/EngineMaxRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1200.0
+max_value = 4200.0
+step = 10.0
+value = 1200.0
+
+[node name="EngineMaxValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/EngineMaxRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+
+[node name="ThrottleGainRow" type="HBoxContainer" parent="DebugMenu/VBox/TabsContainer/Mechanics"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ThrottleGainLabel" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/ThrottleGainRow"]
+layout_mode = 2
+text = "Throttle Gain"
+
+[node name="ThrottleGainSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/ThrottleGainRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 2000.0
+step = 10.0
+
+[node name="ThrottleGainValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/ThrottleGainRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+
+[node name="RpmDecayRow" type="HBoxContainer" parent="DebugMenu/VBox/TabsContainer/Mechanics"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="RpmDecayLabel" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/RpmDecayRow"]
+layout_mode = 2
+text = "RPM Decay"
+
+[node name="RpmDecaySlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/RpmDecayRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 800.0
+step = 5.0
+
+[node name="RpmDecayValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/RpmDecayRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+
+[node name="TorqueRow" type="HBoxContainer" parent="DebugMenu/VBox/TabsContainer/Mechanics"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TorqueLabel" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/TorqueRow"]
+layout_mode = 2
+text = "Engine Torque"
+
+[node name="TorqueSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/TorqueRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 4000.0
+step = 10.0
+
+[node name="TorqueValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/TorqueRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+
+[node name="UseStallRow" type="HBoxContainer" parent="DebugMenu/VBox/TabsContainer/Mechanics"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="UseEngineStallToggle" type="CheckButton" parent="DebugMenu/VBox/TabsContainer/Mechanics/UseStallRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Use Engine Stall"
+
+[node name="MechanicsStatus" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Sandbox disabled — changes will revert."
+
+[node name="ResetMechanicsButton" type="Button" parent="DebugMenu/VBox/TabsContainer/Mechanics"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Reset to Defaults"
+
+[node name="SaveSettingsButton" type="Button" parent="DebugMenu/VBox/TabsContainer/Mechanics"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Save Settings"
+
+[node name="InputRemap" type="VBoxContainer" parent="DebugMenu/VBox/TabsContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 8
+metadata/_tab_index = 1
+
+[node name="InputHeader" type="Label" parent="DebugMenu/VBox/TabsContainer/InputRemap"]
+layout_mode = 2
+text = "Rebind actions in sandbox mode."
+
+[node name="ActionSelector" type="OptionButton" parent="DebugMenu/VBox/TabsContainer/InputRemap"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="InputButtons" type="HBoxContainer" parent="DebugMenu/VBox/TabsContainer/InputRemap"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ListenButton" type="Button" parent="DebugMenu/VBox/TabsContainer/InputRemap/InputButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Listen"
+
+[node name="ClearBindingButton" type="Button" parent="DebugMenu/VBox/TabsContainer/InputRemap/InputButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Clear"
+
+[node name="ResetBindingButton" type="Button" parent="DebugMenu/VBox/TabsContainer/InputRemap/InputButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Reset"
+
+[node name="InvertSteeringToggle" type="CheckButton" parent="DebugMenu/VBox/TabsContainer/InputRemap/InputButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Invert Steering Direction"
+
+[node name="BindingStatusLabel" type="Label" parent="DebugMenu/VBox/TabsContainer/InputRemap"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Select an action to view bindings."
+
+[node name="BindingDetails" type="RichTextLabel" parent="DebugMenu/VBox/TabsContainer/InputRemap"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SaveInputBindingsButton" type="Button" parent="DebugMenu/VBox/TabsContainer/InputRemap"]
+layout_mode = 2
+text = "Save input bindings"
+
+[node name="Debug" type="VBoxContainer" parent="DebugMenu/VBox/TabsContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 8
+metadata/_tab_index = 2
+
+[node name="DebugTabs" type="TabContainer" parent="DebugMenu/VBox/TabsContainer/Debug"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+current_tab = 0
+
+[node name="Physics" type="VBoxContainer" parent="DebugMenu/VBox/TabsContainer/Debug/DebugTabs"]
+unique_name_in_owner = true
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="Speed" type="Label" parent="DebugMenu/TabsContainer/Tank"]
+[node name="PhysicsInfo" type="RichTextLabel" parent="DebugMenu/VBox/TabsContainer/Debug/DebugTabs/Physics"]
+unique_name_in_owner = true
 layout_mode = 2
-text = "Speed: -"
+size_flags_vertical = 3
+text = "Physics status pending..."
 
-[node name="Gear" type="Label" parent="DebugMenu/TabsContainer/Tank"]
-layout_mode = 2
-text = "Gear: -"
-
-[node name="Fuel" type="Label" parent="DebugMenu/TabsContainer/Tank"]
-layout_mode = 2
-text = "Fuel: -"
-
-[node name="Camera" type="VBoxContainer" parent="DebugMenu/TabsContainer"]
+[node name="Dialogue" type="VBoxContainer" parent="DebugMenu/VBox/TabsContainer/Debug/DebugTabs"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="Zoom" type="Label" parent="DebugMenu/TabsContainer/Camera"]
+[node name="DialogueInfo" type="RichTextLabel" parent="DebugMenu/VBox/TabsContainer/Debug/DebugTabs/Dialogue"]
+unique_name_in_owner = true
 layout_mode = 2
-text = "Zoom: -"
+size_flags_vertical = 3
+text = "Dialogue status pending..."
 
-[node name="OffsetX" type="Label" parent="DebugMenu/TabsContainer/Camera"]
-layout_mode = 2
-text = "OffsetX: -"
-
-[node name="OffsetY" type="Label" parent="DebugMenu/TabsContainer/Camera"]
-layout_mode = 2
-text = "OffsetY: -"
-
-[node name="System" type="VBoxContainer" parent="DebugMenu/TabsContainer"]
+[node name="Signals" type="VBoxContainer" parent="DebugMenu/VBox/TabsContainer/Debug/DebugTabs"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
 metadata/_tab_index = 2
 
-[node name="FPS" type="Label" parent="DebugMenu/TabsContainer/System"]
+[node name="SignalsInfo" type="RichTextLabel" parent="DebugMenu/VBox/TabsContainer/Debug/DebugTabs/Signals"]
+unique_name_in_owner = true
 layout_mode = 2
-text = "FPS: -"
+size_flags_vertical = 3
+text = "Signal history empty."
 
-[node name="Delta" type="Label" parent="DebugMenu/TabsContainer/System"]
+[node name="MotherAI" type="VBoxContainer" parent="DebugMenu/VBox/TabsContainer/Debug/DebugTabs"]
+unique_name_in_owner = true
+visible = false
 layout_mode = 2
-text = "Delta: -"
+metadata/_tab_index = 3
 
-[node name="KeyListener" type="Node" parent="DebugMenu"]
+[node name="MotherAIInfo" type="RichTextLabel" parent="DebugMenu/VBox/TabsContainer/Debug/DebugTabs/MotherAI"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+text = "MotherAI status pending..."
 
 [node name="LogConsole" type="RichTextLabel" parent="."]
-custom_minimum_size = Vector2(400, 160)
+unique_name_in_owner = true
+custom_minimum_size = Vector2(420, 200)
 layout_mode = 0
-offset_left = 16.0
-offset_top = 300.0
-offset_right = 16.0
-offset_bottom = 300.0
+offset_left = 979.0
+offset_top = -25.0
+offset_right = 1399.0
+offset_bottom = 175.0
 size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
 text = "[b]Log Console initialized[/b]"
 
 [node name="MetricsOverlay" type="Label" parent="."]
+unique_name_in_owner = true
 layout_mode = 0
-offset_left = 16.0
-offset_top = 480.0
-offset_right = 16.0
-offset_bottom = 480.0
+offset_left = 996.0
+offset_top = -135.0
+offset_right = 1078.0
+offset_bottom = -112.0
 text = "Metrics: ---"
