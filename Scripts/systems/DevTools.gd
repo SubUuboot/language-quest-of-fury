@@ -1,14 +1,20 @@
-@tool
+# =======================================================================================
+# DevTools.gd  (Godot 4.5)
+# Full, cleaned, tab-indented version with concise FR/EN comments, TODO/FIXME included.
+# =======================================================================================
 
+@tool
 extends Control
 class_name DevTools
 
 signal devtools_toggled(is_open: bool)
 
+# --- Constants ------------------------------------------------------------------------
 const MAX_SIGNAL_HISTORY: int = 20
-const SANDBOX_STAGE_KEYWORDS: Array[String] = ["sandbox", "debug", "test"]
+const SANDBOX_STAGE_KEYWORDS: Array[String] = ["sandbox", "debug", "test", "Stage0"]
 const SETTINGS_PATH: String = "user://devtools_settings.json"
 
+# --- State ---------------------------------------------------------------------------
 var is_open: bool = false
 var _sandbox_enabled: bool = false
 var _sandbox_allowed: bool = false
@@ -31,11 +37,31 @@ var _save_bindings_button_disabled_backup: bool = false
 var _repair_bindings_button_disabled_backup: bool = false
 var _listen_button_default_text: String = ""
 
+# Steering inversion flag (user preference)
+# Inversion du sens de direction (préférence utilisateur)
+var invert_steering: bool = false
+
+# Persistence snapshot
+var _saved_settings: Dictionary = {}
+
+# Listen UI lock (avoid accidental navigation)
+# Verrouillage de l'UI pendant l'écoute (éviter la navigation accidentelle)
+var _listen_ui_locked: bool = false
+var _tabs_focus_backup: int = Control.FOCUS_ALL
+var _selector_disabled_backup: bool = false
+var _listen_button_disabled_backup: bool = false
+var _clear_button_disabled_backup: bool = false
+var _reset_button_disabled_backup: bool = false
+var _invert_toggle_disabled_backup: bool = false
+var _listen_button_default_text: String = ""
+
+# --- External refs -------------------------------------------------------------------
 var _tank: TankController2D = null
 var _input_bootstrap: Node = null
 var _stage_manager: Node = null
 var _mother_ai: Node = null
 
+# --- UI nodes ------------------------------------------------------------------------
 @onready var _debug_menu: Control = %DebugMenu
 @onready var _toggle_button: Button = %ToggleButton
 @onready var _tabs_container: TabContainer = %TabsContainer
@@ -45,6 +71,7 @@ var _mother_ai: Node = null
 @onready var _reset_mechanics_button: Button = %ResetMechanicsButton
 @onready var _save_settings_button: Button = %SaveSettingsButton
 @onready var _use_engine_stall_toggle: CheckButton = %UseEngineStallToggle
+
 @onready var _slider_track_accel: HSlider = %TrackAccelSlider
 @onready var _slider_max_track_speed: HSlider = %MaxTrackSpeedSlider
 @onready var _slider_rotation_gain: HSlider = %RotationGainSlider
@@ -56,6 +83,7 @@ var _mother_ai: Node = null
 @onready var _slider_throttle_gain: HSlider = %ThrottleGainSlider
 @onready var _slider_rpm_decay: HSlider = %RpmDecaySlider
 @onready var _slider_torque: HSlider = %TorqueSlider
+
 @onready var _label_track_accel: Label = %TrackAccelValue
 @onready var _label_max_track_speed: Label = %MaxTrackSpeedValue
 @onready var _label_rotation_gain: Label = %RotationGainValue
@@ -67,6 +95,7 @@ var _mother_ai: Node = null
 @onready var _label_throttle_gain: Label = %ThrottleGainValue
 @onready var _label_rpm_decay: Label = %RpmDecayValue
 @onready var _label_torque: Label = %TorqueValue
+
 @onready var _input_action_selector: OptionButton = %ActionSelector
 @onready var _listen_button: Button = %ListenButton
 @onready var _clear_button: Button = %ClearBindingButton
@@ -76,6 +105,8 @@ var _mother_ai: Node = null
 @onready var _invert_steering_toggle: CheckButton = %InvertSteeringToggle
 @onready var _binding_status: Label = %BindingStatusLabel
 @onready var _binding_details: RichTextLabel = %BindingDetails
+@onready var _save_input_button: Button = %SaveInputBindingsButton
+
 @onready var _debug_tabs: TabContainer = %DebugTabs
 @onready var _physics_info: RichTextLabel = %PhysicsInfo
 @onready var _dialogue_info: RichTextLabel = %DialogueInfo
@@ -84,7 +115,12 @@ var _mother_ai: Node = null
 @onready var _log_console: RichTextLabel = %LogConsole
 @onready var _metrics_overlay: Label = %MetricsOverlay
 
+# =======================================================================================
+# READY / BOOTSTRAP
+# =======================================================================================
+
 func _ready() -> void:
+	# Editor guard / Garde pour l'éditeur
 	if Engine.is_editor_hint():
 		set_process(false)
 		return
@@ -94,6 +130,8 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_sandbox_enabled = false
 	_sandbox_allowed = OS.is_debug_build()
+
+
 
 	_setup_ui()
 	await _hook_input_bootstrap()
@@ -109,12 +147,21 @@ func _ready() -> void:
 
 	set_process(true)
 	set_process_unhandled_input(true)
-	print("🧩 DevTools prêt — appuyez sur F1 pour ouvrir/fermer.")
+	print("🧩 DevTools ready — press F1 to toggle.")
+
+
+# =======================================================================================
+# UI SETUP
+# =======================================================================================
 
 func _setup_ui() -> void:
+	# Intent: connect all buttons/toggles; keep each in its own top-level 'if'
+	# Intention: connecter tous les contrôles; éviter l'imbrication erronée
 	focus_mode = Control.FOCUS_ALL
+
 	if _toggle_button and not _toggle_button.is_connected("pressed", Callable(self, "_on_toggle_button_pressed")):
 		_toggle_button.pressed.connect(Callable(self, "_on_toggle_button_pressed"))
+
 	if _sandbox_toggle and not _sandbox_toggle.is_connected("toggled", Callable(self, "_on_sandbox_toggled")):
 		_sandbox_toggle.toggled.connect(Callable(self, "_on_sandbox_toggled"))
         if _reset_mechanics_button and not _reset_mechanics_button.is_connected("pressed", Callable(self, "_on_reset_mechanics_pressed")):
@@ -139,7 +186,20 @@ func _setup_ui() -> void:
         if _invert_steering_toggle and not _invert_steering_toggle.is_connected("toggled", Callable(self, "_on_invert_steering_toggled")):
                 _invert_steering_toggle.toggled.connect(Callable(self, "_on_invert_steering_toggled"))
 
+	if _invert_steering_toggle and not _invert_steering_toggle.is_connected("toggled", Callable(self, "_on_invert_steering_toggled")):
+		_invert_steering_toggle.toggled.connect(Callable(self, "_on_invert_steering_toggled"))
+
+	if _save_input_button and not _save_input_button.is_connected("pressed", Callable(self, "_on_save_input_bindings_pressed")):
+		_save_input_button.pressed.connect(Callable(self, "_on_save_input_bindings_pressed"))
+
+
+# =======================================================================================
+# NODE HOOKS / COLLECTION
+# =======================================================================================
+
 func _hook_input_bootstrap() -> void:
+	# Wait for InputBootstrap in the root; timeout omitted by design (project boot).
+	# Attente de InputBootstrap à la racine; pas de timeout ici.
 	var bootstrap: Node = get_tree().root.get_node_or_null("InputBootstrap")
 	while bootstrap == null:
 		await get_tree().process_frame
@@ -152,6 +212,7 @@ func _hook_input_bootstrap() -> void:
 	var toggle_callable: Callable = Callable(self, "_on_devtools_toggle_requested")
 	if bootstrap.has_signal("devtools_toggle_requested") and not bootstrap.is_connected("devtools_toggle_requested", toggle_callable):
 		bootstrap.connect("devtools_toggle_requested", toggle_callable)
+
 	var actions_callable: Callable = Callable(self, "_on_input_actions_ready")
 	if bootstrap.has_signal("actions_ready") and not bootstrap.is_connected("actions_ready", actions_callable):
 		bootstrap.connect("actions_ready", actions_callable)
@@ -162,7 +223,7 @@ func _collect_stage_manager() -> void:
 		_stage_manager = root.get_node("Game/StageManager")
 	elif root.has_node("StageManager"):
 		_stage_manager = root.get_node("StageManager")
-	if _stage_manager and _stage_manager.has_variable("current_stage_name"):
+	if _stage_manager:
 		_current_stage_name = _stage_manager.current_stage_name
 
 func _collect_mother_ai() -> void:
@@ -172,6 +233,8 @@ func _collect_mother_ai() -> void:
 		_mother_ai = get_tree().root.get_node("Game/MotherAI")
 
 func _collect_tank() -> void:
+	# Try up to ~4s; avoids infinite wait if scene has no tank
+	# Essaie jusqu'à ~4s; évite l'attente infinie si aucune scène n'a de tank
 	var attempts: int = 0
 	while _tank == null and attempts < 240:
 		var tanks: Array = get_tree().get_nodes_in_group("tank")
@@ -196,6 +259,7 @@ func _connect_signals() -> void:
 			_tank.connect("action_performed", action_callable)
 		if not _tank.is_connected("tree_exited", Callable(self, "_on_tank_tree_exited")):
 			_tank.tree_exited.connect(Callable(self, "_on_tank_tree_exited"))
+
 	if _stage_manager:
 		var loaded_callable: Callable = Callable(self, "_on_stage_loaded")
 		if _stage_manager.has_signal("stage_loaded") and not _stage_manager.is_connected("stage_loaded", loaded_callable):
@@ -206,6 +270,7 @@ func _connect_signals() -> void:
 		var completed_callable: Callable = Callable(self, "_on_stage_completed")
 		if _stage_manager.has_signal("stage_completed") and not _stage_manager.is_connected("stage_completed", completed_callable):
 			_stage_manager.connect("stage_completed", completed_callable)
+
 	if _mother_ai:
 		var task_start_callable: Callable = Callable(self, "_on_mother_ai_task_started")
 		if _mother_ai.has_signal("task_started") and not _mother_ai.is_connected("task_started", task_start_callable):
@@ -217,9 +282,14 @@ func _connect_signals() -> void:
 		if _mother_ai.has_signal("log_updated") and not _mother_ai.is_connected("log_updated", log_callable):
 			_mother_ai.connect("log_updated", log_callable)
 
+# =======================================================================================
+# MECHANICS (sliders <-> tank)
+# =======================================================================================
+
 func _setup_mechanics_controls() -> void:
 	_mechanics_controls.clear()
 	if _tank == null:
+
 		return
 	_register_mechanic_control("track_accel", _slider_track_accel, _label_track_accel, "%.2f")
 	_register_mechanic_control("max_track_speed", _slider_max_track_speed, _label_max_track_speed, "%.2f")
@@ -238,13 +308,12 @@ func _register_mechanic_control(property_name: String, slider: HSlider, label: L
 	if slider == null:
 		return
 	slider.value_changed.connect(Callable(self, "_on_mechanic_slider_value_changed").bind(property_name, label, format))
-	var entry: Dictionary = {
+	_mechanics_controls.append({
 		"property": property_name,
 		"slider": slider,
 		"label": label,
 		"format": format
-	}
-	_mechanics_controls.append(entry)
+	})
 
 func _sync_mechanics_from_tank() -> void:
 	if _tank == null:
@@ -269,6 +338,12 @@ func _sync_mechanics_from_tank() -> void:
                 invert_steering = _tank.invert_steering
                 _invert_steering_toggle.button_pressed = invert_steering
                 _invert_steering_toggle.set_block_signals(false)
+
+	if _invert_steering_toggle:
+		_invert_steering_toggle.set_block_signals(true)
+		invert_steering = _tank.invert_steering
+		_invert_steering_toggle.button_pressed = invert_steering
+		_invert_steering_toggle.set_block_signals(false)
 
 func _capture_tank_defaults() -> Dictionary:
 	var defaults: Dictionary = {}
@@ -390,6 +465,123 @@ func _apply_saved_settings() -> void:
         if applied:
                 _mechanics_status.text = "Saved settings applied."
 
+func _apply_invert_steering() -> void:
+	if _tank == null:
+		return
+	_tank.invert_steering = invert_steering
+
+# =======================================================================================
+# PERSISTENCE (save / load)
+# =======================================================================================
+
+func _load_saved_settings() -> void:
+	_saved_settings.clear()
+	if not FileAccess.file_exists(SETTINGS_PATH):
+		return
+	var file := FileAccess.open(SETTINGS_PATH, FileAccess.READ)
+	if file == null:
+		var error_code: int = FileAccess.get_open_error()
+		push_warning("[DevTools] Failed to open settings file: %s" % error_string(error_code))
+		return
+	var data: Variant = file.get_var()
+	file.close()
+	if data is Dictionary:
+		_saved_settings = data
+
+		if _saved_settings.has("invert_steering"):
+			invert_steering = bool(_saved_settings["invert_steering"])
+			if _invert_steering_toggle:
+				_invert_steering_toggle.set_block_signals(true)
+				_invert_steering_toggle.button_pressed = invert_steering
+				_invert_steering_toggle.set_block_signals(false)
+		# Apply only when sandbox is enabled to avoid contaminating gameplay scenes
+		# Applique seulement si sandbox actif pour éviter la contamination
+		# if _sandbox_enabled:
+			_apply_saved_settings()
+	else:
+		push_warning("[DevTools] Settings file contained unexpected data.")
+
+func _apply_saved_settings() -> void:
+	if _tank == null or _saved_settings.is_empty() or not _sandbox_enabled:
+		return
+	var applied: bool = false
+
+	if _saved_settings.has("tank"):
+		var tank_data: Variant = _saved_settings["tank"]
+
+		if tank_data is Dictionary:
+			var tank_dict: Dictionary = tank_data
+			for entry in _mechanics_controls:
+				var property_name: String = entry["property"]
+				if not tank_dict.has(property_name):
+					continue
+				var value: Variant = tank_dict[property_name]
+				var numeric_value: float = float(value)
+				var slider: HSlider = entry["slider"]
+				if slider:
+					slider.set_block_signals(true)
+					slider.value = numeric_value
+					slider.set_block_signals(false)
+				var label: Label = entry["label"]
+				var format: String = entry["format"]
+				if label:
+					label.text = format % numeric_value
+				_tank.set(property_name, numeric_value)
+				applied = true
+
+
+			if tank_dict.has("use_engine_stall") and _use_engine_stall_toggle:
+				var stall_value: bool = tank_dict["use_engine_stall"]
+				_tank.use_engine_stall = stall_value
+				_use_engine_stall_toggle.set_block_signals(true)
+				_use_engine_stall_toggle.button_pressed = stall_value
+				_use_engine_stall_toggle.set_block_signals(false)
+				applied = true
+
+	if _saved_settings.has("invert_steering"):
+		invert_steering = bool(_saved_settings["invert_steering"])
+		_apply_invert_steering()
+		if _invert_steering_toggle:
+			_invert_steering_toggle.set_block_signals(true)
+			_invert_steering_toggle.button_pressed = invert_steering
+			_invert_steering_toggle.set_block_signals(false)
+		if _binding_status:
+			_binding_status.text = "Invert steering restored (%s)." % ("ON" if invert_steering else "OFF")
+		applied = true
+
+	if applied:
+
+		_mechanics_status.text = "Saved settings applied."
+
+func _on_save_settings_pressed() -> void:
+	if not _sandbox_enabled:
+		_mechanics_status.text = "Sandbox disabled — cannot save."
+		return
+	if _tank == null:
+		_mechanics_status.text = "Tank unavailable — cannot save."
+		return
+
+	var data: Dictionary = {
+		"tank": _capture_tank_defaults(),
+		"invert_steering": invert_steering
+	}
+
+	var file := FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
+	if file == null:
+		var error_code: int = FileAccess.get_open_error()
+		_mechanics_status.text = "Failed to save settings (%s)." % error_string(error_code)
+		return
+
+
+	file.store_var(data)
+	file.close()
+	_saved_settings = data
+	_mechanics_status.text = "Settings saved."
+
+# =======================================================================================
+# INPUT REMAPPER (listen/focus/persistence)
+# =======================================================================================
+
 func _populate_action_selector() -> void:
         if _input_action_selector == null:
                 return
@@ -463,6 +655,55 @@ func _set_listen_ui_locked(enabled: bool) -> void:
                         _repair_bindings_button.disabled = _repair_bindings_button_disabled_backup
                 if _invert_steering_toggle:
                         _invert_steering_toggle.disabled = _invert_toggle_disabled_backup
+
+func _set_listen_ui_locked(enabled: bool) -> void:
+	# Lock/unlock UI around "Listen" to avoid navigation eating arrow keys
+	# Verrouille/déverrouille l'UI pendant l'écoute pour éviter la navigation
+	if enabled:
+		if _listen_ui_locked:
+			return
+		_listen_ui_locked = true
+		if _tabs_container:
+			_tabs_focus_backup = _tabs_container.focus_mode
+			_tabs_container.focus_mode = Control.FOCUS_NONE
+		if _input_action_selector:
+
+			_selector_disabled_backup = _input_action_selector.disabled
+			_input_action_selector.disabled = true
+		if _listen_button:
+			_listen_button_disabled_backup = _listen_button.disabled
+			_listen_button.disabled = true
+			if _listen_button_default_text == "":
+				_listen_button_default_text = _listen_button.text
+			_listen_button.text = "Listening..."
+		if _clear_button:
+			_clear_button_disabled_backup = _clear_button.disabled
+			_clear_button.disabled = true
+		if _reset_button:
+			_reset_button_disabled_backup = _reset_button.disabled
+			_reset_button.disabled = true
+		if _invert_steering_toggle:
+			_invert_toggle_disabled_backup = _invert_steering_toggle.disabled
+			_invert_steering_toggle.disabled = true
+	else:
+		if not _listen_ui_locked:
+			return
+
+		_listen_ui_locked = false
+		if _tabs_container:
+			_tabs_container.focus_mode = _tabs_focus_backup
+		if _input_action_selector:
+			_input_action_selector.disabled = _selector_disabled_backup
+		if _listen_button:
+			_listen_button.disabled = _listen_button_disabled_backup
+			if _listen_button_default_text != "":
+				_listen_button.text = _listen_button_default_text
+		if _clear_button:
+			_clear_button.disabled = _clear_button_disabled_backup
+		if _reset_button:
+			_reset_button.disabled = _reset_button_disabled_backup
+		if _invert_steering_toggle:
+			_invert_steering_toggle.disabled = _invert_toggle_disabled_backup
 
 func _on_listen_button_pressed() -> void:
         if not _sandbox_enabled:
@@ -549,10 +790,22 @@ func _save_bindings() -> bool:
                 return _input_bootstrap.save_bindings()
         return false
 
+
+func _on_save_input_bindings_pressed() -> void:
+	if _input_bootstrap and _input_bootstrap.has_method("save_bindings"):
+		_input_bootstrap.save_bindings()
+		if _binding_status:
+			_binding_status.text = "Bindings saved to disk."
+	else:
+		if _binding_status:
+			_binding_status.text = "Cannot save: InputBootstrap.save_bindings() missing."
+
+
 func _get_selected_action() -> String:
 	if _input_action_selector == null or _input_action_selector.item_count == 0:
 		return ""
 	var index: int = _input_action_selector.get_selected_id()
+
 	if index < 0:
 		index = 0
 	return _input_action_selector.get_item_text(index)
@@ -573,6 +826,7 @@ func _refresh_binding_display(action_name: String) -> void:
 func _format_input_event(event: InputEvent) -> String:
 	if event is InputEventKey:
 		var key_event: InputEventKey = event
+
 		return OS.get_keycode_string(key_event.keycode)
 	elif event is InputEventJoypadButton:
 		var button_event: InputEventJoypadButton = event
@@ -583,28 +837,33 @@ func _format_input_event(event: InputEvent) -> String:
 	return "Unknown"
 
 func _unhandled_input(event: InputEvent) -> void:
-        if _listening_action == StringName():
-                return
-        if event is InputEventKey:
-                var cancel_event: InputEventKey = event
-                if cancel_event.pressed and not cancel_event.echo and cancel_event.keycode == Key.ESCAPE:
-                        _listening_action = &""
-                        _binding_status.text = "Listening canceled."
-                        _set_listen_ui_locked(false)
-                        if has_focus():
-                                release_focus()
-                        get_viewport().gui_release_focus()
-                        return
-        var accepted: bool = false
-        if event is InputEventKey:
-                var key_event: InputEventKey = event
-                accepted = key_event.pressed and not key_event.echo
-        elif event is InputEventJoypadButton:
+	if _listening_action == StringName():
+		return
+
+	# Cancel on ESC / Annuler sur ESC
+	if event is InputEventKey:
+		var cancel_event: InputEventKey = event
+		if cancel_event.pressed and not cancel_event.echo and cancel_event.keycode == KEY_ESCAPE:
+			_listening_action = &""
+			_binding_status.text = "Listening canceled."
+			_set_listen_ui_locked(false)
+
+			if has_focus():
+				release_focus()
+			get_viewport().gui_release_focus()
+			return
+
+	var accepted: bool = false
+	if event is InputEventKey:
+		var key_event: InputEventKey = event
+		accepted = key_event.pressed and not key_event.echo
+	elif event is InputEventJoypadButton:
 		var button_event: InputEventJoypadButton = event
 		accepted = button_event.pressed
 	elif event is InputEventJoypadMotion:
 		var axis_event: InputEventJoypadMotion = event
 		accepted = absf(axis_event.axis_value) >= 0.5
+
 	if not accepted:
 		return
         var action_name: StringName = _listening_action
@@ -629,31 +888,40 @@ func _unhandled_input(event: InputEvent) -> void:
         _refresh_binding_display(String(action_name))
         get_viewport().set_input_as_handled()
 
+# =======================================================================================
+# SANDBOX / TOGGLING
+# =======================================================================================
+
 func _on_sandbox_toggled(pressed: bool) -> void:
+	# Properly de-nested indentation / Indentation corrigée
 	if not _sandbox_allowed:
 		_sandbox_toggle.set_block_signals(true)
 		_sandbox_toggle.button_pressed = false
 		_sandbox_toggle.set_block_signals(false)
 		_update_sandbox_status("Sandbox locked — production build.")
 		return
-        if _sandbox_toggle.disabled:
-                _sandbox_toggle.set_block_signals(true)
-                _sandbox_toggle.button_pressed = false
-                _sandbox_toggle.set_block_signals(false)
-                _update_sandbox_status("Sandbox locked for stage %s." % _current_stage_name)
-                return
-        _sandbox_enabled = pressed
-        if _sandbox_enabled:
-                _apply_invert_steering()
-                _apply_saved_settings()
-        else:
-                _restore_tank_defaults()
-                _set_listen_ui_locked(false)
-                _listening_action = &""
-                if has_focus():
-                        release_focus()
-                get_viewport().gui_release_focus()
-        _update_sandbox_status()
+
+	if _sandbox_toggle.disabled:
+		_sandbox_toggle.set_block_signals(true)
+		_sandbox_toggle.button_pressed = false
+		_sandbox_toggle.set_block_signals(false)
+		_update_sandbox_status("Sandbox locked for stage %s." % _current_stage_name)
+		return
+
+	_sandbox_enabled = pressed
+
+	if _sandbox_enabled:
+		_apply_invert_steering()
+		_apply_saved_settings()
+	else:
+		_restore_tank_defaults()
+		_set_listen_ui_locked(false)
+		_listening_action = &""
+		if has_focus():
+			release_focus()
+		get_viewport().gui_release_focus()
+
+	_update_sandbox_status()
 
 func _update_stage_lock() -> void:
 	if not _sandbox_allowed:
@@ -663,9 +931,11 @@ func _update_stage_lock() -> void:
 		_sandbox_enabled = false
 		_restore_tank_defaults()
 		return
+
 	var stage_safe: bool = _is_sandbox_stage(_current_stage_name)
 	if _sandbox_toggle:
 		_sandbox_toggle.disabled = not stage_safe
+
 	if not stage_safe:
 		_sandbox_enabled = false
 		if _sandbox_toggle:
@@ -742,6 +1012,9 @@ func _on_invert_steering_toggled(pressed: bool) -> void:
         _apply_invert_steering()
         if _binding_status:
                 _binding_status.text = "Invert steering %s." % ("enabled" if pressed else "disabled")
+# =======================================================================================
+# TOGGLE MENU / LAYERING
+# =======================================================================================
 
 func _on_devtools_toggle_requested() -> void:
         _toggle_menu()
@@ -752,36 +1025,44 @@ func _on_toggle_button_pressed() -> void:
 func _toggle_menu() -> void:
 	is_open = not is_open
 	if is_open:
-		raise()
+		set_z_index(1024)
+		move_to_front()
 	visible = is_open
 	mouse_filter = Control.MOUSE_FILTER_STOP if is_open else Control.MOUSE_FILTER_IGNORE
-	z_index = 1024 if is_open else 0
+
 	if _debug_menu:
 		if is_open:
-			_debug_menu.raise()
+			_debug_menu.set_z_index(1024)
+			_debug_menu.move_to_front()
 		_debug_menu.visible = is_open
 		_debug_menu.mouse_filter = Control.MOUSE_FILTER_STOP if is_open else Control.MOUSE_FILTER_IGNORE
-		_debug_menu.z_index = 1024 if is_open else 0
-        if is_open:
-                if has_focus():
-                        release_focus()
-                get_viewport().gui_release_focus()
-                grab_focus()
-                if _debug_menu:
-                        _debug_menu.grab_focus()
-                _refresh_binding_display(_get_selected_action())
-        else:
-                if has_focus():
-                        release_focus()
-                get_viewport().gui_release_focus()
-                if _debug_menu and _debug_menu.has_focus():
-                        _debug_menu.release_focus()
-                _set_listen_ui_locked(false)
-                _listening_action = &""
-        emit_signal("devtools_toggled", is_open)
+
+	if is_open:
+		if has_focus():
+			release_focus()
+		get_viewport().gui_release_focus()
+
+		grab_focus()
+		if _debug_menu:
+			_debug_menu.grab_focus()
+		_refresh_binding_display(_get_selected_action())
+	else:
+		if has_focus():
+			release_focus()
+		get_viewport().gui_release_focus()
+		if _debug_menu and _debug_menu.has_focus():
+			_debug_menu.release_focus()
+		_set_listen_ui_locked(false)
+		_listening_action = &""
+
+	emit_signal("devtools_toggled", is_open)
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE if is_open else Input.MOUSE_MODE_CAPTURED)
 	print("🎛️ DevTools toggled → Tank input_enabled =", not is_open)
-	print("🧭 DevTools:" + ("ouvert" if is_open else "fermé"))
+	print("🧭 DevTools:" + ("open" if is_open else "closed"))
+
+# =======================================================================================
+# LOGGING / SIGNALS
+# =======================================================================================
 
 func _append_signal_entry(entry: String) -> void:
 	var timestamp: String = Time.get_time_string_from_system()
@@ -801,12 +1082,15 @@ func _log_to_console(message: String) -> void:
 func _on_tank_gear_changed(gear: int) -> void:
 	_append_signal_entry("Tank gear changed → %d" % gear)
 
+
 func _on_tank_moved(direction: String) -> void:
 	_append_signal_entry("Tank moved %s" % direction)
 
 func _on_tank_action(action: String) -> void:
 	_append_signal_entry("Tank action performed: %s" % action)
 
+# Merge-resolved version: wait a couple frames, then re-collect, and re-apply saved settings if sandbox
+# Version fusionnée: attendre quelques frames, re-collecter, puis réappliquer si sandbox actif
 func _on_tank_tree_exited() -> void:
         _tank = null
         _append_signal_entry("Tank node exited scene tree.")
@@ -837,6 +1121,12 @@ func _on_mother_ai_task_completed(scene_name: String, action_name: String) -> vo
 
 func _on_mother_ai_log_updated(entry: String) -> void:
 	_append_signal_entry("MotherAI log → %s" % entry)
+  
+  
+  
+# =======================================================================================
+# DEBUG PANELS / METRICS
+# =======================================================================================
 
 func _process(delta: float) -> void:
 	_update_physics_panel()
@@ -895,15 +1185,24 @@ func _update_mother_ai_panel() -> void:
 	if _mother_ai == null:
 		_mother_ai_info.text = "MotherAI offline."
 		return
+
+	var props: Array = []
+	if _mother_ai.has_method("get_property_list"):
+		props = _mother_ai.get_property_list().map(func(p): return p.name)
+
 	var active_scenes_count: int = 0
-	if _mother_ai.has_variable("active_scenes"):
+	if "active_scenes" in props:
 		active_scenes_count = (_mother_ai.active_scenes as Dictionary).size()
+
 	var queue_size: int = 0
-	if _mother_ai.has_variable("task_queue"):
+	if "task_queue" in props:
 		queue_size = (_mother_ai.task_queue as Array).size()
+
 	var busy_text: String = "true"
-	if _mother_ai.has_variable("is_busy"):
+	if "is_busy" in props:
 		busy_text = "true" if _mother_ai.is_busy else "false"
+
+
 	var lines: Array[String] = []
 	lines.append("[b]MotherAI[/b]")
 	lines.append("Active scenes: %d" % active_scenes_count)

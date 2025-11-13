@@ -69,6 +69,8 @@ var right_track_speed: float = 0.0
 var left_target_speed: float = 0.0
 var right_target_speed: float = 0.0
 
+var invert_steering: bool = true
+
 # ------------------------------------------------------------
 # HUD DEBUG
 # ------------------------------------------------------------
@@ -166,10 +168,9 @@ func get_engine_torque_at_rpm(rpm: float) -> float:
 # INPUTS JOUEUR
 # ------------------------------------------------------------
 func _process_inputs(delta: float) -> void:
-	
+
 	print("🎮 Tank écoute:", input_accelerate, input_brake, input_gear_up, input_gear_down, input_clutch)
 
-	
 	if not input_enabled:
 		return
 
@@ -300,7 +301,8 @@ func _physics_process(delta: float) -> void:
 
 	var forward_dir: Vector2 = Vector2.UP.rotated(rotation)
 	velocity = forward_dir * forward_speed
-	rotation += rotation_speed_local * delta
+	var direction_factor: float = -1.0 if invert_steering else 1.0
+	rotation += rotation_speed_local * delta * direction_factor
 
 	_apply_engine_brake(delta)
 

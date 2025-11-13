@@ -2,7 +2,12 @@
 
 [node name="DevTools" type="Control"]
 layout_mode = 3
-anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 214.0
+offset_top = 156.0
+offset_right = -938.0
+offset_bottom = -492.0
 focus_mode = 2
 mouse_filter = 2
 
@@ -57,8 +62,8 @@ current_tab = 0
 [node name="Mechanics" type="VBoxContainer" parent="DebugMenu/VBox/TabsContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-metadata/_tab_index = 0
 theme_override_constants/separation = 6
+metadata/_tab_index = 0
 
 [node name="MechanicsHeader" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics"]
 layout_mode = 2
@@ -75,10 +80,9 @@ text = "Track Accel"
 [node name="TrackAccelSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/TrackAccelRow"]
 unique_name_in_owner = true
 layout_mode = 2
-min_value = 0.0
+size_flags_horizontal = 3
 max_value = 40.0
 step = 0.1
-size_flags_horizontal = 3
 
 [node name="TrackAccelValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/TrackAccelRow"]
 unique_name_in_owner = true
@@ -96,10 +100,9 @@ text = "Max Track Speed"
 [node name="MaxTrackSpeedSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/MaxTrackSpeedRow"]
 unique_name_in_owner = true
 layout_mode = 2
-min_value = 0.0
+size_flags_horizontal = 3
 max_value = 40.0
 step = 0.1
-size_flags_horizontal = 3
 
 [node name="MaxTrackSpeedValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/MaxTrackSpeedRow"]
 unique_name_in_owner = true
@@ -117,10 +120,9 @@ text = "Rotation Gain"
 [node name="RotationGainSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/RotationGainRow"]
 unique_name_in_owner = true
 layout_mode = 2
-min_value = 0.0
+size_flags_horizontal = 3
 max_value = 1.0
 step = 0.01
-size_flags_horizontal = 3
 
 [node name="RotationGainValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/RotationGainRow"]
 unique_name_in_owner = true
@@ -138,10 +140,9 @@ text = "Friction"
 [node name="FrictionSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/FrictionRow"]
 unique_name_in_owner = true
 layout_mode = 2
-min_value = 0.0
+size_flags_horizontal = 3
 max_value = 10.0
 step = 0.05
-size_flags_horizontal = 3
 
 [node name="FrictionValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/FrictionRow"]
 unique_name_in_owner = true
@@ -159,10 +160,9 @@ text = "Brake Power"
 [node name="BrakePowerSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/BrakePowerRow"]
 unique_name_in_owner = true
 layout_mode = 2
-min_value = 0.0
+size_flags_horizontal = 3
 max_value = 40.0
 step = 0.1
-size_flags_horizontal = 3
 
 [node name="BrakePowerValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/BrakePowerRow"]
 unique_name_in_owner = true
@@ -180,10 +180,8 @@ text = "Visual Speed"
 [node name="VisualSpeedSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/VisualSpeedRow"]
 unique_name_in_owner = true
 layout_mode = 2
-min_value = 0.0
-max_value = 256.0
-step = 1.0
 size_flags_horizontal = 3
+max_value = 256.0
 
 [node name="VisualSpeedValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/VisualSpeedRow"]
 unique_name_in_owner = true
@@ -201,10 +199,11 @@ text = "Engine Idle RPM"
 [node name="EngineIdleSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/EngineIdleRow"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 min_value = 400.0
 max_value = 1600.0
 step = 10.0
-size_flags_horizontal = 3
+value = 400.0
 
 [node name="EngineIdleValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/EngineIdleRow"]
 unique_name_in_owner = true
@@ -222,10 +221,11 @@ text = "Engine Max RPM"
 [node name="EngineMaxSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/EngineMaxRow"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 min_value = 1200.0
 max_value = 4200.0
 step = 10.0
-size_flags_horizontal = 3
+value = 1200.0
 
 [node name="EngineMaxValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/EngineMaxRow"]
 unique_name_in_owner = true
@@ -243,10 +243,9 @@ text = "Throttle Gain"
 [node name="ThrottleGainSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/ThrottleGainRow"]
 unique_name_in_owner = true
 layout_mode = 2
-min_value = 0.0
+size_flags_horizontal = 3
 max_value = 2000.0
 step = 10.0
-size_flags_horizontal = 3
 
 [node name="ThrottleGainValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/ThrottleGainRow"]
 unique_name_in_owner = true
@@ -264,10 +263,9 @@ text = "RPM Decay"
 [node name="RpmDecaySlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/RpmDecayRow"]
 unique_name_in_owner = true
 layout_mode = 2
-min_value = 0.0
+size_flags_horizontal = 3
 max_value = 800.0
 step = 5.0
-size_flags_horizontal = 3
 
 [node name="RpmDecayValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/RpmDecayRow"]
 unique_name_in_owner = true
@@ -285,10 +283,9 @@ text = "Engine Torque"
 [node name="TorqueSlider" type="HSlider" parent="DebugMenu/VBox/TabsContainer/Mechanics/TorqueRow"]
 unique_name_in_owner = true
 layout_mode = 2
-min_value = 0.0
+size_flags_horizontal = 3
 max_value = 4000.0
 step = 10.0
-size_flags_horizontal = 3
 
 [node name="TorqueValue" type="Label" parent="DebugMenu/VBox/TabsContainer/Mechanics/TorqueRow"]
 unique_name_in_owner = true
@@ -321,9 +318,10 @@ text = "Save Settings"
 
 [node name="InputRemap" type="VBoxContainer" parent="DebugMenu/VBox/TabsContainer"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
-metadata/_tab_index = 1
 theme_override_constants/separation = 8
+metadata/_tab_index = 1
 
 [node name="InputHeader" type="Label" parent="DebugMenu/VBox/TabsContainer/InputRemap"]
 layout_mode = 2
@@ -384,13 +382,17 @@ text = "Select an action to view bindings."
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-text = ""
+
+[node name="SaveInputBindingsButton" type="Button" parent="DebugMenu/VBox/TabsContainer/InputRemap"]
+layout_mode = 2
+text = "Save input bindings"
 
 [node name="Debug" type="VBoxContainer" parent="DebugMenu/VBox/TabsContainer"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
-metadata/_tab_index = 2
 theme_override_constants/separation = 8
+metadata/_tab_index = 2
 
 [node name="DebugTabs" type="TabContainer" parent="DebugMenu/VBox/TabsContainer/Debug"]
 unique_name_in_owner = true
@@ -411,6 +413,7 @@ text = "Physics status pending..."
 
 [node name="Dialogue" type="VBoxContainer" parent="DebugMenu/VBox/TabsContainer/Debug/DebugTabs"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
@@ -422,6 +425,7 @@ text = "Dialogue status pending..."
 
 [node name="Signals" type="VBoxContainer" parent="DebugMenu/VBox/TabsContainer/Debug/DebugTabs"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 metadata/_tab_index = 2
 
@@ -433,6 +437,7 @@ text = "Signal history empty."
 
 [node name="MotherAI" type="VBoxContainer" parent="DebugMenu/VBox/TabsContainer/Debug/DebugTabs"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 metadata/_tab_index = 3
 
@@ -446,21 +451,20 @@ text = "MotherAI status pending..."
 unique_name_in_owner = true
 custom_minimum_size = Vector2(420, 200)
 layout_mode = 0
-offset_left = 24.0
-offset_top = 360.0
-offset_right = 444.0
-offset_bottom = 560.0
+offset_left = 979.0
+offset_top = -25.0
+offset_right = 1399.0
+offset_bottom = 175.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 bbcode_enabled = true
-scroll_active = true
 text = "[b]Log Console initialized[/b]"
 
 [node name="MetricsOverlay" type="Label" parent="."]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 24.0
-offset_top = 24.0
-offset_right = 24.0
-offset_bottom = 24.0
+offset_left = 996.0
+offset_top = -135.0
+offset_right = 1078.0
+offset_bottom = -112.0
 text = "Metrics: ---"

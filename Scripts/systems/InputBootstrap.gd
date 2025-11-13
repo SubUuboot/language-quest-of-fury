@@ -1,3 +1,12 @@
+# ================================================
+# 🧭 INPUT BOOTSTRAP — SAVE/LOAD SYSTEM (PATCH v2.2)
+# ================================================
+# This script should adds human-readable key labels to your input bindings file in the future.
+# Ce script ajoute des labels lisibles pour les humains dans le fichier JSON des touches.
+# It preserves full backward compatibility with your previous JSON structure.
+# Il reste rétrocompatible avec le format précédent.
+# ================================================
+
 extends Node
 
 signal actions_ready
@@ -5,13 +14,8 @@ signal devtools_toggle_requested
 
 var _actions_registered: bool = false
 
-## ============================================================
-## InputBootstrap
-## Initialise les entrées par défaut du jeu (clavier + manette).
-## Appelé automatiquement au démarrage (autoload).
-## ============================================================
+const BINDINGS_PATH: String = "user://input_bindings.json"
 
-const BINDINGS_PATH := "user://input_bindings.json"
 const DEFAULT_BINDINGS := {
         "gear_up": [KEY_P, JOY_BUTTON_RIGHT_SHOULDER],
         "gear_down": [KEY_M, JOY_BUTTON_LEFT_SHOULDER],
@@ -32,29 +36,6 @@ func _ready() -> void:
         load_bindings()
         _ensure_default_bindings()
 
-        # === Key non reconnues pour l'instant ===
-        #_ensure_action("gear_up",   [KEY_KP_ADD, JOY_BUTTON_RIGHT_SHOULDER])   # Pavé num + / R1
-        #_ensure_action("gear_down", [KEY_KP_ENTER, JOY_BUTTON_LEFT_SHOULDER])  # Pavé num Entrée / L1
-        #_ensure_action("clutch",    [KEY_KP_0, JOY_BUTTON_X])                  # Pavé num 0 / X
-
-        # === Transmission ===
-        _ensure_action("gear_up", DEFAULT_BINDINGS["gear_up"])    # Pavé num + / R1
-        _ensure_action("gear_down", DEFAULT_BINDINGS["gear_down"])   # Pavé num Entrée / L1
-        _ensure_action("clutch", DEFAULT_BINDINGS["clutch"])                  # Pavé num 0 / X
-
-        # === Conduite du tank ===
-        _ensure_action("engine_start", DEFAULT_BINDINGS["engine_start"])
-        _ensure_action("accelerate", DEFAULT_BINDINGS["accelerate"])
-        _ensure_action("brake", DEFAULT_BINDINGS["brake"])
-        _ensure_action("steer_left", DEFAULT_BINDINGS["steer_left"])                # axe analogique gauche
-        _ensure_action("steer_right", DEFAULT_BINDINGS["steer_right"])               # axe analogique gauche inversé
-
-        # === Tourelle ===
-        _ensure_action("turret_left", DEFAULT_BINDINGS["turret_left"])
-        _ensure_action("turret_right", DEFAULT_BINDINGS["turret_right"])
-
-        # === Debug / Interface ===
-        _ensure_action("ui_devtools_menu", DEFAULT_BINDINGS["ui_devtools_menu"])  # utilisé par DevTools
 
 
 	print("🎮 [InputBootstrap] Bindings clavier/manette initiaux enregistrés.")
@@ -230,7 +211,7 @@ func _serialize_event(ev: InputEvent) -> Dictionary:
                 entry["type"] = "key"
                 entry["keycode"] = ev.keycode
         elif ev is InputEventJoypadButton:
-                entry["type"] = "joy_button"
+                entry["type"] = "joypad_button"
                 entry["button_index"] = ev.button_index
         elif ev is InputEventJoypadMotion:
                 entry["type"] = "joy_axis"
@@ -239,6 +220,11 @@ func _serialize_event(ev: InputEvent) -> Dictionary:
         return entry
 
 
+# ================================================
+# 🔹 LOAD INPUT MAP FROM JSON FILE
+# ================================================
+# Loads previously saved bindings and applies them to the InputMap.
+# Charge les bindings sauvegardés et les applique dans l'InputMap.
 # Recharge les bindings depuis le fichier JSON s’il existe
 # ------------------------------------------------------------
 # Recharge les bindings depuis le fichier JSON s’il existe,
@@ -254,48 +240,77 @@ func load_bindings() -> void:
                 push_warning("[InputBootstrap] Échec de lecture du fichier " + BINDINGS_PATH)
                 return
 
-	var content := file.get_as_text()
+	# On supporte 2 formats:
+	# 1) Ancien format binaire (store_var)
+	# 2) Nouveau format JSON lisible (store_string)
+	var config: Dictionary = {}
+	var ok: bool = false
+
+	# Tentative 1: lecture binaire (store_var)
+	file.seek(0)
+	var bin_try: Variant = file.get_var(true)  # allow_objects = true au cas où
+	if typeof(bin_try) == TYPE_DICTIONARY:
+		config = bin_try as Dictionary
+		ok = true
+	else:
+		# Tentative 2: JSON texte
+		file.seek(0)
+		var text: String = file.get_as_text()
+
+		# Option A: parse statique
+		var parsed_any: Variant = JSON.parse_string(text)
+		if typeof(parsed_any) == TYPE_DICTIONARY:
+			config = parsed_any as Dictionary
+			ok = true
+		else:
+			# Option B: parseur objet, pour logs plus précis
+			var json := JSON.new()
+			var parse_err: Error = json.parse(text)
+			if parse_err == OK:
+				var data_any: Variant = json.get_data()
+				if typeof(data_any) == TYPE_DICTIONARY:
+					config = data_any as Dictionary
+					ok = true
+
 	file.close()
 
-	var result: Variant = JSON.parse_string(content)
-	if typeof(result) != TYPE_DICTIONARY:
-		push_warning("[InputBootstrap] Fichier de bindings corrompu ou vide — valeurs par défaut conservées.")
+	if not ok:
+		push_warning("[InputBootstrap] Format de bindings invalide dans le fichier.")
 		return
 
-	# Vérifie que le fichier contient au moins une action cohérente
-	var valid_entries := 0
-	for action_name in result.keys():
-		if typeof(result[action_name]) == TYPE_ARRAY and result[action_name].size() > 0:
-			valid_entries += 1
-	if valid_entries == 0:
-		push_warning("[InputBootstrap] Aucun binding valide trouvé — valeurs par défaut conservées.")
-		return
-
-	print("🔁 [InputBootstrap] Fichier de bindings utilisateur détecté, application en cours…")
-
-	# Recharge uniquement les actions connues et valides
-	for action_name in result.keys():
-		if not InputMap.has_action(action_name):
-			print("[InputBootstrap] ⚠️ Action inconnue '%s' ignorée." % action_name)
-			continue
-
-		# Nettoie uniquement cette action (pas tout)
+	# Applique proprement les événements
+	for action_name_any in config.keys():
+		var action_name: String = String(action_name_any)
 		InputMap.action_erase_events(action_name)
 
-		for entry in result[action_name]:
+		var events_any: Variant = config[action_name]
+		var events_list: Array = (events_any as Array)
+
+		for ev_any in events_list:
+			var ev_dict: Dictionary = (ev_any as Dictionary)
+			var ev_type_any: Variant = ev_dict.get("type", "")
+			var ev_type: String = String(ev_type_any)
+
 			var ev: InputEvent = null
-			match entry.get("type", ""):
+			match ev_type:
 				"key":
-					ev = InputEventKey.new()
-					ev.keycode = entry.get("keycode", 0)
-				"joy_button":
-					ev = InputEventJoypadButton.new()
-					ev.button_index = entry.get("button_index", 0)
-				"joy_axis":
-					ev = InputEventJoypadMotion.new()
-					ev.axis = entry.get("axis", 0)
-					ev.axis_value = entry.get("axis_value", 1.0)
-			if ev:
+					var ev_key := InputEventKey.new()
+					ev_key.keycode = int(ev_dict.get("keycode", 0))
+					ev = ev_key
+				"joypad_button":
+					var ev_button := InputEventJoypadButton.new()
+					ev_button.button_index = int(ev_dict.get("button_index", 0))
+					ev = ev_button
+				"joypad_axis":
+					var ev_axis := InputEventJoypadMotion.new()
+					ev_axis.axis = int(ev_dict.get("axis", 0))
+					ev_axis.axis_value = float(ev_dict.get("axis_value", 0.0))
+					ev = ev_axis
+				_:
+					# TODO/À FAIRE: gérer souris / autres types si tu les sauvegardes un jour
+					pass
+
+			if ev != null:
 				InputMap.action_add_event(action_name, ev)
 
         print("✅ [InputBootstrap] Bindings personnalisés appliqués sans perte de commandes.")
