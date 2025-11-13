@@ -11,35 +11,50 @@ var _actions_registered: bool = false
 ## Appelé automatiquement au démarrage (autoload).
 ## ============================================================
 
+const BINDINGS_PATH := "user://input_bindings.json"
+const DEFAULT_BINDINGS := {
+        "gear_up": [KEY_P, JOY_BUTTON_RIGHT_SHOULDER],
+        "gear_down": [KEY_M, JOY_BUTTON_LEFT_SHOULDER],
+        "clutch": [KEY_O, JOY_BUTTON_X],
+        "engine_start": [KEY_E, JOY_BUTTON_START],
+        "accelerate": [KEY_SPACE, JOY_BUTTON_A],
+        "brake": [KEY_L, JOY_BUTTON_B],
+        "steer_left": [KEY_Q, JOY_AXIS_LEFT_X],
+        "steer_right": [KEY_D, -JOY_AXIS_LEFT_X],
+        "turret_left": [KEY_LEFT, JOY_AXIS_RIGHT_X],
+        "turret_right": [KEY_RIGHT, -JOY_AXIS_RIGHT_X],
+        "ui_devtools_menu": [KEY_F1],
+}
+
 func _ready() -> void:
-	set_process_unhandled_input(true)
-	# --- Tente de recharger les bindings personnalisés ---
-	load_bindings()
-	repair_missing_bindings()
+        set_process_unhandled_input(true)
+        # --- Tente de recharger les bindings personnalisés ---
+        load_bindings()
+        _ensure_default_bindings()
 
-	# === Key non reconnues pour l'instant ===
-	#_ensure_action("gear_up",   [KEY_KP_ADD, JOY_BUTTON_RIGHT_SHOULDER])   # Pavé num + / R1
-	#_ensure_action("gear_down", [KEY_KP_ENTER, JOY_BUTTON_LEFT_SHOULDER])  # Pavé num Entrée / L1
-	#_ensure_action("clutch",    [KEY_KP_0, JOY_BUTTON_X])                  # Pavé num 0 / X
+        # === Key non reconnues pour l'instant ===
+        #_ensure_action("gear_up",   [KEY_KP_ADD, JOY_BUTTON_RIGHT_SHOULDER])   # Pavé num + / R1
+        #_ensure_action("gear_down", [KEY_KP_ENTER, JOY_BUTTON_LEFT_SHOULDER])  # Pavé num Entrée / L1
+        #_ensure_action("clutch",    [KEY_KP_0, JOY_BUTTON_X])                  # Pavé num 0 / X
 
-	# === Transmission ===
-	_ensure_action("gear_up",   [KEY_P, JOY_BUTTON_RIGHT_SHOULDER])    # Pavé num + / R1
-	_ensure_action("gear_down", [KEY_M, JOY_BUTTON_LEFT_SHOULDER])   # Pavé num Entrée / L1
-	_ensure_action("clutch",    [KEY_O, JOY_BUTTON_X])                  # Pavé num 0 / X
+        # === Transmission ===
+        _ensure_action("gear_up", DEFAULT_BINDINGS["gear_up"])    # Pavé num + / R1
+        _ensure_action("gear_down", DEFAULT_BINDINGS["gear_down"])   # Pavé num Entrée / L1
+        _ensure_action("clutch", DEFAULT_BINDINGS["clutch"])                  # Pavé num 0 / X
 
-	# === Conduite du tank ===
-	_ensure_action("engine_start", [KEY_E, JOY_BUTTON_START])
-	_ensure_action("accelerate",   [KEY_SPACE, JOY_BUTTON_A])
-	_ensure_action("brake",        [KEY_L, JOY_BUTTON_B])
-	_ensure_action("steer_left",   [KEY_Q, JOY_AXIS_LEFT_X])                # axe analogique gauche
-	_ensure_action("steer_right",  [KEY_D, -JOY_AXIS_LEFT_X])               # axe analogique gauche inversé
+        # === Conduite du tank ===
+        _ensure_action("engine_start", DEFAULT_BINDINGS["engine_start"])
+        _ensure_action("accelerate", DEFAULT_BINDINGS["accelerate"])
+        _ensure_action("brake", DEFAULT_BINDINGS["brake"])
+        _ensure_action("steer_left", DEFAULT_BINDINGS["steer_left"])                # axe analogique gauche
+        _ensure_action("steer_right", DEFAULT_BINDINGS["steer_right"])               # axe analogique gauche inversé
 
-	# === Tourelle ===
-	_ensure_action("turret_left",  [KEY_LEFT, JOY_AXIS_RIGHT_X])
-	_ensure_action("turret_right", [KEY_RIGHT, -JOY_AXIS_RIGHT_X])
+        # === Tourelle ===
+        _ensure_action("turret_left", DEFAULT_BINDINGS["turret_left"])
+        _ensure_action("turret_right", DEFAULT_BINDINGS["turret_right"])
 
-	# === Debug / Interface ===
-	_ensure_action("ui_devtools_menu", [KEY_F1])  # utilisé par DevTools
+        # === Debug / Interface ===
+        _ensure_action("ui_devtools_menu", DEFAULT_BINDINGS["ui_devtools_menu"])  # utilisé par DevTools
 
 
 	print("🎮 [InputBootstrap] Bindings clavier/manette initiaux enregistrés.")
@@ -87,35 +102,48 @@ func is_ready() -> bool:
 # Enregistre ou met à jour une action d'entrée donnée.
 # Détecte automatiquement le type (touche, bouton ou axe).
 # ------------------------------------------------------------
-func _ensure_action(action_name: String, inputs: Array) -> void:
-	if not InputMap.has_action(action_name):
-		InputMap.add_action(action_name)
+func _ensure_default_bindings() -> void:
+        for action_name in DEFAULT_BINDINGS.keys():
+                _ensure_action(action_name, DEFAULT_BINDINGS[action_name])
 
-	for input in inputs:
-		if input == 0:
-			continue
+func _ensure_action(action_name: String, inputs: Array, force_defaults: bool = false) -> void:
+        if not InputMap.has_action(action_name):
+                InputMap.add_action(action_name)
 
-		var ev: InputEvent = null
+        var existing_events: Array = InputMap.action_get_events(action_name)
+        if force_defaults:
+                InputMap.action_erase_events(action_name)
+                existing_events.clear()
 
-		# --- Clavier ---
-		if typeof(input) == TYPE_INT and input < 1000:
-			ev = InputEventKey.new()
-			ev.keycode = input
+        if not force_defaults and not existing_events.is_empty():
+                return
 
-		# --- Boutons de manette ---
-		elif input >= JOY_BUTTON_A and input <= JOY_BUTTON_RIGHT_STICK:
-			ev = InputEventJoypadButton.new()
-			ev.button_index = input
+        for input in inputs:
+                if input == 0:
+                        continue
 
-		# --- Axes de manette ---
-		elif abs(input) >= JOY_AXIS_LEFT_X and abs(input) <= JOY_AXIS_RIGHT_Y:
-			ev = InputEventJoypadMotion.new()
-			ev.axis = abs(input)
-			ev.axis_value = 1.0 if input > 0 else -1.0
+                var ev: InputEvent = _event_from_input(input)
+                if ev == null:
+                        continue
+                if force_defaults or not _has_event(action_name, ev):
+                        InputMap.action_add_event(action_name, ev)
 
-		# --- Validation et ajout ---
-		if ev and not _has_event(action_name, ev):
-			InputMap.action_add_event(action_name, ev)
+func _event_from_input(input: int) -> InputEvent:
+        var ev: InputEvent = null
+        # --- Clavier ---
+        if typeof(input) == TYPE_INT and input < 1000:
+                ev = InputEventKey.new()
+                ev.keycode = input
+        # --- Boutons de manette ---
+        elif input >= JOY_BUTTON_A and input <= JOY_BUTTON_RIGHT_STICK:
+                ev = InputEventJoypadButton.new()
+                ev.button_index = input
+        # --- Axes de manette ---
+        elif abs(input) >= JOY_AXIS_LEFT_X and abs(input) <= JOY_AXIS_RIGHT_Y:
+                ev = InputEventJoypadMotion.new()
+                ev.axis = abs(input)
+                ev.axis_value = 1.0 if input > 0 else -1.0
+        return ev
 
 
 # ------------------------------------------------------------
@@ -167,42 +195,48 @@ func remap_action(action_name: String, new_input: InputEvent) -> void:
 
 	print("🎛️ [InputBootstrap] Action '%s' remappée sur %s" % [action_name, input_label])
 
-	save_bindings()
-	print("🎛️ [InputBootstrap] bindings sauvegarder dans user://bindings.json" )
+        if save_bindings():
+                print("🎛️ [InputBootstrap] Bindings sauvegardés après remap.")
 
 # ------------------------------------------------------------
 # SAUVEGARDE ET CHARGEMENT DES BINDINGS UTILISATEUR
 # ------------------------------------------------------------
 
-const BINDINGS_FILE := "user://bindings.json"
-
 # Sauvegarde tous les bindings actuels dans un fichier JSON
-func save_bindings() -> void:
-	var data: Dictionary = {}
-	for action in InputMap.get_actions():
-		var events: Array = []
-		for ev in InputMap.action_get_events(action):
-			var entry := {}
-			if ev is InputEventKey:
-				entry["type"] = "key"
-				entry["keycode"] = ev.keycode
-			elif ev is InputEventJoypadButton:
-				entry["type"] = "joy_button"
-				entry["button_index"] = ev.button_index
-			elif ev is InputEventJoypadMotion:
-				entry["type"] = "joy_axis"
-				entry["axis"] = ev.axis
-				entry["axis_value"] = ev.axis_value
-			events.append(entry)
-		data[action] = events
+func save_bindings() -> bool:
+        var data: Dictionary = {}
+        for action in InputMap.get_actions():
+                var events: Array = []
+                for ev in InputMap.action_get_events(action):
+                        var entry := _serialize_event(ev)
+                        if entry.is_empty():
+                                continue
+                        events.append(entry)
+                data[action] = events
 
-	var file := FileAccess.open(BINDINGS_FILE, FileAccess.WRITE)
-	if file:
-		file.store_string(JSON.stringify(data, "\t"))  # indenté pour lisibilité
-		file.close()
-		print("💾 [InputBootstrap] Bindings sauvegardés dans", BINDINGS_FILE)
-	else:
-		push_warning("[InputBootstrap] Impossible d’écrire dans " + BINDINGS_FILE)
+        var file := FileAccess.open(BINDINGS_PATH, FileAccess.WRITE)
+        if file == null:
+                push_warning("[InputBootstrap] Impossible d’écrire dans " + BINDINGS_PATH)
+                return false
+
+        file.store_string(JSON.stringify(data, "\t"))  # indenté pour lisibilité
+        file.close()
+        print("💾 [InputBootstrap] Bindings sauvegardés dans", BINDINGS_PATH)
+        return true
+
+func _serialize_event(ev: InputEvent) -> Dictionary:
+        var entry: Dictionary = {}
+        if ev is InputEventKey:
+                entry["type"] = "key"
+                entry["keycode"] = ev.keycode
+        elif ev is InputEventJoypadButton:
+                entry["type"] = "joy_button"
+                entry["button_index"] = ev.button_index
+        elif ev is InputEventJoypadMotion:
+                entry["type"] = "joy_axis"
+                entry["axis"] = ev.axis
+                entry["axis_value"] = ev.axis_value
+        return entry
 
 
 # Recharge les bindings depuis le fichier JSON s’il existe
@@ -211,14 +245,14 @@ func save_bindings() -> void:
 # sans jamais casser les contrôles par défaut.
 # ------------------------------------------------------------
 func load_bindings() -> void:
-	if not FileAccess.file_exists(BINDINGS_FILE):
-		print("📁 [InputBootstrap] Aucun fichier de bindings trouvé — valeurs par défaut conservées.")
-		return
+        if not FileAccess.file_exists(BINDINGS_PATH):
+                print("📁 [InputBootstrap] Aucun fichier de bindings trouvé — valeurs par défaut conservées.")
+                return
 
-	var file := FileAccess.open(BINDINGS_FILE, FileAccess.READ)
-	if not file:
-		push_warning("[InputBootstrap] Échec de lecture du fichier " + BINDINGS_FILE)
-		return
+        var file := FileAccess.open(BINDINGS_PATH, FileAccess.READ)
+        if not file:
+                push_warning("[InputBootstrap] Échec de lecture du fichier " + BINDINGS_PATH)
+                return
 
 	var content := file.get_as_text()
 	file.close()
@@ -264,8 +298,19 @@ func load_bindings() -> void:
 			if ev:
 				InputMap.action_add_event(action_name, ev)
 
-	print("✅ [InputBootstrap] Bindings personnalisés appliqués sans perte de commandes.")
+        print("✅ [InputBootstrap] Bindings personnalisés appliqués sans perte de commandes.")
 
+
+# ------------------------------------------------------------
+# Restaure les bindings par défaut pour une action précise
+# ------------------------------------------------------------
+func restore_default_binding(action_name: String) -> bool:
+        if not DEFAULT_BINDINGS.has(action_name):
+                push_warning("[InputBootstrap] Aucun binding par défaut pour '%s'." % action_name)
+                return false
+        _ensure_action(action_name, DEFAULT_BINDINGS[action_name], true)
+        print("🧩 [InputBootstrap] Action '%s' réinitialisée sur les valeurs par défaut." % action_name)
+        return true
 
 # ------------------------------------------------------------
 # AUTO-RÉPARATION DES BINDINGS
@@ -273,29 +318,15 @@ func load_bindings() -> void:
 # et recrée celles qui manquent ou sont vides.
 # ------------------------------------------------------------
 func repair_missing_bindings() -> void:
-	var required_actions := {
-		"gear_up": [KEY_KP_ADD, JOY_BUTTON_RIGHT_SHOULDER],
-		"gear_down": [KEY_KP_ENTER, JOY_BUTTON_LEFT_SHOULDER],
-		"clutch": [KEY_KP_0, JOY_BUTTON_X],
-		"engine_start": [KEY_E, JOY_BUTTON_START],
-		"accelerate": [KEY_SPACE, JOY_BUTTON_A],
-		"brake": [KEY_CTRL, JOY_BUTTON_B],
-		"steer_left": [KEY_Q, JOY_AXIS_LEFT_X],
-		"steer_right": [KEY_D, -JOY_AXIS_LEFT_X],
-		"turret_left": [KEY_LEFT, JOY_AXIS_RIGHT_X],
-		"turret_right": [KEY_RIGHT, -JOY_AXIS_RIGHT_X],
-		"ui_devtools_menu": [KEY_F1],
-	}
+        for action_name in DEFAULT_BINDINGS.keys():
+                if not InputMap.has_action(action_name):
+                        print("🧩 [InputBootstrap] Action manquante '%s' recréée." % action_name)
+                        _ensure_action(action_name, DEFAULT_BINDINGS[action_name])
+                        continue
 
-	for action_name in required_actions.keys():
-		if not InputMap.has_action(action_name):
-			print("🧩 [InputBootstrap] Action manquante '%s' recréée." % action_name)
-			_ensure_action(action_name, required_actions[action_name])
-			continue
+                var events := InputMap.action_get_events(action_name)
+                if events.is_empty():
+                        print("🧩 [InputBootstrap] Action '%s' vide — réinitialisée." % action_name)
+                        _ensure_action(action_name, DEFAULT_BINDINGS[action_name])
 
-		var events := InputMap.action_get_events(action_name)
-		if events.is_empty():
-			print("🧩 [InputBootstrap] Action '%s' vide — réinitialisée." % action_name)
-			_ensure_action(action_name, required_actions[action_name])
-
-	print("🔧 [InputBootstrap] Vérification et réparation des bindings terminée.")
+        print("🔧 [InputBootstrap] Vérification et réparation des bindings terminée.")
