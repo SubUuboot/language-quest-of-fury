@@ -1,0 +1,45 @@
+{
+	"ui_devtools_menu": [
+		{ "type": "key", "keycode": 4194333 }
+	],
+
+	"accelerate": [
+		{ "type": "key", "keycode": 4194332 }
+	],
+
+	"brake": [
+		{ "type": "key", "keycode": 4194332 }
+	],
+
+	"turret_left": [
+		{ "type": "key", "keycode": 4194319 }
+	],
+
+	"turret_right": [
+		{ "type": "key", "keycode": 4194321 }
+	],
+
+	"clutch": [
+		{ "type": "key", "keycode": 96 }
+	],
+
+	"gear_down": [
+		{ "type": "key", "keycode": 4194309 }
+	],
+
+	"gear_up": [
+		{ "type": "key", "keycode": 4194310 }
+	],
+
+	"engine_start": [
+		{ "type": "key", "keycode": 69 }
+	],
+
+	"steer_left": [
+		{ "type": "key", "keycode": 81 }
+	],
+
+	"steer_right": [
+		{ "type": "key", "keycode": 68 }
+	]
+}

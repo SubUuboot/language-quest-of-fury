@@ -180,9 +180,9 @@ func _update_debug_overlay() -> void:
 	if tank_ref.has_method("_get_direction_from_velocity"):
 		dir = tank_ref._get_direction_from_velocity()
 
-	var gear_text := "?"
-	if tank_ref.has_variable("current_gear"):
-		var g : int = tank_ref.current_gear
+	var gear_text: String = "?"
+	if "current_gear" in tank_ref.get_property_list().map(func(p): return p.name):
+		var g: int = tank_ref.current_gear
 		match g:
 			-1: gear_text = "R"
 			0: gear_text = "N"

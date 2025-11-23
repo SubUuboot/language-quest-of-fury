@@ -1,3 +1,4 @@
+
 # Request for Codex
 
 Please read this document and design a unified startup sequence for Super Language Quest Of Fury, including scene order, signal management, and input synchronization. Focus on creating a GameBootstrap scene as described.
@@ -8,8 +9,6 @@ Please read this document and design a unified startup sequence for Super Langua
 Establish a clean and reliable startup sequence for **Super Language Quest Of Fury**, ensuring that all autoloaded systems (InputBootstrap, DevTools, MotherAI, StageManager, etc.) are fully initialized before gameplay begins.
 
 The main scene should **only start once all systems are ready**, preventing timing-related bugs such as missing input bindings or incomplete signal connections.
-
----
 
 ## 🧩 Current Symptoms
 
@@ -30,7 +29,6 @@ The main scene should **only start once all systems are ready**, preventing timi
    - The engine (spacebar → RPM) works, but clutch and gear changes do not.
    - When DevTools opens, inputs lock/unlock correctly — so the signal logic is fine, but the timing is not.
 
----
 
 ## ⚙️ Root Cause Hypothesis
 
@@ -39,7 +37,6 @@ The main scene should **only start once all systems are ready**, preventing timi
 - The tank and DevTools rely on InputMap actions and signals that may not yet exist.
 - Therefore, the first few frames run in an inconsistent state.
 
----
 
 ## 🧠 Proposed Solution
 
@@ -49,7 +46,6 @@ Introduce a **Game Bootstrap Scene** (`MainMenu.tscn` or `GameBootstrap.tscn`) t
 3. Optionally shows a **main menu or splash screen** with “Press any key” or a simple loading animation.
 4. Once everything is ready, it **transitions to `MainScene`** using `get_tree().change_scene_to_file()`.
 
----
 
 ## 🧩 Required Changes
 
@@ -152,6 +148,3 @@ This ensures that input bindings exist even on slow initializations.
     On continue, MainScene loads cleanly.
 
     F1 toggle and tank input work immediately, without any race condition.
-
-
----
