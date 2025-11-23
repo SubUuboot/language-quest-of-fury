@@ -155,6 +155,8 @@ layer = 10
 [node name="DevTools" parent="HUDLayer" instance=ExtResource("10_dg77c")]
 process_mode = 3
 visible = false
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("9_efxa6")
 
 [node name="HUD" parent="HUDLayer" instance=ExtResource("7_kek77")]

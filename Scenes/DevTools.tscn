@@ -2,12 +2,15 @@
 
 [node name="DevTools" type="Control"]
 layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 214.0
 offset_top = 156.0
 offset_right = -938.0
 offset_bottom = -492.0
+grow_horizontal = 2
+grow_vertical = 2
 focus_mode = 2
 mouse_filter = 2
 
@@ -384,6 +387,7 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="SaveInputBindingsButton" type="Button" parent="DebugMenu/VBox/TabsContainer/InputRemap"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Save input bindings"
 
