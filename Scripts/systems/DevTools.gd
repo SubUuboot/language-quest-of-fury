@@ -15,26 +15,7 @@ var _listening_action: StringName = &""
 var _mechanics_controls := []
 var _signal_history := []
 var _default_tank_params: Dictionary = {}
-<<<<<<< Updated upstream
-var _last_metrics_refresh: float = 0.0
-var invert_steering: bool = false
-var _saved_settings: Dictionary = {}
-var _listen_ui_locked: bool = false
-var _tabs_focus_backup: int = Control.FOCUS_ALL
-var _selector_disabled_backup: bool = false
-var _listen_button_disabled_backup: bool = false
-var _clear_button_disabled_backup: bool = false
-var _reset_button_disabled_backup: bool = false
-var _invert_toggle_disabled_backup: bool = false
-var _save_bindings_button_disabled_backup: bool = false
-var _repair_bindings_button_disabled_backup: bool = false
-var _listen_button_default_text: String = ""
-
-# Steering inversion flag (user preference)
-# Inversion du sens de direction (préférence utilisateur)
-=======
 var _last_metrics_refresh := 0.0
->>>>>>> Stashed changes
 var invert_steering: bool = false
 var _saved_settings: Dictionary = {}
 var _listen_ui_locked: bool = false
@@ -90,10 +71,6 @@ var _mother_ai: Node = null
 @onready var _listen_button: Button = %ListenButton
 @onready var _clear_button: Button = %ClearBindingButton
 @onready var _reset_button: Button = %ResetBindingButton
-<<<<<<< Updated upstream
-@onready var _save_bindings_button: Button = %SaveBindingsButton
-=======
->>>>>>> Stashed changes
 @onready var _repair_bindings_button: Button = %RepairBindingsButton
 @onready var _invert_steering_toggle: CheckButton = %InvertSteeringToggle
 @onready var _binding_status: Label = %BindingStatusLabel
@@ -126,21 +103,11 @@ func _ready() -> void:
 	await _hook_input_bootstrap()
 	_collect_stage_manager()
 	await _collect_tank()
-<<<<<<< Updated upstream
-        _collect_mother_ai()
-        _setup_mechanics_controls()
-        _load_saved_settings()
-        _populate_action_selector()
-        _connect_signals()
-        _update_stage_lock()
-        _update_sandbox_status()
-=======
 	_collect_mother_ai()
 	_setup_mechanics_controls()
 	_load_saved_settings()
 	_populate_action_selector()
 	_connect_signals()
->>>>>>> Stashed changes
 
 	set_process(true)
 	set_process_unhandled_input(true)
@@ -157,31 +124,6 @@ func _setup_ui() -> void:
 	if _toggle_button and not _toggle_button.is_connected("pressed", Callable(self, "_on_toggle_button_pressed")):
 		_toggle_button.pressed.connect(Callable(self, "_on_toggle_button_pressed"))
 
-<<<<<<< Updated upstream
-	if _sandbox_toggle and not _sandbox_toggle.is_connected("toggled", Callable(self, "_on_sandbox_toggled")):
-		_sandbox_toggle.toggled.connect(Callable(self, "_on_sandbox_toggled"))
-        if _reset_mechanics_button and not _reset_mechanics_button.is_connected("pressed", Callable(self, "_on_reset_mechanics_pressed")):
-                _reset_mechanics_button.pressed.connect(Callable(self, "_on_reset_mechanics_pressed"))
-        if _save_settings_button and not _save_settings_button.is_connected("pressed", Callable(self, "_on_save_settings_pressed")):
-                _save_settings_button.pressed.connect(Callable(self, "_on_save_settings_pressed"))
-        if _use_engine_stall_toggle and not _use_engine_stall_toggle.is_connected("toggled", Callable(self, "_on_use_engine_stall_toggled")):
-                _use_engine_stall_toggle.toggled.connect(Callable(self, "_on_use_engine_stall_toggled"))
-        if _input_action_selector and not _input_action_selector.is_connected("item_selected", Callable(self, "_on_action_selected")):
-                _input_action_selector.item_selected.connect(Callable(self, "_on_action_selected"))
-        if _listen_button and not _listen_button.is_connected("pressed", Callable(self, "_on_listen_button_pressed")):
-                _listen_button.pressed.connect(Callable(self, "_on_listen_button_pressed"))
-                _listen_button_default_text = _listen_button.text
-        if _clear_button and not _clear_button.is_connected("pressed", Callable(self, "_on_clear_binding_pressed")):
-                _clear_button.pressed.connect(Callable(self, "_on_clear_binding_pressed"))
-        if _reset_button and not _reset_button.is_connected("pressed", Callable(self, "_on_reset_binding_pressed")):
-                _reset_button.pressed.connect(Callable(self, "_on_reset_binding_pressed"))
-        if _save_bindings_button and not _save_bindings_button.is_connected("pressed", Callable(self, "_on_save_bindings_pressed")):
-                _save_bindings_button.pressed.connect(Callable(self, "_on_save_bindings_pressed"))
-        if _repair_bindings_button and not _repair_bindings_button.is_connected("pressed", Callable(self, "_on_repair_bindings_pressed")):
-                _repair_bindings_button.pressed.connect(Callable(self, "_on_repair_bindings_pressed"))
-        if _invert_steering_toggle and not _invert_steering_toggle.is_connected("toggled", Callable(self, "_on_invert_steering_toggled")):
-                _invert_steering_toggle.toggled.connect(Callable(self, "_on_invert_steering_toggled"))
-=======
 	if _reset_mechanics_button and not _reset_mechanics_button.is_connected("pressed", Callable(self, "_on_reset_mechanics_pressed")):
 		_reset_mechanics_button.pressed.connect(Callable(self, "_on_reset_mechanics_pressed"))
 
@@ -203,7 +145,6 @@ func _setup_ui() -> void:
 
 	if _reset_button and not _reset_button.is_connected("pressed", Callable(self, "_on_reset_binding_pressed")):
 		_reset_button.pressed.connect(Callable(self, "_on_reset_binding_pressed"))
->>>>>>> Stashed changes
 
 
 	if _repair_bindings_button and not _repair_bindings_button.is_connected("pressed", Callable(self, "_on_repair_bindings_pressed")):
@@ -382,23 +323,11 @@ func _sync_mechanics_from_tank() -> void:
 
 		if label:
 			label.text = format % slider.value
-<<<<<<< Updated upstream
-        if _use_engine_stall_toggle:
-                _use_engine_stall_toggle.set_block_signals(true)
-                _use_engine_stall_toggle.button_pressed = _tank.use_engine_stall
-                _use_engine_stall_toggle.set_block_signals(false)
-        if _invert_steering_toggle:
-                _invert_steering_toggle.set_block_signals(true)
-                invert_steering = _tank.invert_steering
-                _invert_steering_toggle.button_pressed = invert_steering
-                _invert_steering_toggle.set_block_signals(false)
-=======
 
 	if _use_engine_stall_toggle:
 		_use_engine_stall_toggle.set_block_signals(true)
 		_use_engine_stall_toggle.button_pressed = _tank.use_engine_stall
 		_use_engine_stall_toggle.set_block_signals(false)
->>>>>>> Stashed changes
 
 	if _invert_steering_toggle:
 		_invert_steering_toggle.set_block_signals(true)
@@ -417,12 +346,12 @@ func _capture_tank_defaults() -> Dictionary:
 	defaults["visual_speed_factor"] = _tank.visual_speed_factor
 	defaults["engine_idle_rpm"] = _tank.engine_idle_rpm
 	defaults["engine_max_rpm"] = _tank.engine_max_rpm
-        defaults["engine_throttle_rpm_gain"] = _tank.engine_throttle_rpm_gain
-        defaults["engine_rpm_decay"] = _tank.engine_rpm_decay
-        defaults["engine_torque_max"] = _tank.engine_torque_max
-        defaults["use_engine_stall"] = _tank.use_engine_stall
-        defaults["invert_steering"] = _tank.invert_steering
-        return defaults
+	defaults["engine_throttle_rpm_gain"] = _tank.engine_throttle_rpm_gain
+	defaults["engine_rpm_decay"] = _tank.engine_rpm_decay
+	defaults["engine_torque_max"] = _tank.engine_torque_max
+	defaults["use_engine_stall"] = _tank.use_engine_stall
+	defaults["invert_steering"] = _tank.invert_steering
+	return defaults
 
 
 func _on_mechanic_slider_value_changed(value: float, property_name: String, label: Label, format: String) -> void:
@@ -441,94 +370,6 @@ func _apply_mechanic_value(property_name: String, value: float) -> void:
 
 
 func _restore_tank_defaults() -> void:
-<<<<<<< Updated upstream
-        if _tank == null or _default_tank_params.is_empty():
-                return
-        for key in _default_tank_params.keys():
-                if key == "use_engine_stall":
-                        _tank.use_engine_stall = _default_tank_params[key]
-                elif key == "invert_steering":
-                        invert_steering = _default_tank_params[key]
-                        _tank.invert_steering = invert_steering
-                else:
-                        _tank.set(key, _default_tank_params[key])
-        _sync_mechanics_from_tank()
-        _mechanics_status.text = "Tank parameters restored."
-
-func _apply_invert_steering() -> void:
-        if _tank == null:
-                return
-        _tank.invert_steering = invert_steering
-
-func _load_saved_settings() -> void:
-        _saved_settings.clear()
-        if not FileAccess.file_exists(SETTINGS_PATH):
-                return
-        var file := FileAccess.open(SETTINGS_PATH, FileAccess.READ)
-        if file == null:
-                var error_code: int = FileAccess.get_open_error()
-                push_warning("[DevTools] Failed to open settings file: %s" % error_string(error_code))
-                return
-        var data: Variant = file.get_var()
-        file.close()
-        if data is Dictionary:
-                _saved_settings = data
-                if _saved_settings.has("invert_steering"):
-                        invert_steering = bool(_saved_settings["invert_steering"])
-                        if _invert_steering_toggle:
-                                _invert_steering_toggle.set_block_signals(true)
-                                _invert_steering_toggle.button_pressed = invert_steering
-                                _invert_steering_toggle.set_block_signals(false)
-                if _sandbox_enabled:
-                        _apply_saved_settings()
-        else:
-                push_warning("[DevTools] Settings file contained unexpected data.")
-
-func _apply_saved_settings() -> void:
-        if _tank == null or _saved_settings.is_empty() or not _sandbox_enabled:
-                return
-        var applied: bool = false
-        if _saved_settings.has("tank"):
-                var tank_data: Variant = _saved_settings["tank"]
-                if tank_data is Dictionary:
-                        var tank_dict: Dictionary = tank_data
-                        for entry in _mechanics_controls:
-                                var property_name: String = entry["property"]
-                                if not tank_dict.has(property_name):
-                                        continue
-                                var value: Variant = tank_dict[property_name]
-                                var numeric_value: float = float(value)
-                                var slider: HSlider = entry["slider"]
-                                if slider:
-                                        slider.set_block_signals(true)
-                                        slider.value = numeric_value
-                                        slider.set_block_signals(false)
-                                var label: Label = entry["label"]
-                                var format: String = entry["format"]
-                                if label:
-                                        label.text = format % numeric_value
-                                _tank.set(property_name, numeric_value)
-                                applied = true
-                        if tank_dict.has("use_engine_stall") and _use_engine_stall_toggle:
-                                var stall_value: bool = tank_dict["use_engine_stall"]
-                                _tank.use_engine_stall = stall_value
-                                _use_engine_stall_toggle.set_block_signals(true)
-                                _use_engine_stall_toggle.button_pressed = stall_value
-                                _use_engine_stall_toggle.set_block_signals(false)
-                                applied = true
-        if _saved_settings.has("invert_steering"):
-                invert_steering = bool(_saved_settings["invert_steering"])
-                _apply_invert_steering()
-                if _invert_steering_toggle:
-                        _invert_steering_toggle.set_block_signals(true)
-                        _invert_steering_toggle.button_pressed = invert_steering
-                        _invert_steering_toggle.set_block_signals(false)
-                if _binding_status:
-                        _binding_status.text = "Invert steering restored (%s)." % ("ON" if invert_steering else "OFF")
-                applied = true
-        if applied:
-                _mechanics_status.text = "Saved settings applied."
-=======
 	if _tank == null or _default_tank_params.is_empty():
 		return
 
@@ -543,7 +384,6 @@ func _apply_saved_settings() -> void:
 
 	_sync_mechanics_from_tank()
 	_mechanics_status.text = "Tank parameters restored."
->>>>>>> Stashed changes
 
 
 func _apply_invert_steering() -> void:
@@ -702,8 +542,8 @@ func _on_invert_steering_toggled(pressed: bool) -> void:
 
 
 func _populate_action_selector() -> void:
-        if _input_action_selector == null:
-                return
+	if _input_action_selector == null:
+		return
 	_input_action_selector.clear()
 
 	var actions: PackedStringArray = InputMap.get_actions()
@@ -722,63 +562,8 @@ func _on_input_actions_ready() -> void:
 
 
 func _on_action_selected(index: int) -> void:
-        var action_name: String = _get_selected_action()
-        _refresh_binding_display(action_name)
-
-func _set_listen_ui_locked(enabled: bool) -> void:
-        if enabled:
-                if _listen_ui_locked:
-                        return
-                _listen_ui_locked = true
-                if _tabs_container:
-                        _tabs_focus_backup = _tabs_container.focus_mode
-                        _tabs_container.focus_mode = Control.FOCUS_NONE
-                if _input_action_selector:
-                        _selector_disabled_backup = _input_action_selector.disabled
-                        _input_action_selector.disabled = true
-                if _listen_button:
-                        _listen_button_disabled_backup = _listen_button.disabled
-                        _listen_button.disabled = true
-                        if _listen_button_default_text == "":
-                                _listen_button_default_text = _listen_button.text
-                        _listen_button.text = "Listening..."
-                if _clear_button:
-                        _clear_button_disabled_backup = _clear_button.disabled
-                        _clear_button.disabled = true
-                if _reset_button:
-                        _reset_button_disabled_backup = _reset_button.disabled
-                        _reset_button.disabled = true
-                if _save_bindings_button:
-                        _save_bindings_button_disabled_backup = _save_bindings_button.disabled
-                        _save_bindings_button.disabled = true
-                if _repair_bindings_button:
-                        _repair_bindings_button_disabled_backup = _repair_bindings_button.disabled
-                        _repair_bindings_button.disabled = true
-                if _invert_steering_toggle:
-                        _invert_toggle_disabled_backup = _invert_steering_toggle.disabled
-                        _invert_steering_toggle.disabled = true
-        else:
-                if not _listen_ui_locked:
-                        return
-                _listen_ui_locked = false
-                if _tabs_container:
-                        _tabs_container.focus_mode = _tabs_focus_backup
-                if _input_action_selector:
-                        _input_action_selector.disabled = _selector_disabled_backup
-                if _listen_button:
-                        _listen_button.disabled = _listen_button_disabled_backup
-                        if _listen_button_default_text != "":
-                                _listen_button.text = _listen_button_default_text
-                if _clear_button:
-                        _clear_button.disabled = _clear_button_disabled_backup
-                if _reset_button:
-                        _reset_button.disabled = _reset_button_disabled_backup
-                if _save_bindings_button:
-                        _save_bindings_button.disabled = _save_bindings_button_disabled_backup
-                if _repair_bindings_button:
-                        _repair_bindings_button.disabled = _repair_bindings_button_disabled_backup
-                if _invert_steering_toggle:
-                        _invert_steering_toggle.disabled = _invert_toggle_disabled_backup
+	var action_name: String = _get_selected_action()
+	_refresh_binding_display(action_name)
 
 
 # ==========================================================
@@ -845,21 +630,6 @@ func _set_listen_ui_locked(enabled: bool) -> void:
 		if _invert_steering_toggle:
 			_invert_steering_toggle.disabled = _invert_toggle_disabled_backup
 
-<<<<<<< Updated upstream
-func _on_listen_button_pressed() -> void:
-        if not _sandbox_enabled:
-                _binding_status.text = "Sandbox disabled — cannot listen."
-                return
-        var action_name: String = _get_selected_action()
-        if action_name == "":
-                _binding_status.text = "No action selected."
-                return
-        _listening_action = action_name
-        _binding_status.text = "Listening for new input on %s... (Esc to cancel)" % action_name
-        get_viewport().gui_release_focus()
-        grab_focus()
-        _set_listen_ui_locked(true)
-=======
 
 
 # ==========================================================
@@ -880,21 +650,12 @@ func _on_listen_button_pressed() -> void:
 	get_viewport().gui_release_focus()
 	grab_focus()
 	_set_listen_ui_locked(true)
->>>>>>> Stashed changes
 
 
 func _on_clear_binding_pressed() -> void:
 	var action_name: String = _get_selected_action()
 	if action_name == "":
 		return
-<<<<<<< Updated upstream
-        InputMap.action_erase_events(action_name)
-        var saved: bool = _save_bindings()
-        _binding_status.text = "Cleared binding for %s." % action_name
-        if not saved:
-                _binding_status.text += " [Save failed.]"
-        _refresh_binding_display(action_name)
-=======
 
 	InputMap.action_erase_events(action_name)
 
@@ -905,67 +666,9 @@ func _on_clear_binding_pressed() -> void:
 			_binding_status.text += " [Save failed.]"
 
 	_refresh_binding_display(action_name)
->>>>>>> Stashed changes
 
 
 func _on_reset_binding_pressed() -> void:
-<<<<<<< Updated upstream
-        if not _sandbox_enabled:
-                _binding_status.text = "Sandbox disabled — defaults locked."
-                return
-        var action_name: String = _get_selected_action()
-        if action_name == "":
-                return
-        var restored: bool = false
-        if _input_bootstrap:
-                if _input_bootstrap.has_method("restore_default_binding"):
-                        restored = _input_bootstrap.restore_default_binding(action_name)
-                elif _input_bootstrap.has_method("repair_missing_bindings"):
-                        _input_bootstrap.repair_missing_bindings()
-                        restored = true
-        if restored:
-                var saved: bool = _save_bindings()
-                _binding_status.text = "Restored defaults for %s." % action_name
-                if not saved:
-                        _binding_status.text += " [Save failed.]"
-        else:
-                _binding_status.text = "No default binding available for %s." % action_name
-        _refresh_binding_display(action_name)
-
-func _on_save_bindings_pressed() -> void:
-        if not _sandbox_enabled:
-                _binding_status.text = "Sandbox disabled — cannot save bindings."
-                return
-        var saved: bool = _save_bindings()
-        if saved:
-                _binding_status.text = "Input bindings saved."
-        else:
-                _binding_status.text = "Failed to save input bindings."
-
-func _on_repair_bindings_pressed() -> void:
-        if not _sandbox_enabled:
-                _binding_status.text = "Sandbox disabled — cannot repair bindings."
-                return
-        var repaired: bool = false
-        if _input_bootstrap and _input_bootstrap.has_method("repair_missing_bindings"):
-                _input_bootstrap.repair_missing_bindings()
-                repaired = true
-        var action_name: String = _get_selected_action()
-        if repaired:
-                var saved: bool = _save_bindings()
-                _binding_status.text = "Checked defaults for missing bindings."
-                if not saved:
-                        _binding_status.text += " [Save failed.]"
-        else:
-                _binding_status.text = "Repair unavailable without bootstrap."
-        if action_name != "":
-                _refresh_binding_display(action_name)
-
-func _save_bindings() -> bool:
-        if _input_bootstrap and _input_bootstrap.has_method("save_bindings"):
-                return _input_bootstrap.save_bindings()
-        return false
-=======
 	var action_name: String = _get_selected_action()
 	if action_name == "":
 		return
@@ -1011,7 +714,6 @@ func _save_bindings() -> bool:
 		return _input_bootstrap.save_user_bindings()
 	return false
 
->>>>>>> Stashed changes
 
 
 func _on_save_input_bindings_pressed() -> void:
@@ -1103,29 +805,6 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if not accepted:
 		return
-<<<<<<< Updated upstream
-        var action_name: StringName = _listening_action
-        _listening_action = &""
-        var new_event: InputEvent = event.duplicate()
-        var save_failed: bool = false
-        if _input_bootstrap and _input_bootstrap.has_method("remap_action"):
-                _input_bootstrap.remap_action(String(action_name), new_event)
-        else:
-                var action_text: String = String(action_name)
-                InputMap.action_erase_events(action_text)
-                InputMap.action_add_event(action_text, new_event)
-                var saved: bool = _save_bindings()
-                save_failed = not saved
-        _set_listen_ui_locked(false)
-        if has_focus():
-                release_focus()
-        get_viewport().gui_release_focus()
-        _binding_status.text = "Assigned %s to %s." % [_format_input_event(new_event), action_name]
-        if save_failed:
-                _binding_status.text += " [Save failed.]"
-        _refresh_binding_display(String(action_name))
-        get_viewport().set_input_as_handled()
-=======
 
 	var action_name: StringName = _listening_action
 	_listening_action = &""
@@ -1158,67 +837,15 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	_refresh_binding_display(String(action_name))
 	get_viewport().set_input_as_handled()
->>>>>>> Stashed changes
 
 
 
-func _on_reset_mechanics_pressed() -> void:
-        if _tank == null:
-                return
-        _default_tank_params = _capture_tank_defaults()
-        _restore_tank_defaults()
-
-func _on_save_settings_pressed() -> void:
-        if not _sandbox_enabled:
-                _mechanics_status.text = "Sandbox disabled — cannot save."
-                return
-        if _tank == null:
-                _mechanics_status.text = "Tank unavailable — cannot save."
-                return
-        var data: Dictionary = {
-                "tank": _capture_tank_defaults(),
-                "invert_steering": invert_steering
-        }
-        var file := FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
-        if file == null:
-                var error_code: int = FileAccess.get_open_error()
-                _mechanics_status.text = "Failed to save settings (%s)." % error_string(error_code)
-                return
-        file.store_var(data)
-        file.close()
-        _saved_settings = data
-        _mechanics_status.text = "Settings saved."
-
-func _on_use_engine_stall_toggled(pressed: bool) -> void:
-        if _tank == null:
-                return
-        if not _sandbox_enabled:
-                _use_engine_stall_toggle.set_block_signals(true)
-                _use_engine_stall_toggle.button_pressed = _tank.use_engine_stall
-                _use_engine_stall_toggle.set_block_signals(false)
-                _mechanics_status.text = "Sandbox disabled — stall unchanged."
-                return
-        _tank.use_engine_stall = pressed
-        _mechanics_status.text = "use_engine_stall = %s" % ("true" if pressed else "false")
-
-func _on_invert_steering_toggled(pressed: bool) -> void:
-        if not _sandbox_enabled:
-                if _invert_steering_toggle:
-                        _invert_steering_toggle.set_block_signals(true)
-                        _invert_steering_toggle.button_pressed = invert_steering
-                        _invert_steering_toggle.set_block_signals(false)
-                _binding_status.text = "Sandbox disabled — steering unchanged."
-                return
-        invert_steering = pressed
-        _apply_invert_steering()
-        if _binding_status:
-                _binding_status.text = "Invert steering %s." % ("enabled" if pressed else "disabled")
 # =======================================================================================
 # TOGGLE MENU / LAYERING
 # =======================================================================================
 
 func _on_devtools_toggle_requested() -> void:
-        _toggle_menu()
+	_toggle_menu()
 
 
 func _on_toggle_button_pressed() -> void:
@@ -1302,15 +929,6 @@ func _on_tank_action(action: String) -> void:
 # Version fusionnée : on re-collecte le tank après sortie de scène et on réapplique les
 # réglages si sandbox encore actif.
 func _on_tank_tree_exited() -> void:
-<<<<<<< Updated upstream
-        _tank = null
-        _append_signal_entry("Tank node exited scene tree.")
-        await _collect_tank()
-        _setup_mechanics_controls()
-        _connect_signals()
-        if _sandbox_enabled:
-                _apply_saved_settings()
-=======
 	_tank = null
 	_append_signal_entry("Tank node exited scene tree.")
 	await _collect_tank()
@@ -1344,32 +962,7 @@ func _on_mother_ai_task_completed(scene_name: String, action_name: String) -> vo
 func _on_mother_ai_log_updated(entry: String) -> void:
 	_append_signal_entry("MotherAI log → %s" % entry)
 
->>>>>>> Stashed changes
 
-func _on_stage_loaded(stage_name: String) -> void:
-	_current_stage_name = stage_name
-	_append_signal_entry("Stage loaded: %s" % stage_name)
-	_update_stage_lock()
-
-func _on_stage_unloaded(stage_name: String) -> void:
-	_append_signal_entry("Stage unloaded: %s" % stage_name)
-	_current_stage_name = ""
-	_update_stage_lock()
-
-func _on_stage_completed(stage_name: String) -> void:
-	_append_signal_entry("Stage completed: %s" % stage_name)
-
-func _on_mother_ai_task_started(scene_name: String, action_name: String) -> void:
-	_append_signal_entry("MotherAI task started: %s/%s" % [scene_name, action_name])
-
-func _on_mother_ai_task_completed(scene_name: String, action_name: String) -> void:
-	_append_signal_entry("MotherAI task completed: %s/%s" % [scene_name, action_name])
-
-func _on_mother_ai_log_updated(entry: String) -> void:
-	_append_signal_entry("MotherAI log → %s" % entry)
-  
-  
-  
 # =======================================================================================
 # DEBUG PANELS / METRICS
 # =======================================================================================
