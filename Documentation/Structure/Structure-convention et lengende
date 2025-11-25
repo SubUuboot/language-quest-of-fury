@@ -1,0 +1,15 @@
+🧭 Carte Structurelle SLQOF – Convention Officielle
+
+(v2025.11 — format mixte “arbre + runtime”)
+
+Notation :
+
+│ ├ └  structure réelle dans l’éditeur
+
+─ ─ ▶  chargement / instanciation dynamique
+
+⇔  autoload (singleton disponible partout)
+
+[ Nom ]  scène chargée par StageManager
+
+(Script)  script attaché

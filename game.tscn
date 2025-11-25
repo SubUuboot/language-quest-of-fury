@@ -8,10 +8,10 @@
 [node name="Game" type="Node"]
 script = ExtResource("1_j5wjh")
 
-[node name="StageManager" type="Node" parent="."]
-script = ExtResource("2_ryrav")
-
 [node name="Main" parent="." instance=ExtResource("1_e2o6t")]
 position = Vector2(1, 0)
 
 [node name="MotherAI" parent="." instance=ExtResource("6_ryrav")]
+
+[node name="StageManager" type="Node" parent="."]
+script = ExtResource("2_ryrav")

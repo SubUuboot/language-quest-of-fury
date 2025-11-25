@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://b0r0q4bbu1p5w"]
+[gd_scene load_steps=3 format=3 uid="uid://b0r0q4bbu1p5w"]
 
 [ext_resource type="Script" uid="uid://swhac1qhxa5d" path="res://Scripts/GameBootstrap.gd" id="1_yx7q3"]
+[ext_resource type="Texture2D" uid="uid://rc87tbf2bmga" path="res://Assets/splash.png" id="2_8yevy"]
 
 [node name="GameBootstrap" type="Control"]
 layout_mode = 3
@@ -12,27 +13,29 @@ grow_vertical = 2
 script = ExtResource("1_yx7q3")
 
 [node name="Overlay" type="Panel" parent="."]
-modulate = Color(0, 0, 0, 0.75)
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="VBox" type="VBoxContainer" parent="Overlay"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -160.0
-offset_top = -70.0
-offset_right = 160.0
-offset_bottom = 70.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Overlay"]
+top_level = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = 44.0
+offset_bottom = 184.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2, 2)
 alignment = 1
 
 [node name="TitleLabel" type="Label" parent="Overlay/VBox"]
@@ -54,6 +57,11 @@ size_flags_vertical = 1
 max_value = 1.0
 step = 0.0
 
+[node name="Splash" type="Sprite2D" parent="Overlay"]
+light_mask = 0
+z_as_relative = false
+texture = ExtResource("2_8yevy")
+
 [node name="StartTimer" type="Timer" parent="."]
-wait_time = 2.0
+wait_time = 8.888
 one_shot = true
